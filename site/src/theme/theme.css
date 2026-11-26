@@ -1,0 +1,127 @@
+/* =============================================================================
+   theme.css: the ONE place for design tokens (graphite & champagne).
+   Tailwind v4 reads @theme and generates utilities from it, e.g.
+   --color-accent -> bg-accent / text-accent / border-accent.
+   Text colours marked "AA" are checked by scripts/check-contrast.mjs.
+   "static" emits every token as a CSS variable on :root, so non-Tailwind code
+   (the Shiki SQL theme, later the charts and the 3D map) can read the same
+   values with getComputedStyle instead of repeating them.
+   ============================================================================= */
+@import "tailwindcss";
+
+@theme static {
+  /* Surfaces */
+  --color-bg: #0f0f10;            /* page background */
+  --color-card: #18181b;          /* cards */
+  --color-line: #26262a;          /* thin borders */
+  --color-line-strong: #34343a;   /* hover / focus borders */
+
+  /* Text (AA on bg and card) */
+  --color-ink: #e9e6e0;           /* body text */
+  --color-muted: #8e8b85;         /* secondary text */
+
+  /* Accent: key numbers, highlights, on-time */
+  --color-accent: #d9c7a3;        /* champagne (AA as text) */
+  --color-accent-soft: rgb(217 199 163 / 0.12);
+
+  /* Secondary data */
+  --color-slate: #5e6878;         /* fills and marks only (not AA as small text) */
+  --color-slate-text: #9aa3b2;    /* slate for text (AA) */
+
+  /* Late / negative */
+  --color-late: #c2675a;          /* terracotta: fills and marks only */
+  --color-late-text: #df8f82;     /* terracotta for text (AA) */
+
+  /* Fonts (self-hosted via @fontsource, imported in main.tsx) */
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, Menlo, monospace;
+
+  /* Shape and depth */
+  --radius-card: 1rem;
+  --shadow-glow: 0 0 28px rgb(217 199 163 / 0.16);
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 12px 32px rgb(0 0 0 / 0.35);
+}
+
+/* -----------------------------------------------------------------------------
+   Base styles
+   ----------------------------------------------------------------------------- */
+html {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgb(217 199 163 / 0.3);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Lenis smooth scroll (from lenis/dist/lenis.css, inlined so tokens stay here) */
+html.lenis, html.lenis body { height: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+
+/* Glass card: subtle translucent surface with a thin border */
+.glass {
+  background: linear-gradient(180deg, rgb(24 24 27 / 0.92), rgb(24 24 27 / 0.78));
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Soft glow, used only on key numbers */
+.glow {
+  text-shadow: 0 0 24px rgb(217 199 163 / 0.28);
+}
+
+/* Shiki output inside the SQL panel */
+.sql-code pre {
+  margin: 0;
+  background: transparent !important;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+.sql-code code { counter-reset: line; display: block; }
+.sql-code .line { display: inline-block; width: 100%; padding: 0 1rem 0 0; }
+.sql-code .line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 2.25rem;
+  margin-right: 0.75rem;
+  text-align: right;
+  color: var(--color-muted);
+  opacity: 0.6;
+}
+.sql-code .line.annotated {
+  background: var(--color-accent-soft);
+  box-shadow: inset 2px 0 0 var(--color-accent);
+}
+
+/* Respect reduced motion everywhere */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

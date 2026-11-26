@@ -1,0 +1,15 @@
+# Netlify build settings for the case-study site in site/.
+[build]
+  base = "site"
+  command = "npm run build"
+  publish = "dist"
+
+# Vite 8 needs Node 20.19 or later.
+[build.environment]
+  NODE_VERSION = "22"
+
+# Single-page app: serve index.html for any path that isn't a file.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
