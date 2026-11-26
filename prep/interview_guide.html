@@ -1,0 +1,1734 @@
+<!doctype html><html><head><meta charset='utf-8'><title>Olist interview prep</title><style>
+@page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+body { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; font-size: 10.5pt;
+       line-height: 1.45; color: #1a1a1a; }
+h1 { font-size: 20pt; margin: 0 0 6pt; }
+h2 { font-size: 15pt; border-bottom: 1.5px solid #333; padding-bottom: 3pt; margin-top: 0;
+     page-break-before: always; }
+h2.first { page-break-before: avoid; }
+h3 { font-size: 12pt; margin: 14pt 0 4pt; page-break-after: avoid; }
+h4 { font-size: 11pt; margin: 10pt 0 3pt; page-break-after: avoid; }
+p { margin: 4pt 0; }
+ul, ol { margin: 3pt 0 3pt 0; padding-left: 18pt; }
+li { margin: 2pt 0; }
+code { font-family: Menlo, Consolas, monospace; font-size: 9pt; background: #f2f2f2;
+       padding: 0 2pt; border-radius: 2px; }
+pre { background: #f5f5f5; border: 1px solid #ddd; border-radius: 3px; padding: 6pt 8pt;
+      font-size: 8.6pt; line-height: 1.35; white-space: pre-wrap; page-break-inside: avoid; }
+pre code { background: none; padding: 0; font-size: 8.6pt; }
+table { border-collapse: collapse; margin: 6pt 0; font-size: 9.5pt; page-break-inside: avoid; }
+th, td { border: 1px solid #bbb; padding: 3pt 6pt; vertical-align: top; }
+th { background: #eee; }
+td.r, th.r { text-align: right; }
+hr { border: none; border-top: 1px solid #ccc; margin: 10pt 0; }
+</style></head><body><h1>Olist SQL Product Analytics: Interview Prep Guide</h1>
+<p>Private prep notes. Not committed (prep/ is in .gitignore). Every number comes from a file in results/. Where a number was checked once during the project but never saved to results/, this guide says so instead of quoting it.</p>
+<hr>
+<h2 class="first">1. Pitches</h2>
+<h3>30-second version</h3>
+<ul><li>
+I analysed 99,441 orders from Olist, a Brazilian e-commerce marketplace, in PostgreSQL, using plain SQL only.
+</li><li>
+I built a cleaned data layer with checks that fail loudly if a join duplicates rows. Then I answered five product questions: retention, delivery, reviews, sellers and revenue.
+</li><li>
+The headline: only 2.15% of customers came back on a later day, and late deliveries drive 1-2 star reviews: 79.27% of orders arriving 8+ days late got one, against 8.98% for orders arriving a week early.
+</li><li>
+I ended with three testable recommendations:
+<ul><li>
+send the review request after delivery
+</li><li>
+hold sellers to a handover deadline
+</li><li>
+win back lapsed high-value customers with free freight
+</li></ul>
+</li></ul>
+<h3>2-minute version</h3>
+<ul><li>
+<strong>Context.</strong> Olist is a Brazilian marketplace that lets small sellers sell through one storefront. The public dataset has 99,441 orders from 2016 to 2018 across 9 tables: orders, items, payments, reviews, customers, sellers, products, a category translation and geolocation.
+</li><li>
+<strong>Setup.</strong> I loaded it into PostgreSQL with typed columns. I declared keys only where profiling showed they were unique, and foreign keys only where every child row had a parent. I documented every data-quality issue and the decision I took. For example, reviews are not one per order: 547 orders have more than one review, so I keep the latest.
+</li><li>
+<strong>Clean layer.</strong> I built views at a stated grain, one row per order, product or seller. Every view is checked automatically: row count equals distinct keys equals the expected count, or the script stops.
+</li><li>
+<strong>Scope.</strong> Analysis window: purchases from 2017-01-01 to 2018-08-31 (99,092 orders, 96,211 delivered). Revenue is 13,181,027.13 BRL of item value.
+</li><li>
+<strong>Retention.</strong> 97.00% of customers ordered once. Only 2.15% returned on a later day. Of the "second orders", 29.65% were placed the same day as the first, usually within seconds, so I count only later-day returns.
+</li><li>
+<strong>Delivery.</strong> 93.21% of orders arrived on time, because promises are generous: a median 24-day promise against a median 10 calendar days actual. Orders handed to the carrier after the seller's shipping deadline were late 21.10% of the time, against 5.39%.
+</li><li>
+<strong>Reviews.</strong> The 1-2 star share climbs from 8.98% (7+ days early) to 79.27% (8+ days late). 74.46% of late orders were reviewed before they arrived.
+</li><li>
+<strong>Sellers.</strong> The top 1% of sellers (30) earn 25.93% of revenue. 62 sellers produce 55.42% of the scorecard's late handovers.
+</li><li>
+<strong>Revenue.</strong> Jan-Aug 2018 revenue was 141.13% above Jan-Aug 2017. Orders rose 139.94% and average order value only 0.49%, so growth is volume.
+</li><li>
+<strong>Three recommendations, each with an A/B test design:</strong>
+<ol><li>
+Send the review request after delivery confirmation, because late orders are reviewed before they arrive.
+</li><li>
+Put a handover SLA with alerts and a ranking penalty on sellers, starting with those 62 sellers.
+</li><li>
+Win back the 22,369 lapsed high-value one-time customers, who brought 39.77% of revenue, with a free-freight voucher.
+</li></ol>
+</li></ul>
+<hr>
+<h2>2. The dataset</h2>
+<h3>What Olist is</h3>
+<ul><li>
+<strong>The business.</strong> Olist is a Brazilian company that connects small merchants to large online marketplaces through one contract. A customer buys on the marketplace, a seller ships the product, a carrier delivers it, and the customer receives a satisfaction survey (the review).
+</li><li>
+<strong>The data.</strong> The public Kaggle dataset is real, anonymised commercial data. Customers, sellers and products are hashed IDs. Purchase dates run from 2016-09-04 21:15:19 to 2018-10-17 17:30:18 (results/02_data_quality_output.txt).
+</li></ul>
+<h3>The 9 tables: what one row means</h3>
+<table><thead><tr><th class="">Table</th><th class="r">Rows</th><th class="">One row =</th></tr></thead><tbody>
+<tr><td class="">orders</td><td class="r">99,441</td><td class="">one order: status and five timestamps (purchase, approval, carrier handover, customer delivery, estimated delivery)</td></tr>
+<tr><td class="">customers</td><td class="r">99,441</td><td class="">one customer_id. Olist creates a new customer_id for every order; the person is customer_unique_id</td></tr>
+<tr><td class="">order_items</td><td class="r">112,650</td><td class="">one item in an order (order_item_id 1, 2, 3 ... within the order), with product, seller, price, freight, shipping limit</td></tr>
+<tr><td class="">order_payments</td><td class="r">103,886</td><td class="">one payment part of an order (payment_sequential); an order can be split over card and voucher</td></tr>
+<tr><td class="">order_reviews</td><td class="r">99,224</td><td class="">one review attached to one order; not unique by review_id or by order_id</td></tr>
+<tr><td class="">products</td><td class="r">32,951</td><td class="">one product: Portuguese category, dimensions, weight, photo count</td></tr>
+<tr><td class="">sellers</td><td class="r">3,095</td><td class="">one seller: zip prefix, city, state</td></tr>
+<tr><td class="">product_category_name_translation</td><td class="r">71</td><td class="">Portuguese category name -&gt; English</td></tr>
+<tr><td class="">geolocation</td><td class="r">1,000,163</td><td class="">one lat/lng point for a zip-code prefix; many points per prefix</td></tr>
+</tbody></table>
+<h3>How they join</h3>
+<ul><li>
+orders.customer_id -&gt; customers.customer_id (one customer_id per order)
+</li><li>
+order_items.order_id -&gt; orders.order_id (many items per order)
+</li><li>
+order_items.product_id -&gt; products.product_id
+</li><li>
+order_items.seller_id -&gt; sellers.seller_id (one order can have several sellers)
+</li><li>
+order_payments.order_id -&gt; orders.order_id (many payments per order)
+</li><li>
+order_reviews.order_id -&gt; orders.order_id (usually one review, sometimes more)
+</li><li>
+products.product_category_name -&gt; translation.product_category_name (not enforced: 2 categories missing)
+</li><li>
+customers / sellers zip prefix -&gt; geolocation zip prefix (not a key: many rows per prefix)
+</li></ul>
+<h3>What the data can't answer</h3>
+<ul><li>
+<strong>Why</strong> customers leave or come back: there is no browsing, marketing, search or support data.
+</li><li>
+<strong>Margin or profit:</strong> there are prices, but no costs, commissions or Olist fees.
+</li><li>
+<strong>Cause and effect:</strong> everything is observational, and nothing was randomised.
+</li><li>
+<strong>Customer history before 2016, or behaviour on other channels.</strong>
+</li><li>
+<strong>Carrier identity</strong>, so carrier performance can't be split out.
+</li><li>
+<strong>Review text in English:</strong> comments are Portuguese, and only the score was analysed.
+</li><li>
+<strong>Exact locations:</strong> only zip-code prefixes, so distances are between prefix centres.
+</li></ul>
+<hr>
+<h2>3. Setup and schema (00_schema.sql, 01_load.sql)</h2>
+<h3>Type choices</h3>
+<ul><li>
+<strong>IDs are varchar(32).</strong> They are 32-character hex hashes; the length documents that.
+</li><li>
+<strong>Zip prefixes are char(5), not integer.</strong> As numbers, "01037" would lose its leading zero and become 1037.
+</li><li>
+<strong>Money is numeric(10,2).</strong> numeric is exact. float can add rounding errors when summing money, and every source value has 2 decimals.
+</li><li>
+<strong>Latitude and longitude are double precision.</strong> They are measurements, not money, so tiny float error doesn't matter.
+</li><li>
+<strong>Timestamps are timestamp without time zone.</strong> The source has no time zone, and adding one would claim information the data doesn't have.
+</li><li>
+<strong>Counts and dimensions are integer; review_score is smallint.</strong>
+</li><li>
+<strong>Column names match the CSV exactly, including Olist's typo "lenght".</strong> Raw tables mirror the source; the clean view v_products exposes "length".
+</li></ul>
+<h3>Primary keys: only where profiling proved uniqueness</h3>
+<ul><li>
+<strong>Single-column keys:</strong> customers(customer_id), orders(order_id), products(product_id), sellers(seller_id), translation(product_category_name). Each is unique in the data.
+</li><li>
+<strong>order_items: (order_id, order_item_id).</strong> order_item_id restarts at 1 in every order, so it is unique only with order_id.
+</li><li>
+<strong>order_payments: (order_id, payment_sequential).</strong> Same idea: payments are numbered within an order.
+</li><li>
+<strong>order_reviews: (review_id, order_id).</strong> Neither column is unique on its own: 789 review_ids repeat and 547 orders have more than one review. The pair is unique.
+</li><li>
+<strong>geolocation: no primary key.</strong> There are 19,015 distinct zip prefixes across 1,000,163 rows, and 261,831 rows are exact copies of another row, so nothing identifies a row.
+</li></ul>
+<h3>Foreign keys: only where every child has a parent</h3>
+<ul><li>
+<strong>Declared:</strong> orders -&gt; customers; order_items -&gt; orders, products, sellers; order_payments -&gt; orders; order_reviews -&gt; orders. Each had 0 orphans when profiled.
+</li><li>
+<strong>Not declared: products -&gt; translation.</strong> 2 categories (portateis_cozinha_e_preparadores_de_alimentos with 10 products, pc_gamer with 3) have no translation. The constraint would reject those products, so I use a LEFT JOIN with a fallback instead.
+</li><li>
+<strong>Not declared: customers/sellers zip -&gt; geolocation.</strong> A foreign key must point at a unique column, and the zip prefix isn't unique in geolocation. Also, 157 customer zip prefixes (278 customers) and 7 seller prefixes are missing from geolocation.
+</li></ul>
+<h3>Load (01_load.sql)</h3>
+<ul><li>
+<strong>\copy rather than COPY.</strong> COPY reads files on the database server; \copy is a psql command that reads the file on my machine and streams it. It needs no server file permissions.
+</li><li>
+<strong>FORMAT csv, HEADER true.</strong> CSV mode handles quoted commas and line breaks inside review comments. HEADER skips the column-name line, which also skips the hidden BOM at the start of the translation file.
+</li><li>
+<strong>Empty unquoted fields load as NULL</strong> in CSV mode. That is how blank timestamps became NULLs.
+</li><li>
+<strong>One transaction (BEGIN ... COMMIT).</strong> Either every table loads or nothing changes; no half-loaded state.
+</li><li>
+<strong>ON_ERROR_STOP.</strong> psql stops at the first error instead of carrying on.
+</li><li>
+<strong>Re-runnable.</strong> It starts with one TRUNCATE of all 9 tables; listing them together lets Postgres empty tables that reference each other. A second run gave identical counts.
+</li><li>
+<strong>Load order is parents before children</strong> (customers, geolocation, sellers, translation, products, orders, items, payments, reviews), so every foreign key finds its parent.
+</li><li>
+<strong>ANALYZE at the end</strong> refreshes planner statistics after a bulk load.
+</li><li>
+<strong>The schema script drops tables children-first,</strong> so foreign keys don't block the drop and the schema can be rebuilt from scratch.
+</li></ul>
+<hr>
+<h2>4. Data quality: issues, numbers, decisions and why</h2>
+<p>Sources: results/02_data_quality_output.txt, results/baseline.csv, results/15_quality_issues.csv, docs/data_quality_notes.md (C1-C12 = confirmed decisions).</p>
+<ul><li>
+<strong>Thin months at both ends.</strong>
+<ul><li>
+<em>Numbers:</em> 2016-09 has 4 orders, 2016-10 has 324, 2016-11 has none, 2016-12 has 1; 2018-09 has 16, 2018-10 has 4.
+</li><li>
+<em>Decision (C1):</em> window 2017-01-01 to 2018-08-31. 349 orders fall outside it.
+</li><li>
+<em>Why:</em> partial months distort trends and month-over-month changes. The alternative of keeping everything and flagging it would still put misleading points on every chart.
+</li></ul>
+</li><li>
+<strong>customer_id is per order.</strong>
+<ul><li>
+<em>Numbers:</em> counting by customer_id, 0 customers have 2+ orders; by customer_unique_id, 2,997 do.
+</li><li>
+<em>Decision (C2):</em> identify customers by customer_unique_id.
+</li><li>
+<em>Why:</em> customer_id would make retention exactly zero. That is an artefact, not a finding.
+</li></ul>
+</li><li>
+<strong>Multiple reviews per order.</strong>
+<ul><li>
+<em>Numbers:</em> 547 orders have 2+ reviews, and 789 review_ids repeat across orders.
+</li><li>
+<em>Decision (C3):</em> keep the latest review per order (by answer time, then creation date, then review_id).
+</li><li>
+<em>Why:</em> the latest reflects the final opinion. An average would invent half-star scores; the first would ignore updates. Never join on review_id.
+</li></ul>
+</li><li>
+<strong>Revenue definition.</strong>
+<ul><li>
+<em>Decision (C4):</em> revenue = SUM(order_items.price) on delivered orders. Freight is separate; payments are a cross-check only.
+</li><li>
+<em>Why:</em> item price is what the seller sells. Payments include instalment interest and vouchers, and one order has no payment row.
+</li></ul>
+</li><li>
+<strong>Payments don't always reconcile.</strong>
+<ul><li>
+<em>Numbers:</em> 294 delivered in-window orders differ from items + freight by more than 0.01 (257 paid more, 37 paid less). Total gap 3,023.49 BRL; median 5.66; max 182.81.
+</li><li>
+<em>Decision (C11):</em> leave unexplained and list as a limitation.
+</li><li>
+<em>Why:</em> 294 of 96,211 orders, and revenue doesn't use payments.
+</li></ul>
+</li><li>
+<strong>Status contradicts dates.</strong>
+<ul><li>
+<em>Numbers:</em> 8 delivered orders have no delivery date, and 6 canceled orders have one.
+</li><li>
+<em>Decision (C5):</em> delivery timing uses only delivered orders with a delivery date (96,203).
+</li><li>
+<em>Why:</em> timing needs both dates; the contradictions are too few to matter and are kept but not timed.
+</li></ul>
+</li><li>
+<strong>Missing categories.</strong>
+<ul><li>
+<em>Numbers:</em> 610 products have no category; 13 products have an untranslated category.
+</li><li>
+<em>Decision (C6):</em> English name, else Portuguese, else 'unknown'.
+</li><li>
+<em>Why:</em> dropping them would remove real sales from category totals.
+</li></ul>
+</li><li>
+<strong>Column typo "lenght".</strong>
+<ul><li>
+<em>Decision (C7):</em> raw tables unchanged; v_products exposes corrected names.
+</li><li>
+<em>Why:</em> raw stays faithful to the source; analysis uses clean names.
+</li></ul>
+</li><li>
+<strong>On-time definition.</strong>
+<ul><li>
+<em>Decision (C8):</em> calendar days. Late = delivered on a later calendar day than estimated.
+</li><li>
+<em>Why:</em> the estimated date always has time 00:00:00, so a timestamp comparison would call a delivery on the promised day late. The timestamp version gave a lower rate when I checked it once; that number isn't saved in results/.
+</li></ul>
+</li><li>
+<strong>Negative stage durations.</strong>
+<ul><li>
+<em>Numbers:</em> 1,344 timed in-window orders have a stage running backwards (for example, carrier handover recorded before approval).
+</li><li>
+<em>Decision (C9):</em> exclude from stage statistics only, and report the count.
+</li><li>
+<em>Why:</em> they are clearly recording errors for stage timing, but the delivery itself is fine, so they stay in every other metric.
+</li></ul>
+</li><li>
+<strong>Retention population.</strong>
+<ul><li>
+<em>Decision (C10):</em> retention uses delivered orders only, with the sequence recomputed over delivered orders.
+</li><li>
+<em>Why:</em> a canceled first order isn't a real first purchase.
+</li></ul>
+</li><li>
+<strong>Same-day "second orders".</strong>
+<ul><li>
+<em>Numbers:</em> 827 of 2,789 second orders fall on the same day as the first. 735 are within 10 minutes, 253 have an identical timestamp, and the median gap is 0.0167 minutes (1 second).
+</li><li>
+<em>Decision (C12):</em> a repeat customer is one who returned on a later calendar day.
+</li><li>
+<em>Why:</em> these look like one checkout split into several orders, not a return visit. The any-day figure (3.00%) is shown alongside where it helps.
+</li></ul>
+</li><li>
+<strong>Geolocation duplicates.</strong>
+<ul><li>
+<em>Numbers:</em> 261,831 exact duplicate rows; 17,972 zip prefixes have more than one row.
+</li><li>
+<em>Decision:</em> v_geo averages distinct points, one row per prefix.
+</li><li>
+<em>Why:</em> without de-duplication, a copied point pulls the average towards itself.
+</li></ul>
+</li><li>
+<strong>Orders without children.</strong>
+<ul><li>
+<em>Numbers:</em> 775 orders have no items (603 unavailable, 164 canceled, 5 created, 2 invoiced, 1 shipped), 1 has no payment (delivered, 2016-09-15, outside the window) and 768 have no review.
+</li><li>
+<em>Decision:</em> item analysis naturally drops orders with no items; review metrics use reviewed orders only.
+</li></ul>
+</li><li>
+<strong>Geo coverage.</strong>
+<ul><li>
+<em>Numbers:</em> 157 customer zip prefixes (278 customers) and 7 seller prefixes are not in geolocation.
+</li><li>
+<em>Decision:</em> exclude those orders from distance analysis only.
+</li></ul>
+</li></ul>
+<hr>
+<h2>5. Clean views (03_clean_views.sql)</h2>
+<h3>Why views at all</h3>
+<ul><li>
+<strong>Raw tables are never changed.</strong> All cleaning is visible SQL that can be re-run.
+</li><li>
+<strong>Every view states its grain</strong> (what one row means), so joins can't silently multiply rows.
+</li></ul>
+<h3>The fan-out problem</h3>
+<ul><li>
+<strong>What it is.</strong> Joining orders (1 row per order) to order_items (many per order) gives one row per item. Any SUM or COUNT over that result counts orders several times.
+</li><li>
+<strong>Example.</strong> An order with 3 items joined to its payment would count the payment 3 times.
+</li><li>
+<strong>The cure.</strong> Aggregate the child table to one row per order first, then join one-to-one.
+</li></ul>
+<h3>Each view</h3>
+<ul><li>
+<strong>v_order_items_agg</strong> (98,666 rows, one per order with items)
+<ul><li>
+item_count, seller_count, item_value, freight_value, latest_shipping_limit
+</li><li>
+single_seller_id: the seller when there is exactly one; MIN(seller_id) returns that seller.
+</li></ul>
+</li><li>
+<strong>v_order_payments_agg</strong> (99,440 rows, one per order with payments)
+<ul><li>
+total_paid, payment_rows, max_installments
+</li><li>
+main_payment_type: the highest-value payment, picked with ROW_NUMBER.
+</li></ul>
+</li><li>
+<strong>v_order_review</strong> (98,673 rows, one per reviewed order)
+<ul><li>
+The latest review, via ROW_NUMBER over order_id, plus review_count.
+</li></ul>
+</li><li>
+<strong>v_geo</strong> (19,015 rows, one per zip prefix)
+<ul><li>
+The average lat/lng of distinct points.
+</li></ul>
+</li><li>
+<strong>v_products</strong> (32,951 rows, one per product)
+<ul><li>
+Cleaned category (COALESCE English, Portuguese, 'unknown') and corrected column names.
+</li></ul>
+</li><li>
+<strong>v_sellers</strong> (3,095 rows, one per seller)
+<ul><li>
+A pass-through, so analysis reads seller location from a clean view.
+</li></ul>
+</li><li>
+<strong>v_order_lines</strong> (112,650 rows, one per item)
+<ul><li>
+Each item with its category, so category revenue is counted per item.
+</li></ul>
+</li><li>
+<strong>v_seller_orders</strong> (100,010 rows, one per order-seller pair)
+<ul><li>
+Each seller's part of an order, so seller revenue is split by item, not double-counted.
+</li></ul>
+</li><li>
+<strong>v_order_main_category</strong> (98,666 rows, one per order with items)
+<ul><li>
+The category with the highest item value in the order.
+</li></ul>
+</li><li>
+<strong>v_orders</strong> (99,441 rows, all orders)
+<ul><li>
+customer_unique_id and state, in_window, is_delivered, has_delivery_timing
+</li><li>
+promised_days, delivery_days, delay_days, is_late, three stage durations.
+</li><li>
+Every timing column is NULL unless the order is delivered with a date.
+</li></ul>
+</li><li>
+<strong>v_order_facts</strong> (99,092 rows, in-window orders only)
+<ul><li>
+v_orders LEFT JOINed to the per-order views. Missing children become NULLs and orders are never dropped.
+</li></ul>
+</li></ul>
+<h3>How the checks prove it</h3>
+<ul><li>
+<strong>Three counts per view.</strong> For every view: row_count, COUNT(DISTINCT grain key) and the expected count from the raw tables.
+<ul><li>
+For example, v_order_items_agg must equal COUNT(DISTINCT order_id) in order_items.
+</li></ul>
+</li><li>
+<strong>Fail loudly.</strong> A DO block raises an exception if any of the three differ, and with ON_ERROR_STOP psql exits with an error.
+</li><li>
+<strong>Tested.</strong> I fed it a fake failing row to confirm it stops (psql exit code 3).
+</li><li>
+<strong>Result.</strong> All 11 views pass (results/03_clean_views_output.txt).
+</li><li>
+<strong>Totals reconcile.</strong> Other files assert totals: seller revenue split by item adds back to exactly 13,181,027.13, and the retention repeat rate matches the baseline.
+</li></ul>
+<hr>
+<h2>6. The analyses, query by query</h2>
+<p>Format for each query: question / why it matters / logic / technique / result / insight / caveat.</p>
+<h3>File 10: retention (results/10_*.csv)</h3>
+<p>Building blocks:</p>
+<ul><li>
+<strong>delivered_orders:</strong> one row per delivered in-window order, with ROW_NUMBER (delivered_seq), LAG (previous purchase) and MIN OVER (first purchase date) per customer_unique_id.
+</li><li>
+<strong>delivered_customers:</strong> one row per customer, using MAX(...) FILTER (WHERE delivered_seq = 1) to pull first-order attributes.
+</li></ul>
+<p><strong>Q1. Orders per customer</strong></p>
+<ul><li>
+<em>Question:</em> how many customers have 1, 2, 3, 4+ delivered orders?
+</li><li>
+<em>Why it matters:</em> it sizes the repeat business.
+</li><li>
+<em>Logic:</em> bucket delivered_orders per customer and add a repeat-rate row.
+</li><li>
+<em>Technique:</em> CASE buckets, SUM(COUNT(*)) OVER () for shares, and a DO-block check against the baseline.
+</li><li>
+<em>Result:</em> 1 order 90,315 (97.00%); 2 orders 2,562 (2.75%); 3 orders 180 (0.19%); 4+ orders 47 (0.05%). Repeat (any day) 2,789 = 3.00%, matching the baseline.
+</li><li>
+<em>Insight:</em> almost everyone buys once.
+</li><li>
+<em>Caveat:</em> only the window is visible, so a 2016 buyer's first in-window order counts as their first.
+</li></ul>
+<p><strong>Q2. Time to second order</strong></p>
+<ul><li>
+<em>Question:</em> for customers who return, how long until the second order?
+</li><li>
+<em>Why it matters:</em> it sets the timing for re-engagement.
+</li><li>
+<em>Logic:</em> on the delivered_seq = 2 row, LAG gives the first order's date; the gap is in calendar days.
+</li><li>
+<em>Technique:</em> LAG and percentile_cont.
+</li><li>
+<em>Result:</em> p25 0 days, median 29, p75 125, p90 245. Buckets: same day 827 (29.65%); 1-7 days 198 (7.10%); 8-30 days 387 (13.88%); 31-90 days 492 (17.64%); 91-180 days 413 (14.81%); 180+ days 472 (16.92%).
+</li><li>
+<em>Insight:</em> the 25th percentile is 0, which exposed the same-day issue.
+</li><li>
+<em>Caveat:</em> calendar days, not hours.
+</li></ul>
+<p><strong>Q3. Same-day check</strong></p>
+<ul><li>
+<em>Question:</em> how many second orders are same-day, and what is the repeat rate without them?
+</li><li>
+<em>Why it matters:</em> it decides whether the 3.00% repeat rate is real.
+</li><li>
+<em>Logic:</em> a later-day repeat is any delivered order on a later calendar day than the first.
+</li><li>
+<em>Technique:</em> FILTER counts.
+</li><li>
+<em>Result:</em> 29.65% of second orders are same-day. Repeat rate is 3.00% for any day and 2.15% (2,005 customers) for a later day.
+</li><li>
+<em>Insight:</em> about a third of apparent repeat behaviour isn't a return.
+</li><li>
+<em>Caveat:</em> a split checkout is the likely explanation, but not proven.
+</li></ul>
+<p><strong>Q3b. Same-day gap</strong></p>
+<ul><li>
+<em>Result:</em> of 827 same-day second orders, 253 have an identical timestamp, 735 come within 10 minutes, and the median gap is 0.0167 minutes.
+</li><li>
+<em>Insight:</em> consistent with one checkout recorded as several orders.
+</li></ul>
+<p><strong>Q4. Monthly cohort matrix</strong></p>
+<ul><li>
+<em>Question:</em> of customers who first bought in month X, what share bought again 1-12 months later?
+</li><li>
+<em>Why it matters:</em> it is the standard view of retention decay.
+</li><li>
+<em>Logic:</em> cohort = first delivered month. A grid of cohort x months 0-12 from generate_series is LEFT JOINed to activity. Cells after 2018-08 are NULL, not 0.
+</li><li>
+<em>Technique:</em> cohort matrix, DISTINCT activity, month arithmetic (year x 12 + month), CROSS JOIN with generate_series.
+</li><li>
+<em>Result:</em> 20 cohorts and 260 cells; cells after 2018-08 are NULL. Every observable month 1-12 cell is under 1%; the highest is 0.72% (2017-10, month 1).
+</li><li>
+<em>Insight:</em> there is no retained core in any cohort.
+</li><li>
+<em>Caveat:</em> exact-month activity: a customer who skips a month isn't counted in it.
+</li></ul>
+<p><strong>Q5. Fixed-window repeat</strong></p>
+<ul><li>
+<em>Question:</em> what share order again within 90 / 180 days?
+</li><li>
+<em>Why it matters:</em> it is fair across cohorts because everyone gets the same time to return.
+</li><li>
+<em>Logic:</em> only customers whose first order + N days falls before 2018-09-01 count.
+</li><li>
+<em>Technique:</em> interval arithmetic, COALESCE(comparison, false), NULLIF in the denominator.
+</li><li>
+<em>Result:</em> 90 days: 75,448 eligible, 2.28% (later-day 1.30%). 180 days: 56,194 eligible, 3.12% (later-day 1.97%).
+</li><li>
+<em>Caveat:</em> some cohorts are only partly eligible (2018-03 for 180 days: 927 of 6,775).
+</li></ul>
+<p><strong>Q6. Who comes back</strong></p>
+<ul><li>
+<em>Question:</em> does the repeat rate differ by first-order category, state, payment type or value?
+</li><li>
+<em>Logic:</em> segment customers by first-order attributes. Categories need 500+ customers. Value quartiles use NTILE(4).
+</li><li>
+<em>Technique:</em> NTILE, HAVING.
+</li><li>
+<em>Result, category:</em> home_appliances 8.74% any-day but 1.78% later-day; fashion_bags_accessories 5.63% (3.79% later-day); electronics 1.63%.
+</li><li>
+<em>Result, state:</em> big states 2.65-3.26%.
+</li><li>
+<em>Result, payment:</em> voucher 3.64%, credit_card 2.99%, boleto 2.99%, debit_card 2.29%.
+</li><li>
+<em>Result, value quartile:</em> 3.15% / 3.12% / 2.89% / 2.81%, cheapest to most expensive.
+</li><li>
+<em>Insight:</em> rankings change once same-day orders are removed, and value barely matters.
+</li><li>
+<em>Caveat:</em> NTILE splits tied values across quartiles; small segments are noisy.
+</li></ul>
+<p><strong>Q7. Revenue from repeat customers</strong></p>
+<ul><li>
+<em>Result:</em> total 13,181,027.13. Second and later orders: 381,515.75 = 2.89% of revenue (3,107 orders, 3.23% of orders). Repeat customers' orders including their first: 5.50%.
+</li><li>
+<em>Insight:</em> retention is a growth lever not yet used, rather than a current revenue source.
+</li></ul>
+<h3>File 11: delivery (results/11_*.csv)</h3>
+<p>Population: 96,203 delivered in-window orders with a delivery date.</p>
+<p><strong>Q1. Overall</strong></p>
+<ul><li>
+<em>Result:</em> on time 93.21% (6,531 late). Delivery days: p50 10.21, p75 15.68, p90 23.06, p95 29.22.
+</li><li>
+<em>Technique:</em> percentile_cont at several p values.
+</li><li>
+<em>Insight:</em> the tail matters; the 95th percentile (29.22) is far above the median (10.21).
+</li></ul>
+<p><strong>Q2. Monthly trend</strong></p>
+<ul><li>
+<em>Logic:</em> percentile_cont ignores NULLs, so medians cover timed orders only.
+</li><li>
+<em>Result:</em> the late rate is 2.79-6.56% in most months, with spikes in 2017-11 (12.40%), 2018-02 (14.13%) and 2018-03 (18.96%). The median falls to 7.01 days in 2018-08.
+</li><li>
+<em>Caveat:</em> recent months have undelivered orders (2018-08: 161 of 6,512 have no timing), so they may be missing their slowest deliveries.
+</li></ul>
+<p><strong>Q3. Promise accuracy</strong></p>
+<ul><li>
+<em>Logic:</em> promised_days = estimated date - purchase date. Actual calendar days = promised_days + delay_days; a DO block asserts the identity with 0 mismatches.
+</li><li>
+<em>Technique:</em> date subtraction (date - date gives an integer), CASE buckets.
+</li><li>
+<em>Result:</em> median promise 24 days, actual 10, delay -12. Buckets: 7+ days early 75,882 (78.88%); 1-6 days early 12,499 (12.99%); on the day 1,291 (1.34%); 1-3 days late 1,869 (1.94%); 4-7 days late 1,802 (1.87%); 8+ days late 2,860 (2.97%).
+</li><li>
+<em>Insight:</em> promises are very conservative, so being on time is mostly about the tail.
+</li></ul>
+<p><strong>Q4. By customer state (500+ orders)</strong></p>
+<ul><li>
+<em>Result:</em> worst late rates MA 17.53%, CE 13.83%, BA 12.17%, RJ 12.14%; best PR 4.06%, SP 4.50%. SP is fastest (median 7.20 days, promise 19).
+</li><li>
+<em>Insight:</em> the northeastern states get longer promises (MA 31, CE 32) and are still late more often. RJ is an outlier among large markets.
+</li></ul>
+<p><strong>Q5. Stage breakdown</strong></p>
+<ul><li>
+<em>Logic:</em> three stages (purchase -&gt; approval, approval -&gt; carrier, carrier -&gt; customer). Orders with any negative stage or any missing stage are excluded so all medians use the same orders. Filters use IS TRUE / IS NOT TRUE because a comparison with NULL is NULL.
+</li><li>
+<em>Result:</em> excluded 1,344 negative + 15 missing; 94,844 used. Medians (approval / to carrier / carrier to customer): on time 0.01 / 1.79 / 6.96; late 0.02 / 3.06 / 26.21.
+</li><li>
+<em>Insight:</em> late orders differ mostly in transit.
+</li></ul>
+<p><strong>Q6. Seller handover</strong></p>
+<ul><li>
+<em>Logic:</em> handover is after the limit when carrier date &gt; latest shipping_limit_date of the order's items.
+</li><li>
+<em>Result:</em> after the limit: 8,581 orders (8.92%), late 21.10%, median 16.88 days. On or before: 87,621 (91.08%), late 5.39%, median 9.82 days.
+</li><li>
+<em>Insight:</em> a strong association, though not proven cause.
+</li></ul>
+<p><strong>Q7. Same state vs cross state (single-seller orders)</strong></p>
+<ul><li>
+<em>Result:</em> same state: 34,149 orders, median 6.56 days, late 4.57%. Cross state: 60,782 orders, median 12.84 days, late 8.16%. Excluded multi-seller orders: 1,272.
+</li></ul>
+<p><strong>Q8. Distance (haversine)</strong></p>
+<ul><li>
+<em>Logic:</em> great-circle distance between zip-prefix centres, with bad coordinates dropped by a Brazil bounding box.
+</li><li>
+<em>Result:</em> coverage 94,453 of 94,931 orders (99.50%). Late rate rises with every band: 4.48% (0-50 km), 4.71% (50-200 km), 6.48% (200-500 km), 7.21% (500-1000 km), 9.68% (1000-2000 km), 12.17% (2000+ km). Median days go from 4.90 to 18.26.
+</li><li>
+<em>Caveat:</em> prefix centres, not addresses.
+</li></ul>
+<h3>File 12: reviews (results/12_*.csv)</h3>
+<p>Population: 98,330 in-window orders with a review (latest review); low = 1-2 stars (14,382 reviews).</p>
+<p><strong>Q1. Distribution</strong></p>
+<ul><li>
+<em>Result:</em> 1 star 11,263 (11.45%); 2 stars 3,119 (3.17%); 3 stars 8,110 (8.25%); 4 stars 18,986 (19.31%); 5 stars 56,852 (57.82%).
+</li><li>
+<em>Insight:</em> the distribution is U-shaped, with more 1s than 2s.
+</li></ul>
+<p><strong>Q2. By delay bucket</strong></p>
+<ul><li>
+<em>Result (low-review share):</em> 7+ days early 8.98%; 1-6 days early 10.58%; on the day 12.42%; 1-3 days late 32.14%; 4-7 days late 67.68%; 8+ days late 79.27%; no delivery timing 77.76%.
+</li><li>
+<em>Insight:</em> the biggest jump is from "on the day" to late.
+</li></ul>
+<p><strong>Q3. Speed among on-time orders</strong></p>
+<ul><li>
+<em>Result (low-review share):</em> 0-7 days 7.54%; 8-14 days 8.86%; 15-21 days 11.03%; 22+ days 15.78%.
+</li><li>
+<em>Insight:</em> even when the promise is kept, slower delivery goes with lower scores.
+</li></ul>
+<p><strong>Q4. Order make-up</strong></p>
+<ul><li>
+<em>Result (low-review share):</em> single item 12.67% vs multi item 27.61%; single seller 13.72% vs multi seller 47.22%.
+</li></ul>
+<p><strong>Q5. Category (500+ reviewed orders)</strong></p>
+<ul><li>
+<em>Result:</em> 27 categories qualify. Highest low-review share: office_furniture 22.39%. Lowest: books_general_interest 8.13%.
+</li><li>
+<em>Insight:</em> the spread across categories is much narrower than across delay buckets.
+</li></ul>
+<p><strong>Q6. Status</strong></p>
+<ul><li>
+<em>Result (low-review share):</em> delivered 12.80%; shipped 69.43%; canceled 76.11%; unavailable 84.86%; other 87.61%.
+</li></ul>
+<p><strong>Q7. Sizing (non-overlapping groups)</strong></p>
+<ul><li>
+<em>Logic:</em> a CASE assigns each order to exactly one group; the order of the WHEN lines is the priority. A DO block checks the groups add up to 14,382.
+</li><li>
+<em>Result (share of all low reviews):</em> undelivered 14.97%; late delivered 27.68%; on-time multi-seller 4.06%; everything else 53.29%.
+</li><li>
+<em>Insight:</em> the problem groups are small but bad; "everything else" is low-rate (8.71%) but large (89.44% of orders).
+</li></ul>
+<p><strong>Q8. Review timing</strong></p>
+<ul><li>
+<em>Result:</em> on-time orders: 221 (0.25%) reviewed before delivery. Late orders: 4,749 (74.46%) reviewed before delivery, average 1.84 stars, 75.22% low. Late orders reviewed on or after delivery: average 3.53, 25.11% low.
+</li></ul>
+<p><strong>Q8b. When the review is created</strong></p>
+<ul><li>
+<em>Result:</em> on-time orders: median review 12 days before the estimate and 1 day after delivery. Late orders: 2 days after the estimate and 4 days before delivery.
+</li><li>
+<em>Insight:</em> for late orders, the review appears soon after the promised date passes, while the customer is still waiting.
+</li></ul>
+<p><strong>Q9. First order and return</strong></p>
+<ul><li>
+<em>Result:</em> later-day repeat after a late first order 1.62%, after an on-time first order 2.19%. After a 1-2 star first review 1.72%; after 4-5 stars 2.24%. The 180-day versions are 1.58% vs 2.00%, and 1.65% vs 2.03%. The 'all' rows match file 10 (2.15% and 1.97%).
+</li><li>
+<em>Caveat:</em> only 103 returners after a late first order, and no significance test was run.
+</li></ul>
+<h3>File 13: sellers (results/13_*.csv)</h3>
+<p>Attribution rule:</p>
+<ul><li>
+Revenue goes to each seller by item on all delivered orders.
+</li><li>
+Reviews, lateness and handover are attributed only on single-seller orders.
+</li></ul>
+<p><strong>Q1. Concentration</strong></p>
+<ul><li>
+<em>Result:</em> top 1% (30 sellers) 25.93%; top 5% (148) 52.99%; top 10% (295) 67.04%; top 20% (589) 82.20% of revenue.
+</li><li>
+<em>Technique:</em> ROW_NUMBER, running SUM, CEIL.
+</li></ul>
+<p><strong>Q2. Size bands</strong></p>
+<ul><li>
+<em>Result:</em> 1-9 orders: 1,711 sellers (58.10%) with 9.16% of revenue. 200+ orders: 85 sellers (2.89%) with 36.21%.
+</li></ul>
+<p><strong>Q3. Scorecard (30+ single-seller orders)</strong></p>
+<ul><li>
+<em>Result:</em> 614 of 2,945 sellers qualify, holding 76.84% of revenue. Pooled late handover 8.72%, late delivery 6.88%, low reviews 12.53%. Seller low-review share runs from 0.00% to 60.00% (median 10.835%).
+</li></ul>
+<p><strong>Q4. Problem sellers</strong></p>
+<ul><li>
+<em>Result:</em> benchmark 12.34%, so the threshold is 24.68%. 31 sellers qualify: 4.36% of orders, 5.15% of revenue and 10.62% of low reviews. Their late delivery is 12.38% vs 6.63%, and late handover 27.89% vs 7.84%.
+</li></ul>
+<p><strong>Q5. Late-handover concentration</strong></p>
+<ul><li>
+<em>Result:</em> the top 10% (62 sellers) have 3,817 of 6,887 scorecard late handovers (55.42%; 44.74% of all single-seller late handovers) on 31.93% of orders.
+</li></ul>
+<p><strong>Q6. Handover quartiles</strong></p>
+<ul><li>
+<em>Result:</em> late delivery 4.90% -&gt; 5.98% -&gt; 7.24% -&gt; 9.43%, and low reviews 10.16% -&gt; 11.48% -&gt; 12.47% -&gt; 16.31%, from the lowest-handover to the highest-handover quartile.
+</li></ul>
+<p><strong>Q7. Seller state (30+ sellers)</strong></p>
+<ul><li>
+<em>Result:</em> SP has 1,751 sellers and 64.39% of revenue, with the highest late-delivery rate of the 8 states (7.43%). PR has the highest late-handover rate (10.99%).
+</li></ul>
+<p><strong>Q8. Seller activity</strong></p>
+<ul><li>
+<em>Result:</em> 70-236 new sellers a month. 44.39-63.47% are active exactly 3 months later and 37.43-57.08% at 6 months.
+</li><li>
+<em>Caveat:</em> exact-month rule, so these are a lower bound.
+</li></ul>
+<h3>File 14: revenue (results/14_*.csv)</h3>
+<p><strong>Q1. Monthly and year-on-year</strong></p>
+<ul><li>
+<em>Result:</em> revenue peaks at 987,765.37 in 2017-11 (+52.37% month-over-month), then drops 26.50% in December.
+</li><li>
+<em>Result, Jan-Aug year-on-year:</em> orders 21,998 -&gt; 52,783 (+139.94%); revenue 2,993,456.13 -&gt; 7,218,125.12 (+141.13%); average order value 136.08 -&gt; 136.75 (+0.49%).
+</li></ul>
+<p><strong>Q2. Top categories</strong></p>
+<ul><li>
+<em>Result:</em> 74 categories in total; the top 15 earn 76.33% of revenue. health_beauty is first at 9.33%.
+</li></ul>
+<p><strong>Q3. Category growth</strong></p>
+<ul><li>
+<em>Result:</em> all top 15 grew. baby grew most (+268.56%) and cool_stuff least (+10.39%).
+</li></ul>
+<p><strong>Q4. Freight</strong></p>
+<ul><li>
+<em>Result:</em> freight is 16.63% of item value overall. 35.12% of orders pay more than 30% in freight, and 15.84% more than 50%.
+</li><li>
+<em>Result, by value:</em> the cheapest quartile pays 53.41% of item value; the most expensive pays 10.26%.
+</li><li>
+<em>Result, by state:</em> MA 26.22%, SP 13.85%.
+</li></ul>
+<p><strong>Q5. Payments</strong></p>
+<ul><li>
+<em>Result:</em> credit card 75.48% of orders and 78.89% of revenue.
+</li><li>
+<em>Result, card instalments:</em> average order value is 82.49 BRL for 1 instalment and 301.22 BRL for 7+.
+</li></ul>
+<p><strong>Q6. Customer concentration</strong></p>
+<ul><li>
+<em>Result:</em> top 1% of customers (932) bring 11.48% of revenue; top 10% bring 41.10%; top 20% bring 56.62%.
+</li></ul>
+<p><strong>Q7. RFM</strong></p>
+<ul><li>
+<em>Result:</em> lapsed high-value 22,369 customers, 39.77% of revenue, 234.37 BRL average. Recent high-value 22,473 customers, 39.55%. Lapsed low-value 8.40% and recent low-value 8.15% of revenue. Repeat buyers 2,005 customers, 4.13% of revenue, 271.47 BRL average.
+</li><li>
+<em>Caveat:</em> NTILE makes the four one-time segments about 25% each by construction.
+</li></ul>
+<p><strong>Q8. By state</strong></p>
+<ul><li>
+<em>Result:</em> SP has 42.00% of orders and the lowest average order value (125.12). PB has the highest (218.09). Later-day repeat ranges from 1.01% (MA) to 2.46% (MT).
+</li></ul>
+<hr>
+<h2>7. Findings and recommendations</h2>
+<h3>Metrics tree (results/15_metrics_tree.csv)</h3>
+<ul><li>
+<strong>Revenue 13,181,027.13</strong> = customers 93,104 x orders per customer 1.0334 x average order value 137.00.
+</li><li>
+<strong>Why it matters:</strong> orders per customer is barely above 1, so growth has to come from more customers or bigger orders. F5 shows it came from more orders.
+</li></ul>
+<h3>F1. Retention</h3>
+<p><strong>Evidence chain</strong> (results/15_pipelines.csv):</p>
+<ol><li>
+99,441 orders
+</li><li>
+99,092 in window (349 dropped)
+</li><li>
+96,211 delivered (2,881 dropped)
+</li><li>
+93,104 customers
+</li><li>
+2,005 returned on a later day
+</li></ol>
+<p><strong>Headline:</strong> 2.15% returned on a later day; 29.65% of second orders were same-day.</p>
+<h3>F2. Delivery promises and handover</h3>
+<p><strong>Evidence chain:</strong></p>
+<ol><li>
+96,211 delivered
+</li><li>
+96,203 with a delivery date
+</li><li>
+96,202 with a carrier date
+</li><li>
+8,581 handed over after the limit
+</li></ol>
+<p><strong>Headline:</strong> median 10 days actual vs a 24-day promise; late 21.10% after a late handover vs 5.39%.</p>
+<h3>F3. Reviews and review timing</h3>
+<p><strong>Evidence chain:</strong></p>
+<ol><li>
+99,092 in window
+</li><li>
+98,330 with a review
+</li><li>
+95,560 delivered with a date
+</li><li>
+6,378 late
+</li><li>
+4,749 reviewed before delivery
+</li></ol>
+<p><strong>Headline:</strong> low share 8.98% -&gt; 79.27% across delay buckets; 74.46% of late orders were reviewed before arrival.</p>
+<h3>F4. Seller concentration</h3>
+<p><strong>Evidence chain:</strong></p>
+<ol><li>
+3,095 sellers
+</li><li>
+2,945 with a delivered sale
+</li><li>
+614 on the scorecard
+</li><li>
+62 with the most late handovers
+</li></ol>
+<p><strong>Headline:</strong> the top 1% (30 sellers) earn 25.93% of revenue; 62 sellers hold 55.42% of scorecard late handovers.</p>
+<h3>F5. Volume growth and freight</h3>
+<p><strong>Evidence chain:</strong></p>
+<ol><li>
+96,211 delivered
+</li><li>
+74,781 in the Jan-Aug comparison months
+</li><li>
+52,783 in Jan-Aug 2018
+</li></ol>
+<p><strong>Headline:</strong> revenue +141.13%, orders +139.94%, average order value +0.49%; freight is 16.63% of item value, 53.41% for the cheapest quarter.</p>
+<h3>R1. Send the review request after delivery confirmation</h3>
+<ul><li>
+<strong>Evidence:</strong> 74.46% of late orders were reviewed before arrival (75.22% low, against 25.11% when reviewed after). Late orders produce 27.68% of all low reviews.
+</li><li>
+<strong>Test:</strong>
+<ul><li>
+<em>Unit:</em> order, randomised by order id.
+</li><li>
+<em>Control:</em> current timing.
+</li><li>
+<em>Primary metric:</em> low-review share, read separately for late and on-time orders.
+</li><li>
+<em>Guardrails:</em> review response rate, and days from delivery to review.
+</li><li>
+<em>Duration:</em> 4 weeks of orders, analysed once they are delivered.
+</li></ul>
+</li><li>
+<strong>Why that metric:</strong> it is the outcome the change targets. The response-rate guardrail catches the obvious failure, which is fewer people reviewing at all.
+</li><li>
+<strong>Effort:</strong> low; it is a trigger change.
+</li></ul>
+<h3>R2. Seller handover SLA, starting with the 62 sellers</h3>
+<ul><li>
+<strong>Evidence:</strong> late 21.10% after a late handover vs 5.39%. The 62 sellers hold 55.42% of scorecard late handovers on 31.93% of orders. The top handover quartile delivers late 9.43% of the time vs 4.90% for the bottom.
+</li><li>
+<strong>Test:</strong>
+<ul><li>
+<em>Unit:</em> seller.
+</li><li>
+<em>Control:</em> a random half of the 62 sellers.
+</li><li>
+<em>Primary metric:</em> late-handover rate.
+</li><li>
+<em>Guardrails:</em> seller order volume, the share of sellers still active, and low-review share.
+</li><li>
+<em>Duration:</em> 8 weeks.
+</li></ul>
+</li><li>
+<strong>Why that metric:</strong> handover is under the seller's control, so it is the most direct metric. Late delivery is downstream and noisier because of carriers.
+</li><li>
+<strong>Risk:</strong> low power with 62 sellers, and the penalty may push sellers to leave.
+</li><li>
+<strong>Effort:</strong> medium.
+</li></ul>
+<h3>R3. Free-freight win-back for lapsed high-value one-time customers</h3>
+<ul><li>
+<strong>Evidence:</strong> 22,369 customers brought 39.77% of revenue at 234.37 BRL each, and last ordered 220 to 602 days before the window end. Only 2.15% of customers return on a later day, and freight is 16.63% of item value.
+</li><li>
+<strong>Test:</strong>
+<ul><li>
+<em>Unit:</em> customer.
+</li><li>
+<em>Control:</em> a random holdout with no voucher.
+</li><li>
+<em>Primary metric:</em> share placing a delivered order within 90 days.
+</li><li>
+<em>Guardrails:</em> net revenue per targeted customer after the freight subsidy, and voucher cost.
+</li><li>
+<em>Duration:</em> 12 weeks.
+</li></ul>
+</li><li>
+<strong>Why that metric:</strong> it measures the behaviour we want, and the net-revenue guardrail stops "success" that loses money.
+</li><li>
+<strong>Risk:</strong> subsidising orders that would have happened anyway, which is exactly why the holdout is needed.
+</li><li>
+<strong>Effort:</strong> medium.
+</li></ul>
+<h3>Impact vs effort</h3>
+<ul><li>
+<strong>R1:</strong> low effort, and it affects the quality signal sellers and buyers see. It is the first thing to try.
+</li><li>
+<strong>R2:</strong> medium effort, and it targets the operational root of lateness.
+</li><li>
+<strong>R3:</strong> medium effort and costs money per order, with a large but uncertain revenue upside.
+</li></ul>
+<hr>
+<h2>8. SQL concepts explained simply</h2>
+<h3>CTEs (WITH ... AS)</h3>
+<ul><li>
+<strong>What:</strong> named steps inside one query, read top to bottom.
+</li><li>
+<strong>Example:</strong> v_order_payments_agg builds totals (sums per order), then ranked (ROW_NUMBER per payment), then joins them.
+</li><li>
+<strong>Why:</strong> readability. Each step can be explained on its own.
+</li></ul>
+<h3>Joins and fan-out</h3>
+<ul><li>
+<strong>INNER JOIN</strong> keeps matches only. <strong>LEFT JOIN</strong> keeps every left row and fills NULLs.
+</li><li>
+<strong>Fan-out:</strong> joining one-to-many multiplies rows, so sums double-count.
+</li><li>
+<strong>Example:</strong> v_order_facts LEFT JOINs only views with one row per order_id. The fan-out check proves it.
+</li></ul>
+<h3>GROUP BY vs window functions</h3>
+<ul><li>
+<strong>GROUP BY</strong> collapses rows: one row per group.
+</li><li>
+<strong>A window function</strong> (OVER) keeps every row and adds a value computed over related rows.
+</li><li>
+<strong>Example:</strong> SUM(COUNT(*)) OVER () computes the share of the total next to each group's count.
+</li></ul>
+<h3>ROW_NUMBER vs RANK vs DENSE_RANK</h3>
+<ul><li>
+<strong>ROW_NUMBER</strong> gives 1, 2, 3, 4 with no ties. It needs a tie-breaker to be deterministic.
+</li><li>
+<strong>RANK</strong> gives 1, 2, 2, 4: ties share a rank and leave a gap.
+</li><li>
+<strong>DENSE_RANK</strong> gives 1, 2, 2, 3: ties share a rank with no gap.
+</li><li>
+<strong>Example:</strong> latest review per order uses ROW_NUMBER, ordered by answer time DESC, then creation date DESC, then review_id, and keeps rn = 1. RANK could keep two rows when timestamps tie.
+</li></ul>
+<h3>LAG / LEAD</h3>
+<ul><li>
+<strong>LAG(x)</strong> reads the previous row's x in the window order; <strong>LEAD(x)</strong> reads the next.
+</li><li>
+<strong>Examples:</strong> time to second order (file 10 Q2); month-over-month revenue (file 14 Q1).
+</li></ul>
+<h3>NTILE</h3>
+<ul><li>
+<strong>What:</strong> splits ordered rows into N equal-sized buckets.
+</li><li>
+<strong>Examples:</strong> RFM scores and value quartiles.
+</li><li>
+<strong>Gotcha:</strong> ties can be split across buckets (45.90 appears in two quartiles).
+</li></ul>
+<h3>PERCENTILE_CONT</h3>
+<ul><li>
+<strong>What:</strong> exact percentile, interpolated: percentile_cont(0.5) WITHIN GROUP (ORDER BY x) is the median.
+</li><li>
+<strong>Gotchas:</strong> it returns double precision, so cast to numeric before ROUND. It ignores NULLs.
+</li><li>
+<strong>Example:</strong> median delivery 10.21 days.
+</li></ul>
+<h3>Running totals</h3>
+<ul><li>
+<strong>What:</strong> SUM(x) OVER (ORDER BY rank ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW).
+</li><li>
+<strong>Example:</strong> seller concentration, the cumulative revenue share by rank.
+</li><li>
+<strong>Why ROWS:</strong> the default RANGE frame groups tied values together.
+</li></ul>
+<h3>FILTER vs CASE</h3>
+<ul><li>
+<strong>FILTER:</strong> COUNT(*) FILTER (WHERE is_late) counts only matching rows. It is clean and lets one pass compute many counts.
+</li><li>
+<strong>CASE equivalent:</strong> SUM(CASE WHEN is_late THEN 1 ELSE 0 END).
+</li><li>
+<strong>CASE is still needed</strong> for labels and buckets, where FILTER can't help.
+</li></ul>
+<h3>Cohort analysis</h3>
+<ul><li>
+<strong>Steps:</strong> cohort = first month; months_since = (year x 12 + month) difference.
+</li><li>
+<strong>Grid:</strong> cohorts x 0..12 with generate_series, LEFT JOINed to activity, so empty cells exist.
+</li><li>
+<strong>NULL rule:</strong> cells that can't be observed yet are NULL, not 0.
+</li></ul>
+<h3>NULL handling</h3>
+<ul><li>
+<strong>Comparisons:</strong> NULL compared with anything is NULL, not false. So x &lt; 0 on a NULL stage is NULL.
+</li><li>
+<strong>IS TRUE / IS NOT TRUE</strong> turn NULL into a definite answer (file 11 Q5).
+</li><li>
+<strong>COALESCE(a, b)</strong> returns the first non-NULL value (category fallback; returned_90 defaulting to false).
+</li><li>
+<strong>NULLIF(x, 0)</strong> avoids division by zero.
+</li><li>
+<strong>COUNT(col)</strong> counts non-NULLs, which gives eligible denominators in the seller scorecard.
+</li></ul>
+<h3>Date maths</h3>
+<ul><li>
+<strong>date - date</strong> = integer days (delay_days).
+</li><li>
+<strong>timestamp - timestamp</strong> = interval. EXTRACT(EPOCH FROM interval) / 86400 = fractional days (delivery_days).
+</li><li>
+<strong>date_trunc('month', ts)</strong> = first day of the month.
+</li><li>
+<strong>ts + INTERVAL '180 days'</strong> shifts a date.
+</li><li>
+<strong>Half-open window:</strong> &gt;= '2017-01-01' AND &lt; '2018-09-01'. It includes every time on 31 August, which BETWEEN would cut off at midnight.
+</li></ul>
+<h3>Indexes and EXPLAIN</h3>
+<ul><li>
+<strong>No indexes beyond primary keys:</strong> the analysis is full-table aggregation, where sequential scans and hash joins are right.
+</li><li>
+<strong>EXPLAIN shows the plan.</strong> Two real problems came up:
+<ol><li>
+An EXISTS over stacked views ran for minutes. I rewrote it as COUNT(*), and it took seconds.
+</li><li>
+Temp tables had no statistics, so the planner picked nested loops. ANALYZE fixed the plan to hash joins, and the query took milliseconds.
+</li></ol>
+</li><li>
+<strong>Lesson:</strong> temp tables aren't analysed automatically.
+</li></ul>
+<h3>Views</h3>
+<ul><li>
+<strong>What:</strong> a saved query that runs each time it is used. Good for one source of truth.
+</li><li>
+<strong>Cost:</strong> stacked views can be slow. Files 13-14 copy building blocks into temp tables once per session.
+</li></ul>
+<h3>DO-block checks</h3>
+<ul><li>
+<strong>What:</strong> PL/pgSQL inside DO $$ ... $$. IF something is wrong THEN RAISE EXCEPTION. With ON_ERROR_STOP the script exits with an error.
+</li><li>
+<strong>Examples:</strong> fan-out checks; the repeat rate must match the baseline; seller revenue must add back to the total; sizing groups must add up.
+</li></ul>
+<hr>
+<h2>9. PM concepts used</h2>
+<ul><li>
+<strong>Metrics tree.</strong>
+<ul><li>
+<em>What:</em> break a goal metric into factors you can act on.
+</li><li>
+<em>Here:</em> revenue = customers x orders per customer x average order value (93,104 x 1.0334 x 137.00).
+</li><li>
+<em>Use:</em> find which factor moved or can move.
+</li></ul>
+</li><li>
+<strong>Cohort retention.</strong>
+<ul><li>
+<em>What:</em> group users by start month and track what share return each later month.
+</li><li>
+<em>Why:</em> it separates growth in new users from loyalty.
+</li></ul>
+</li><li>
+<strong>Repeat rate.</strong>
+<ul><li>
+<em>What:</em> the share of customers with a second purchase.
+</li><li>
+<em>Here:</em> the definition matters: 3.00% for any day vs 2.15% for a later day. Always state the definition.
+</li></ul>
+</li><li>
+<strong>RFM.</strong>
+<ul><li>
+<em>What:</em> recency, frequency and monetary value. Segments for targeting.
+</li><li>
+<em>Here:</em> frequency is nearly always 1, so repeat status replaced the frequency score.
+</li></ul>
+</li><li>
+<strong>Concentration (80/20).</strong>
+<ul><li>
+<em>What:</em> how much of the outcome comes from the top share of units.
+</li><li>
+<em>Here:</em> sellers are concentrated (top 20% = 82.20% of revenue); customers less so (top 20% = 56.62%).
+</li></ul>
+</li><li>
+<strong>Correlation vs causation.</strong>
+<ul><li>
+<em>What:</em> two things moving together doesn't prove one causes the other.
+</li><li>
+<em>Here:</em> late handover goes with late delivery, but busy sellers in far-away states could drive both. Only a randomised test shows cause.
+</li></ul>
+</li><li>
+<strong>A/B test design.</strong>
+<ul><li>
+<em>What:</em> unit of randomisation, control, primary metric, guardrails, duration, and the risk of contamination.
+</li><li>
+<em>Units:</em> order-level (R1), seller-level (R2), customer-level (R3).
+</li></ul>
+</li><li>
+<strong>Guardrail metrics.</strong>
+<ul><li>
+<em>What:</em> metrics that must not get worse while the primary metric improves.
+</li><li>
+<em>Examples:</em> response rate for R1, seller volume for R2, net revenue for R3.
+</li></ul>
+</li><li>
+<strong>Impact vs effort.</strong>
+<ul><li>
+<em>What:</em> rank ideas by expected value against cost.
+</li><li>
+<em>Here:</em> R1 first (low effort, direct evidence), then R2, then R3.
+</li></ul>
+</li></ul>
+<hr>
+<h2>10. Likely interview questions with model answers</h2>
+<h3>SQL</h3>
+<ol><li>
+<strong>Walk me through the cohort matrix query.</strong>
+<ul><li>
+<em>Answer:</em>
+<ol><li>
+I take one row per customer with their cohort, the month of their first delivered order.
+</li><li>
+For activity, I list each distinct (customer, month with a delivered order) and compute months_since as (year x 12 + month) of the order minus the same for the cohort.
+</li><li>
+I build a grid of every cohort x months 0-12 with generate_series, so empty cells still exist, and LEFT JOIN activity to it.
+</li><li>
+I count active customers per cell and divide by cohort size.
+</li><li>
+If the cell's calendar month is after 2018-08, I return NULL instead of 0, because it can't be observed yet.
+</li><li>
+A second query pivots it wide with MAX(...) FILTER (WHERE months_since = k).
+</li></ol>
+</li></ul>
+</li><li>
+<strong>Walk me through the LAG query.</strong>
+<ul><li>
+<em>Answer:</em>
+<ol><li>
+In delivered_orders, LAG(order_purchase_timestamp) OVER (PARTITION BY customer_unique_id ORDER BY order_purchase_timestamp, order_id) puts the previous order's timestamp on each row.
+</li><li>
+On the row where delivered_seq = 2, that previous value is the first order.
+</li><li>
+Subtracting the dates gives days to second order.
+</li><li>
+Then percentile_cont gives median 29 and p90 245, and a CASE puts each gap in a bucket.
+</li><li>
+order_id in the ORDER BY breaks ties when two orders share a timestamp.
+</li></ol>
+</li></ul>
+</li><li>
+<strong>Walk me through the RFM query.</strong>
+<ul><li>
+<em>Answer:</em>
+<ol><li>
+One row per customer: recency = 2018-08-31 minus last purchase date, frequency = delivered orders, monetary = revenue.
+</li><li>
+NTILE(4) over recency sorted descending gives 1 to the oldest buyers and 4 to the newest. NTILE(4) over monetary ascending gives 4 to the top spenders. customer_unique_id breaks ties.
+</li><li>
+A CASE assigns the segment, checking repeat buyers first so each customer gets exactly one.
+</li><li>
+A DO block confirms the segments cover all 93,104 customers and all revenue.
+</li></ol>
+</li></ul>
+</li><li>
+<strong>Walk me through the concentration query.</strong>
+<ul><li>
+<em>Answer:</em>
+<ol><li>
+Revenue per seller, then ROW_NUMBER by revenue descending (seller_id as tie-breaker).
+</li><li>
+A running SUM over that order with ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW, divided by the grand total SUM() OVER (), gives the cumulative share.
+</li><li>
+A VALUES list of cut-offs (1, 5, 10, 20) joins to the seller at rank CEIL(sellers x p / 100). Its cumulative share is the answer: top 1% = 30 sellers = 25.93%.
+</li></ol>
+</li></ul>
+</li><li>
+<strong>What is fan-out and how did you prevent it?</strong>
+<ul><li>
+<em>Answer:</em> Joining a one-to-many table repeats the parent rows, so sums double-count. I aggregate children to one row per order first, and a check proves every view has row count = distinct keys = expected count.
+</li></ul>
+</li><li>
+<strong>Why ROW_NUMBER and not RANK for the latest review?</strong>
+<ul><li>
+<em>Answer:</em> I need exactly one row per order. RANK can return two rows on a tie. ROW_NUMBER with a full tie-breaker always returns one, and always the same one.
+</li></ul>
+</li><li>
+<strong>What is the difference between WHERE and HAVING?</strong>
+<ul><li>
+<em>Answer:</em> WHERE filters rows before grouping; HAVING filters groups after aggregation. For example, HAVING COUNT(*) &gt;= 500 keeps categories with 500+ customers.
+</li></ul>
+</li><li>
+<strong>When does a window function run relative to WHERE?</strong>
+<ul><li>
+<em>Answer:</em> After WHERE and GROUP BY. That's why customer_order_seq in v_order_facts counts only in-window orders: the window filter runs first.
+</li></ul>
+</li><li>
+<strong>Why use a half-open date range?</strong>
+<ul><li>
+<em>Answer:</em> <code>&lt; &#x27;2018-09-01&#x27;</code> includes every time on 31 August. <code>BETWEEN ... &#x27;2018-08-31&#x27;</code> stops at midnight, because '2018-08-31' means 00:00:00.
+</li></ul>
+</li><li>
+<strong>How do you count conditionally?</strong>
+<ul><li>
+<em>Answer:</em> COUNT(*) FILTER (WHERE condition), or SUM(CASE WHEN ... THEN 1 ELSE 0 END). AVG of a 1/0 flag gives a rate directly.
+</li></ul>
+</li><li>
+<strong>What does NULL do in comparisons and aggregates?</strong>
+<ul><li>
+<em>Answer:</em> Comparisons with NULL return NULL. Aggregates skip NULLs, except COUNT(*). I used IS TRUE, COALESCE and NULLIF to make that explicit.
+</li></ul>
+</li><li>
+<strong>How did you get the median?</strong>
+<ul><li>
+<em>Answer:</em> percentile_cont(0.5) WITHIN GROUP (ORDER BY x). It interpolates, returns double precision, and I cast it to numeric to round.
+</li></ul>
+</li><li>
+<strong>Why numeric and not float for money?</strong>
+<ul><li>
+<em>Answer:</em> numeric is exact decimal arithmetic. Floats are binary approximations, and sums can drift by fractions of a cent.
+</li></ul>
+</li><li>
+<strong>Why are some foreign keys missing?</strong>
+<ul><li>
+<em>Answer:</em> Foreign keys must reference unique columns and every child must have a parent. The zip prefix isn't unique in geolocation and 157 customer prefixes are missing; 2 categories have no translation.
+</li></ul>
+</li><li>
+<strong>COPY vs \copy?</strong>
+<ul><li>
+<em>Answer:</em> COPY runs on the server and reads server files. \copy runs in psql and streams a local file. I used \copy so no server file access was needed.
+</li></ul>
+</li><li>
+<strong>How is the load re-runnable and safe?</strong>
+<ul><li>
+<em>Answer:</em> It runs in one transaction: TRUNCATE all tables, load parents before children, COMMIT. With ON_ERROR_STOP, a failure rolls back and nothing is half-loaded.
+</li></ul>
+</li><li>
+<strong>How do you pick one value per group without a subquery?</strong>
+<ul><li>
+<em>Answer:</em> MAX(x) FILTER (WHERE delivered_seq = 1) inside a GROUP BY. Only one row matches, so MAX returns it. I used this for first-order state, category and payment type.
+</li></ul>
+</li><li>
+<strong>A query ran for 10 minutes. What did you do?</strong>
+<ul><li>
+<em>Answer:</em> I checked pg_stat_activity and EXPLAIN. Once the cause was EXISTS over stacked views, and I rewrote it as COUNT(*). Once it was temp tables without statistics, and I added ANALYZE, which switched to hash joins.
+</li></ul>
+</li><li>
+<strong>Views or tables?</strong>
+<ul><li>
+<em>Answer:</em> Views keep one definition of every rule. For heavy reuse within one script I copy them into temp tables once per session, which is faster and still has no duplicated logic.
+</li></ul>
+</li><li>
+<strong>How would you write the on-time rate from raw tables?</strong>
+<ul><li>
+<em>Answer:</em> Filter to delivered orders with a delivery date in the window. Then ROUND(100.0 * COUNT(<em>) FILTER (WHERE delivered::date &lt;= estimated::date) / COUNT(</em>), 2), which gives 93.21.
+</li></ul>
+</li><li>
+<strong>Why 100.0 and not 100?</strong>
+<ul><li>
+<em>Answer:</em> Integer division truncates. 100.0 forces numeric division.
+</li></ul>
+</li><li>
+<strong>How did you make sure a multi-seller order's revenue isn't double-counted?</strong>
+<ul><li>
+<em>Answer:</em> v_seller_orders has one row per (order, seller) with that seller's own items. A DO block asserts the seller totals add back to exactly 13,181,027.13.
+</li></ul>
+</li><li>
+<strong>What does SUM(COUNT(*)) OVER () do?</strong>
+<ul><li>
+<em>Answer:</em> The inner COUNT(*) is the group count. The window SUM adds those counts across all groups. Dividing gives each group's share in one query.
+</li></ul>
+</li></ol>
+<h3>Analysis and statistics</h3>
+<ol><li>
+<strong>Why median rather than mean for delivery days?</strong>
+<ul><li>
+<em>Answer:</em> Delivery times are skewed: the p95 (29.22 days) is far above the median (10.21), so the mean would be pulled up by a few very slow orders.
+</li></ul>
+</li><li>
+<strong>Is the late-handover effect causal?</strong>
+<ul><li>
+<em>Answer:</em> No. It is an association: late 21.10% vs 5.39%. Confounders such as seller location, product size and season could drive both. That's why R2 is a randomised test.
+</li></ul>
+</li><li>
+<strong>Why fixed-window repeat rates as well as all-time?</strong>
+<ul><li>
+<em>Answer:</em> All-time favours early cohorts, which had more time to return. A 90- or 180-day window gives everyone the same time, and I only include customers whose full window is observed.
+</li></ul>
+</li><li>
+<strong>Why are some cohort cells NULL?</strong>
+<ul><li>
+<em>Answer:</em> Those months are after the data ends. 0 would claim nobody returned; NULL says "not observed yet".
+</li></ul>
+</li><li>
+<strong>How confident are you in the first-order return differences?</strong>
+<ul><li>
+<em>Answer:</em> Not very. The gaps are about half a point and rest on 103 returners after a late first order. I didn't run significance tests, so I describe them and don't claim them.
+</li></ul>
+</li><li>
+<strong>What is survivorship or censoring in your data?</strong>
+<ul><li>
+<em>Answer:</em> Recent orders that weren't yet delivered have no timing, so recent months under-represent slow deliveries (2018-08: 161 of 6,512 orders untimed).
+</li></ul>
+</li><li>
+<strong>Why pooled rates rather than averages of seller rates?</strong>
+<ul><li>
+<em>Answer:</em> Pooled rates weight by orders, so a seller with 30 orders doesn't count as much as one with 3,000. An average of rates answers a different question: the typical seller.
+</li></ul>
+</li><li>
+<strong>What is Simpson's paradox, and could it apply here?</strong>
+<ul><li>
+<em>Answer:</em> It is when a trend in groups reverses when they are combined. For example, SP sellers have the highest late-delivery rate overall, but that could reflect where their customers are. I'd check within customer state before concluding anything.
+</li></ul>
+</li><li>
+<strong>How did you handle outliers?</strong>
+<ul><li>
+<em>Answer:</em> I mostly used medians and percentiles. Coordinates outside a Brazil bounding box were excluded (8 orders) because they are data errors, not real extremes.
+</li></ul>
+</li><li>
+<strong>What would a significance test look like for R1?</strong>
+<ul><li>
+<em>Answer:</em> A two-proportion test on the low-review share, treatment vs control. Before starting, I'd fix the sample size from the minimum detectable effect I care about and from the baseline rate.
+</li></ul>
+</li><li>
+<strong>Why exclude negative stage durations only from stage stats?</strong>
+<ul><li>
+<em>Answer:</em> The stage timestamps are clearly wrong, but the order and its delivery are real, so removing them everywhere would bias delivery and revenue metrics.
+</li></ul>
+</li><li>
+<strong>What is the risk of NTILE-based segments?</strong>
+<ul><li>
+<em>Answer:</em> Segment sizes are fixed by construction (about 25% each), and ties can be split across buckets. Only the revenue shares and averages are findings.
+</li></ul>
+</li></ol>
+<h3>Product and PM</h3>
+<ol><li>
+<strong>What would you do next?</strong>
+<ul><li>
+<em>Answer:</em> Run R1 first, because it is cheap and has direct evidence. Then analyse review text for the 53.29% of low reviews on normal orders. Then size R3 with a proper power calculation.
+</li></ul>
+</li><li>
+<strong>How would you measure success of R1?</strong>
+<ul><li>
+<em>Answer:</em> Primary metric: low-review share, split by late and on-time orders. Guardrails: response rate and days to review. Success means lower low-review share with no drop in response rate.
+</li></ul>
+</li><li>
+<strong>How would you measure success of R2?</strong>
+<ul><li>
+<em>Answer:</em> Late-handover rate falls for treated sellers vs control, without falling order volume or more sellers going inactive. Late delivery is the secondary metric.
+</li></ul>
+</li><li>
+<strong>How would you measure success of R3?</strong>
+<ul><li>
+<em>Answer:</em> A higher share of targeted customers order within 90 days than the holdout, with positive net revenue after the freight subsidy.
+</li></ul>
+</li><li>
+<strong>Which metric would you put on a dashboard for the CEO?</strong>
+<ul><li>
+<em>Answer:</em> Revenue with its three factors (customers, orders per customer, average order value), plus on-time rate and low-review share as quality guardrails.
+</li></ul>
+</li><li>
+<strong>Why did revenue grow?</strong>
+<ul><li>
+<em>Answer:</em> Volume. Orders rose 139.94% Jan-Aug year on year while average order value moved 0.49%.
+</li></ul>
+</li><li>
+<strong>Is low retention a problem?</strong>
+<ul><li>
+<em>Answer:</em> Probably, but it's partly the category mix: many purchases (furniture, appliances) are infrequent. I'd compare repeat rates with category purchase cycles before setting a target.
+</li></ul>
+</li><li>
+<strong>Which recommendation would you drop if you could only do two?</strong>
+<ul><li>
+<em>Answer:</em> R3. It costs money per order and its evidence is indirect, while R1 and R2 target observed problems.
+</li></ul>
+</li><li>
+<strong>Who are the stakeholders for R2?</strong>
+<ul><li>
+<em>Answer:</em> Seller operations, the marketplace ranking team, and sellers themselves. Seller churn is the main risk, so seller success should co-own it.
+</li></ul>
+</li><li>
+<strong>How would you prioritise the problem sellers?</strong>
+<ul><li>
+<em>Answer:</em> By the volume of harm, not just the rate. The 62 sellers with the most late handovers cover 55.42% of them, so starting there gives the most effect per seller contacted.
+</li></ul>
+</li><li>
+<strong>What surprised you?</strong>
+<ul><li>
+<em>Answer:</em> Three things:
+<ul><li>
+Reviews for late orders mostly come before delivery.
+</li><li>
+Almost a third of "second orders" are seconds apart.
+</li><li>
+SP sellers have the highest late-delivery rate even though SP customers get the fastest deliveries.
+</li></ul>
+</li></ul>
+</li><li>
+<strong>What would you need to know that the data doesn't say?</strong>
+<ul><li>
+<em>Answer:</em> Margins and fees, marketing spend, support contacts, and how review requests are triggered.
+</li></ul>
+</li><li>
+<strong>How would you set the shipping-limit SLA?</strong>
+<ul><li>
+<em>Answer:</em> Start from the current limit, and alert at, say, 24 hours before it. Then look at the distribution of handover delays in the test to tune the penalty threshold.
+</li></ul>
+</li><li>
+<strong>What is a North Star metric for Olist?</strong>
+<ul><li>
+<em>Answer:</em> Delivered orders that get a 4-5 star review. It combines volume, fulfilment and satisfaction.
+</li></ul>
+</li><li>
+<strong>How do freight costs affect the business?</strong>
+<ul><li>
+<em>Answer:</em> Freight is 16.63% of item value overall but 53.41% for the cheapest quarter of orders. Small baskets are expensive to ship, which suggests minimum-basket or bundling ideas, to be tested.
+</li></ul>
+</li><li>
+<strong>How would you validate that same-day orders are split checkouts?</strong>
+<ul><li>
+<em>Answer:</em> Check whether they share a payment or session, or have different sellers. Ask the data owner how carts with several sellers are stored.
+</li></ul>
+</li></ol>
+<h3>Behavioural and honesty</h3>
+<ol><li>
+<strong>Did you use AI tools?</strong>
+<ul><li>
+<em>Answer:</em> Yes. I used AI tools to move faster: drafting SQL, documentation and checks. I set the questions and made the analysis decisions myself. That includes the window, the customer and repeat-customer definitions, the review rule, the revenue definition and the seller attribution rule; each is recorded as a confirmed decision. I reviewed the outputs and can explain every query in this project line by line.
+</li></ul>
+</li><li>
+<strong>What was the hardest part?</strong>
+<ul><li>
+<em>Answer:</em> Definitions. "Repeat customer" changed the headline from 3.00% to 2.15% once same-day orders were understood. Getting that right mattered more than any query.
+</li></ul>
+</li><li>
+<strong>What would you do differently?</strong>
+<ul><li>
+<em>Answer:</em> Decide the repeat definition and the attribution rule before building views, and save every one-off check's output to results/ from the start.
+</li></ul>
+</li><li>
+<strong>Tell me about a mistake you caught.</strong>
+<ul><li>
+<em>Answer:</em> A schema comment claimed review creation dates were always midnight; profiling showed some aren't, so I corrected it. A first export of the data model also listed a wrong source for one view; the parser was fixed and re-checked.
+</li></ul>
+</li><li>
+<strong>How do you make sure your numbers are right?</strong>
+<ul><li>
+<em>Answer:</em> Assertions in SQL (fan-out checks, totals adding back, rates matching the baseline). Every website number is traced to a CSV cell by a script that fails on any mismatch, and I tested that it really fails.
+</li></ul>
+</li><li>
+<strong>How do you communicate uncertainty?</strong>
+<ul><li>
+<em>Answer:</em> Each finding has a "what this doesn't show" line, and the limitations list counts what was excluded and why.
+</li></ul>
+</li></ol>
+<hr>
+<h2>11. Live SQL practice (raw tables)</h2>
+<p>Solutions are in prep/practice_solutions.sql. Each expected answer matches a number in results/.</p>
+<h3>E1 (easy). Count orders by status, largest first.</h3>
+<ul><li>
+<em>Expected:</em> delivered 96,478 first (results/02_data_quality_output.txt).
+</li><li>
+<em>Solution:</em>
+</li></ul>
+<pre><code>SELECT order_status, COUNT(*) AS orders
+FROM orders
+GROUP BY order_status
+ORDER BY orders DESC;</code></pre>
+<h3>E2 (easy). How many people (customer_unique_id) have more than one customer_id?</h3>
+<ul><li>
+<em>Expected:</em> 2,997.
+</li><li>
+<em>Solution:</em>
+</li></ul>
+<pre><code>SELECT COUNT(*)
+FROM (SELECT customer_unique_id
+      FROM customers
+      GROUP BY customer_unique_id
+      HAVING COUNT(*) &gt; 1) t;</code></pre>
+<h3>E3 (easy). Delivered revenue (item price) for purchases from 2017-01-01 to 2018-08-31.</h3>
+<ul><li>
+<em>Expected:</em> 13,181,027.13 (baseline.csv).
+</li><li>
+<em>Solution:</em>
+</li></ul>
+<pre><code>SELECT SUM(oi.price)
+FROM orders o
+JOIN order_items oi ON oi.order_id = o.order_id
+WHERE o.order_status = &#x27;delivered&#x27;
+  AND o.order_purchase_timestamp &gt;= DATE &#x27;2017-01-01&#x27;
+  AND o.order_purchase_timestamp &lt;  DATE &#x27;2018-09-01&#x27;;</code></pre>
+<h3>E4 (easy-medium). Orders per month in the window, all statuses.</h3>
+<ul><li>
+<em>Expected:</em> 2017-11 has 7,544 (baseline.csv).
+</li><li>
+<em>Solution:</em>
+</li></ul>
+<pre><code>SELECT date_trunc(&#x27;month&#x27;, order_purchase_timestamp)::date AS month, COUNT(*)
+FROM orders
+WHERE order_purchase_timestamp &gt;= DATE &#x27;2017-01-01&#x27;
+  AND order_purchase_timestamp &lt;  DATE &#x27;2018-09-01&#x27;
+GROUP BY 1
+ORDER BY 1;</code></pre>
+<h3>E5 (medium). Top 5 categories by delivered revenue, using the English name, else Portuguese, else 'unknown'.</h3>
+<ul><li>
+<em>Expected:</em> health_beauty 1,229,557.50 first (14_top_categories.csv).
+</li><li>
+<em>Solution:</em>
+</li></ul>
+<pre><code>SELECT COALESCE(t.product_category_name_english, p.product_category_name, &#x27;unknown&#x27;) AS category,
+       SUM(oi.price) AS revenue
+FROM orders o
+JOIN order_items oi ON oi.order_id = o.order_id
+JOIN products p     ON p.product_id = oi.product_id
+LEFT JOIN product_category_name_translation t
+       ON t.product_category_name = p.product_category_name
+WHERE o.order_status = &#x27;delivered&#x27;
+  AND o.order_purchase_timestamp &gt;= DATE &#x27;2017-01-01&#x27;
+  AND o.order_purchase_timestamp &lt;  DATE &#x27;2018-09-01&#x27;
+GROUP BY 1
+ORDER BY revenue DESC
+LIMIT 5;</code></pre>
+<h3>E6 (medium). On-time rate: delivered in the window, with a delivery date; on time = delivered date &lt;= estimated date (calendar days).</h3>
+<ul><li>
+<em>Expected:</em> 93.21.
+</li><li>
+<em>Solution:</em>
+</li></ul>
+<pre><code>SELECT ROUND(100.0 * COUNT(*) FILTER (
+         WHERE order_delivered_customer_date::date &lt;= order_estimated_delivery_date::date)
+       / COUNT(*), 2)
+FROM orders
+WHERE order_status = &#x27;delivered&#x27;
+  AND order_delivered_customer_date IS NOT NULL
+  AND order_purchase_timestamp &gt;= DATE &#x27;2017-01-01&#x27;
+  AND order_purchase_timestamp &lt;  DATE &#x27;2018-09-01&#x27;;</code></pre>
+<h3>E7 (medium). Average review score in the window, keeping only the latest review per order.</h3>
+<ul><li>
+<em>Expected:</em> 4.09.
+</li><li>
+<em>Solution:</em>
+</li></ul>
+<pre><code>WITH latest AS (
+  SELECT order_id, review_score,
+         ROW_NUMBER() OVER (PARTITION BY order_id
+                            ORDER BY review_answer_timestamp DESC,
+                                     review_creation_date DESC, review_id) AS rn
+  FROM order_reviews
+)
+SELECT ROUND(AVG(l.review_score), 2)
+FROM latest l
+JOIN orders o ON o.order_id = l.order_id
+WHERE l.rn = 1
+  AND o.order_purchase_timestamp &gt;= DATE &#x27;2017-01-01&#x27;
+  AND o.order_purchase_timestamp &lt;  DATE &#x27;2018-09-01&#x27;;</code></pre>
+<h3>E8 (medium-hard). Median days between a customer's first and second delivered order in the window, using LAG.</h3>
+<ul><li>
+<em>Expected:</em> 29 (10_time_to_second_order_percentiles.csv).
+</li><li>
+<em>Solution:</em>
+</li></ul>
+<pre><code>WITH d AS (
+  SELECT c.customer_unique_id,
+         o.order_purchase_timestamp::date AS purchase_date,
+         ROW_NUMBER() OVER w AS seq,
+         LAG(o.order_purchase_timestamp::date) OVER w AS prev_date
+  FROM orders o
+  JOIN customers c ON c.customer_id = o.customer_id
+  WHERE o.order_status = &#x27;delivered&#x27;
+    AND o.order_purchase_timestamp &gt;= DATE &#x27;2017-01-01&#x27;
+    AND o.order_purchase_timestamp &lt;  DATE &#x27;2018-09-01&#x27;
+  WINDOW w AS (PARTITION BY c.customer_unique_id
+               ORDER BY o.order_purchase_timestamp, o.order_id)
+)
+SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY purchase_date - prev_date)
+FROM d
+WHERE seq = 2;</code></pre>
+<h3>E9 (hard). Share of delivered revenue from the top 1% of sellers.</h3>
+<ul><li>
+<em>Expected:</em> 30 sellers, 25.93 (13_concentration.csv).
+</li><li>
+<em>Solution:</em>
+</li></ul>
+<pre><code>WITH seller_rev AS (
+  SELECT oi.seller_id, SUM(oi.price) AS revenue
+  FROM orders o
+  JOIN order_items oi ON oi.order_id = o.order_id
+  WHERE o.order_status = &#x27;delivered&#x27;
+    AND o.order_purchase_timestamp &gt;= DATE &#x27;2017-01-01&#x27;
+    AND o.order_purchase_timestamp &lt;  DATE &#x27;2018-09-01&#x27;
+  GROUP BY oi.seller_id
+),
+ranked AS (
+  SELECT ROW_NUMBER() OVER (ORDER BY revenue DESC, seller_id) AS rnk,
+         COUNT(*) OVER () AS n,
+         SUM(revenue) OVER (ORDER BY revenue DESC, seller_id
+                            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running,
+         SUM(revenue) OVER () AS total
+  FROM seller_rev
+)
+SELECT rnk, ROUND(100.0 * running / total, 2)
+FROM ranked
+WHERE rnk = CEIL(n * 0.01);</code></pre>
+<h3>E10 (hard). Of customers whose first delivered order in the window was in January 2017, what share had a delivered order in February 2017?</h3>
+<ul><li>
+<em>Expected:</em> cohort 718, 2 active, 0.28 (10_cohort_matrix_pct.csv, 2017-01 row, m1).
+</li><li>
+<em>Solution:</em>
+</li></ul>
+<pre><code>WITH d AS (
+  SELECT c.customer_unique_id,
+         date_trunc(&#x27;month&#x27;, o.order_purchase_timestamp)::date AS m
+  FROM orders o
+  JOIN customers c ON c.customer_id = o.customer_id
+  WHERE o.order_status = &#x27;delivered&#x27;
+    AND o.order_purchase_timestamp &gt;= DATE &#x27;2017-01-01&#x27;
+    AND o.order_purchase_timestamp &lt;  DATE &#x27;2018-09-01&#x27;
+),
+firsts AS (
+  SELECT customer_unique_id, MIN(m) AS cohort
+  FROM d
+  GROUP BY customer_unique_id
+),
+active AS (
+  SELECT DISTINCT f.customer_unique_id
+  FROM firsts f
+  JOIN d ON d.customer_unique_id = f.customer_unique_id
+        AND d.m = f.cohort + INTERVAL &#x27;1 month&#x27;
+  WHERE f.cohort = DATE &#x27;2017-01-01&#x27;
+)
+SELECT COUNT(*) AS cohort_size,
+       (SELECT COUNT(*) FROM active) AS active_m1,
+       ROUND(100.0 * (SELECT COUNT(*) FROM active) / COUNT(*), 2) AS pct
+FROM firsts
+WHERE cohort = DATE &#x27;2017-01-01&#x27;;</code></pre>
+<p>Practice tips:</p>
+<ul><li>
+Say the grain out loud before every join.
+</li><li>
+Write the half-open date filter from memory.
+</li><li>
+Check your answer against the expected number.
+</li></ul>
+<hr>
+<h2>12. Numbers cheat sheet</h2>
+<h3>Data and scope</h3>
+<ul><li>
+<strong>Raw tables:</strong> orders 99,441; customers 99,441; items 112,650; payments 103,886; reviews 99,224; products 32,951; sellers 3,095; categories 71; geolocation 1,000,163.
+</li><li>
+<strong>Window:</strong> 2017-01-01 to 2018-08-31. 99,092 orders in window, 349 outside.
+</li><li>
+<strong>Delivered:</strong> 96,211. Customers 93,104. Active sellers 2,945.
+</li></ul>
+<h3>Money</h3>
+<ul><li>
+<strong>Revenue:</strong> 13,181,027.13 BRL. Freight 2,192,092.88. Average order value 137.00. Orders per customer 1.0334.
+</li><li>
+<strong>Jan-Aug 2018 vs 2017:</strong> revenue +141.13%, orders +139.94%, average order value +0.49%.
+</li><li>
+<strong>Concentration:</strong> top 15 categories 76.33%. Top 20% of sellers 82.20%; top 1% of sellers 25.93%. Top 20% of customers 56.62%.
+</li></ul>
+<h3>Retention</h3>
+<ul><li>
+<strong>Repeat:</strong> later-day 2.15% (2,005); any-day 3.00% (2,789). Same-day second orders 29.65%.
+</li><li>
+<strong>Timing and windows:</strong> median days to second order 29. Within 180 days, later-day 1.97%.
+</li><li>
+<strong>Revenue from second and later orders:</strong> 2.89%.
+</li></ul>
+<h3>Delivery</h3>
+<ul><li>
+<strong>On time:</strong> 93.21%. Median delivery 10.21 days; p95 29.22.
+</li><li>
+<strong>Promise vs actual:</strong> promise 24 days vs actual 10. 78.88% arrive 7+ days early.
+</li><li>
+<strong>Handover:</strong> 8.92% handed over after the limit. Late 21.10% after a late handover vs 5.39%.
+</li><li>
+<strong>States:</strong> worst MA 17.53%; best PR 4.06%.
+</li></ul>
+<h3>Reviews</h3>
+<ul><li>
+<strong>Overall:</strong> average 4.09; low (1-2 stars) 14.63% (14,382 reviews).
+</li><li>
+<strong>By delay:</strong> low share 8.98% (7+ days early) to 79.27% (8+ days late).
+</li><li>
+<strong>Timing:</strong> 74.46% of late orders reviewed before delivery.
+</li><li>
+<strong>Low-review sources:</strong> late 27.68%; undelivered 14.97%; everything else 53.29%.
+</li></ul>
+<h3>Sellers</h3>
+<ul><li>
+<strong>Scorecard:</strong> 614 sellers.
+</li><li>
+<strong>Problem sellers:</strong> 31, holding 10.62% of low reviews on 4.36% of orders.
+</li><li>
+<strong>Late handovers:</strong> 62 sellers = 55.42% of late handovers on 31.93% of orders.
+</li></ul>
+<h3>RFM</h3>
+<ul><li>
+<strong>Lapsed high-value:</strong> 22,369 customers, 39.77% of revenue, 234.37 BRL each.
+</li><li>
+<strong>Repeat buyers:</strong> 2,005 customers, 4.13% of revenue, 271.47 BRL each.
+</li></ul>
+<h3>Freight</h3>
+<ul><li>
+<strong>Overall:</strong> 16.63% of item value.
+</li><li>
+<strong>Cheapest quarter of orders:</strong> 53.41%. Orders with freight over 50% of item value: 15.84%.
+</li></ul>
+<h3>Data quality</h3>
+<ul><li>
+<strong>Reviews:</strong> 547 orders with multiple reviews; 789 repeated review_ids.
+</li><li>
+<strong>Payments:</strong> 294 mismatches.
+</li><li>
+<strong>Stages:</strong> 1,344 negative stage durations.
+</li><li>
+<strong>Status contradictions:</strong> 8 delivered without a date; 6 canceled with a date.
+</li><li>
+<strong>Missing children:</strong> 775 orders without items.
+</li><li>
+<strong>Geolocation:</strong> 261,831 duplicate rows.
+</li></ul>
+<hr>
+<h2>13. Limitations and what I'd do next</h2>
+<h3>Limitations</h3>
+<ul><li>
+<strong>Window.</strong> 349 orders outside the window are excluded, and "first order" means first inside the window.
+</li><li>
+<strong>Same-day orders.</strong> 827 same-day second orders are not counted as returns, which is a definition choice.
+</li><li>
+<strong>Payments.</strong> 294 payment mismatches are unexplained.
+</li><li>
+<strong>Stages.</strong> Stage stats exclude 1,344 negative and 15 missing-stage orders.
+</li><li>
+<strong>Recent months.</strong> They lack their slowest deliveries (2018-08: 161 of 6,512 untimed).
+</li><li>
+<strong>Distances.</strong> They are between zip-prefix centres; 94,453 of 94,931 single-seller orders were usable.
+</li><li>
+<strong>Seller attribution.</strong> Seller quality uses single-seller orders only; 1,272 multi-seller timed orders aren't attributed.
+</li><li>
+<strong>Small counts.</strong> Some comparisons are small (103 returners after a late first order), and there are no significance tests.
+</li><li>
+<strong>RFM.</strong> Segment sizes are set by NTILE.
+</li><li>
+<strong>Review dates.</strong> They are day-level only.
+</li><li>
+<strong>Seller activity.</strong> The exact-month rule makes it a lower bound.
+</li><li>
+<strong>Observational data.</strong> All results are associations, not causes.
+</li></ul>
+<h3>What I'd do next with more data or time</h3>
+<ul><li>
+<strong>Run R1 as an A/B test,</strong> with a power calculation from the current low-review share.
+</li><li>
+<strong>Analyse Portuguese review text</strong> for the 53.29% of low reviews on ordinary orders (topic modelling or keyword counts).
+</li><li>
+<strong>Confirm the split-checkout hypothesis</strong> with the data owner, or check shared payments or sessions.
+</li><li>
+<strong>Check SP sellers within customer state</strong> to rule out a Simpson's-paradox effect on seller lateness.
+</li><li>
+<strong>Add margin data</strong> to turn revenue findings into profit and to price the free-freight voucher.
+</li><li>
+<strong>Join carrier data</strong> if available, to separate carrier performance from seller handover.
+</li><li>
+<strong>Add significance tests and confidence intervals</strong> to segment comparisons, using bootstrap for medians.
+</li><li>
+<strong>Build a monitoring dashboard</strong> for on-time rate, late-handover rate and low-review share by week, with alerts.
+</li></ul></body></html>
