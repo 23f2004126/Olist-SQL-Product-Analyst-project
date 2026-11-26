@@ -1,0 +1,169 @@
+            table_name             | row_count 
+-----------------------------------+-----------
+ customers                         |     99441
+ geolocation                       |   1000163
+ order_items                       |    112650
+ order_payments                    |    103886
+ order_reviews                     |     99224
+ orders                            |     99441
+ product_category_name_translation |        71
+ products                          |     32951
+ sellers                           |      3095
+(9 rows)
+
+ total_rows | null_order_id | null_customer_id | null_purchase_ts | null_approved_at | null_delivered_carrier | null_delivered_customer | null_estimated_delivery 
+------------+---------------+------------------+------------------+------------------+------------------------+-------------------------+-------------------------
+      99441 |             0 |                0 |                0 |              160 |                   1783 |                    2965 |                       0
+(1 row)
+
+ total_rows | null_order_id | null_product_id | null_seller_id | null_shipping_limit | null_price | null_freight 
+------------+---------------+-----------------+----------------+---------------------+------------+--------------
+     112650 |             0 |               0 |              0 |                   0 |          0 |            0
+(1 row)
+
+ total_rows | null_order_id | null_payment_type | null_payment_value 
+------------+---------------+-------------------+--------------------
+     103886 |             0 |                 0 |                  0
+(1 row)
+
+ total_rows | null_review_id | null_order_id | null_score | null_creation_date | null_answer_ts | null_comment_title | null_comment_message 
+------------+----------------+---------------+------------+--------------------+----------------+--------------------+----------------------
+      99224 |              0 |             0 |          0 |                  0 |              0 |              87656 |                58247
+(1 row)
+
+ null_customer_id | null_customer_unique_id | null_seller_id | null_product_id | null_product_category | null_product_weight 
+------------------+-------------------------+----------------+-----------------+-----------------------+---------------------
+                0 |                       0 |              0 |               0 |                   610 |                   2
+(1 row)
+
+                  key_checked                  | keys_appearing_more_than_once 
+-----------------------------------------------+-------------------------------
+ customers.customer_id                         |                             0
+ customers.customer_unique_id                  |                          2997
+ geolocation.zip_code_prefix                   |                         17972
+ order_items.(order_id, order_item_id)         |                             0
+ order_payments.(order_id, payment_sequential) |                             0
+ order_reviews.(review_id, order_id)           |                             0
+ order_reviews.order_id                        |                           547
+ order_reviews.review_id                       |                           789
+ orders.order_id                               |                             0
+ products.product_id                           |                             0
+ sellers.seller_id                             |                             0
+(11 rows)
+
+ geolocation_exact_duplicate_rows 
+----------------------------------
+                           261831
+(1 row)
+
+ orders_without_items | orders_without_payment | orders_without_review 
+----------------------+------------------------+-----------------------
+                  775 |                      1 |                   768
+(1 row)
+
+ order_status | orders_without_items 
+--------------+----------------------
+ unavailable  |                  603
+ canceled     |                  164
+ created      |                    5
+ invoiced     |                    2
+ shipped      |                    1
+(5 rows)
+
+ order_status | orders | pct_of_orders 
+--------------+--------+---------------
+ delivered    |  96478 |         97.02
+ shipped      |   1107 |          1.11
+ canceled     |    625 |          0.63
+ unavailable  |    609 |          0.61
+ invoiced     |    314 |          0.32
+ processing   |    301 |          0.30
+ created      |      5 |          0.01
+ approved     |      2 |          0.00
+(8 rows)
+
+ order_status | no_delivery_date | has_delivery_date 
+--------------+------------------+-------------------
+ approved     |                2 |                 0
+ canceled     |              619 |                 6
+ created      |                5 |                 0
+ delivered    |                8 |             96470
+ invoiced     |              314 |                 0
+ processing   |              301 |                 0
+ shipped      |             1107 |                 0
+ unavailable  |              609 |                 0
+(8 rows)
+
+   first_purchase    |    last_purchase    
+---------------------+---------------------
+ 2016-09-04 21:15:19 | 2018-10-17 17:30:18
+(1 row)
+
+ purchase_month | orders 
+----------------+--------
+ 2016-09-01     |      4
+ 2016-10-01     |    324
+ 2016-12-01     |      1
+ 2017-01-01     |    800
+ 2017-02-01     |   1780
+ 2017-03-01     |   2682
+ 2017-04-01     |   2404
+ 2017-05-01     |   3700
+ 2017-06-01     |   3245
+ 2017-07-01     |   4026
+ 2017-08-01     |   4331
+ 2017-09-01     |   4285
+ 2017-10-01     |   4631
+ 2017-11-01     |   7544
+ 2017-12-01     |   5673
+ 2018-01-01     |   7269
+ 2018-02-01     |   6728
+ 2018-03-01     |   7211
+ 2018-04-01     |   6939
+ 2018-05-01     |   6873
+ 2018-06-01     |   6167
+ 2018-07-01     |   6292
+ 2018-08-01     |   6512
+ 2018-09-01     |     16
+ 2018-10-01     |      4
+(25 rows)
+
+ customer_ids_with_2plus_orders 
+--------------------------------
+                              0
+(1 row)
+
+ unique_customers_with_2plus_orders 
+------------------------------------
+                               2997
+(1 row)
+
+ orders_per_customer | unique_customers 
+---------------------+------------------
+                   1 |            93099
+                   2 |             2745
+                   3 |              203
+                   4 |               30
+                   5 |                8
+                   6 |                6
+                   7 |                3
+                   9 |                1
+                  17 |                1
+(9 rows)
+
+ customer_zips_missing | customers_affected | seller_zips_missing 
+-----------------------+--------------------+---------------------
+                   157 |                278 |                   7
+(1 row)
+
+             product_category_name             | products 
+-----------------------------------------------+----------
+ portateis_cozinha_e_preparadores_de_alimentos |       10
+ pc_gamer                                      |        3
+(2 rows)
+
+             order_id             | order_status | order_purchase_timestamp | items 
+----------------------------------+--------------+--------------------------+-------
+ bfbd0f9bdef84302105ad712db648a6c | delivered    | 2016-09-15 12:16:38      |     3
+(1 row)
+
