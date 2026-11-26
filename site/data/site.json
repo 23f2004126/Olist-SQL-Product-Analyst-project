@@ -480,11 +480,11 @@
     "progress": "Reading progress"
   },
   "links": {
-    "github": "https://github.com/23f2004126/olist-sql-product-analytics",
+    "github": "https://github.com/23f2004126/Olist-SQL-Product-Analyst-project",
     "case_study_pdf": "olist-case-study.pdf",
     "dataset": "https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce",
     "dataset_license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-    "github_file_base": "https://github.com/23f2004126/olist-sql-product-analytics/blob/main/",
+    "github_file_base": "https://github.com/23f2004126/Olist-SQL-Product-Analyst-project/blob/main/",
     "site": "",
     "geo": "https://github.com/tbrugz/geodata-br",
     "author": "https://willowy-druid-25583e.netlify.app/"
