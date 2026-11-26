@@ -1,0 +1,9 @@
+score_type,score,min_value,max_value,customers
+monetary,1,0.85,47.65,23276
+monetary,2,47.65,89.70,23276
+monetary,3,89.70,154.17,23276
+monetary,4,154.19,13440.00,23276
+recency,1,347,603,23276
+recency,2,220,347,23276
+recency,3,116,220,23276
+recency,4,2,116,23276

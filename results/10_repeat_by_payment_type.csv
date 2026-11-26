@@ -1,0 +1,5 @@
+payment_type,customers,repeat_customers,repeat_rate_pct,repeat_rate_later_day_pct
+credit_card,70263,2098,2.99,2.14
+boleto,18574,555,2.99,2.13
+voucher,2829,103,3.64,2.86
+debit_card,1438,33,2.29,1.53

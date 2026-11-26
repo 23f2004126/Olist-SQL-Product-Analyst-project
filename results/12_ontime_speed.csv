@@ -1,0 +1,5 @@
+band,orders,avg_score,low_review_pct
+0-7 days,30442,4.41,7.54
+8-14 days,37361,4.31,8.86
+15-21 days,15414,4.16,11.03
+22+ days,5965,3.90,15.78

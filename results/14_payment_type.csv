@@ -1,0 +1,5 @@
+payment_type,orders,pct_of_orders,pct_of_revenue,aov
+credit_card,72619,75.48,78.89,143.19
+boleto,19140,19.89,17.63,121.39
+voucher,2970,3.09,2.14,94.80
+debit_card,1482,1.54,1.35,119.88

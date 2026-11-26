@@ -1,0 +1,21 @@
+list,rank,category,orders,avg_score,low_review_pct,categories_500plus
+highest low-review share,1,office_furniture,1255,3.63,22.39,27
+highest low-review share,2,unknown,1397,3.94,19.11,27
+highest low-review share,3,bed_bath_table,9243,3.98,16.59,27
+highest low-review share,4,furniture_decor,6232,4.03,16.16,27
+highest low-review share,5,computers_accessories,6613,4.03,15.98,27
+highest low-review share,6,baby,2798,4.06,15.44,27
+highest low-review share,7,telephony,4138,4.01,15.25,27
+highest low-review share,8,watches_gifts,5554,4.07,15.14,27
+highest low-review share,9,auto,3848,4.10,14.24,27
+highest low-review share,10,consoles_games,1037,4.08,14.08,27
+lowest low-review share,1,books_general_interest,504,4.47,8.13,27
+lowest low-review share,2,luggage_accessories,1025,4.33,9.17,27
+lowest low-review share,3,stationery,2274,4.26,11.13,27
+lowest low-review share,4,fashion_bags_accessories,1837,4.19,11.43,27
+lowest low-review share,5,pet_shop,1690,4.24,11.48,27
+lowest low-review share,6,cool_stuff,3560,4.18,12.11,27
+lowest low-review share,7,home_appliances,761,4.16,12.48,27
+lowest low-review share,8,health_beauty,8695,4.19,12.51,27
+lowest low-review share,9,toys,3814,4.19,12.56,27
+lowest low-review share,10,sports_leisure,7612,4.17,12.85,27

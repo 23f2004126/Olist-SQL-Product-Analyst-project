@@ -1,0 +1,7 @@
+dimension,order_group,orders,avg_score,low_review_pct
+items,single item,87954,4.16,12.67
+items,multi item,9655,3.60,27.61
+items,no items,721,1.73,79.06
+sellers,single seller,96349,4.12,13.72
+sellers,multi seller,1260,2.86,47.22
+sellers,no items,721,1.73,79.06

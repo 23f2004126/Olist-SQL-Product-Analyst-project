@@ -1,0 +1,5 @@
+delivery_group,review_timing,orders,pct_within_delivery_group,avg_score,low_review_pct
+on_time,before delivery,221,0.25,3.93,17.65
+on_time,on or after delivery,88961,99.75,4.29,9.23
+late,before delivery,4749,74.46,1.84,75.22
+late,on or after delivery,1629,25.54,3.53,25.11

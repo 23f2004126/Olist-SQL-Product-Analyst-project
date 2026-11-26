@@ -1,0 +1,6 @@
+status_group,orders,avg_score,low_review_pct
+delivered,95568,4.16,12.80
+shipped,1024,2.00,69.43
+other,589,1.45,87.61
+unavailable,588,1.53,84.86
+canceled,561,1.81,76.11

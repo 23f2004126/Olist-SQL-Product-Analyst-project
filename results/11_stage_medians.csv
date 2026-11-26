@@ -1,0 +1,4 @@
+delivery_group,orders,median_purchase_to_approval,median_approval_to_carrier,median_carrier_to_customer
+all,94844,0.01,1.84,7.11
+late,6508,0.02,3.06,26.21
+on_time,88336,0.01,1.79,6.96

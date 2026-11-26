@@ -1,0 +1,133 @@
+CREATE VIEW
+CREATE VIEW
+COPY 5
+ review_score | orders | pct_of_reviews 
+--------------+--------+----------------
+            1 |  11263 |          11.45
+            2 |   3119 |           3.17
+            3 |   8110 |           8.25
+            4 |  18986 |          19.31
+            5 |  56852 |          57.82
+(5 rows)
+
+CREATE VIEW
+COPY 7
+       bucket       | orders | avg_score | low_review_pct 
+--------------------+--------+-----------+----------------
+ 7+ days early      |  75487 |      4.31 |           8.98
+ 1-6 days early     |  12415 |      4.18 |          10.58
+ on the day         |   1280 |      4.03 |          12.42
+ 1-3 days late      |   1851 |      3.29 |          32.14
+ 4-7 days late      |   1748 |      2.10 |          67.68
+ 8+ days late       |   2779 |      1.70 |          79.27
+ no delivery timing |   2770 |      1.75 |          77.76
+(7 rows)
+
+CREATE VIEW
+COPY 4
+    band    | orders | avg_score | low_review_pct 
+------------+--------+-----------+----------------
+ 0-7 days   |  30442 |      4.41 |           7.54
+ 8-14 days  |  37361 |      4.31 |           8.86
+ 15-21 days |  15414 |      4.16 |          11.03
+ 22+ days   |   5965 |      3.90 |          15.78
+(4 rows)
+
+CREATE VIEW
+COPY 6
+ dimension |  order_group  | orders | avg_score | low_review_pct 
+-----------+---------------+--------+-----------+----------------
+ items     | single item   |  87954 |      4.16 |          12.67
+ items     | multi item    |   9655 |      3.60 |          27.61
+ items     | no items      |    721 |      1.73 |          79.06
+ sellers   | single seller |  96349 |      4.12 |          13.72
+ sellers   | multi seller  |   1260 |      2.86 |          47.22
+ sellers   | no items      |    721 |      1.73 |          79.06
+(6 rows)
+
+CREATE VIEW
+COPY 20
+           list           | rank |         category         | orders | avg_score | low_review_pct | categories_500plus 
+--------------------------+------+--------------------------+--------+-----------+----------------+--------------------
+ highest low-review share |    1 | office_furniture         |   1255 |      3.63 |          22.39 |                 27
+ highest low-review share |    2 | unknown                  |   1397 |      3.94 |          19.11 |                 27
+ highest low-review share |    3 | bed_bath_table           |   9243 |      3.98 |          16.59 |                 27
+ highest low-review share |    4 | furniture_decor          |   6232 |      4.03 |          16.16 |                 27
+ highest low-review share |    5 | computers_accessories    |   6613 |      4.03 |          15.98 |                 27
+ highest low-review share |    6 | baby                     |   2798 |      4.06 |          15.44 |                 27
+ highest low-review share |    7 | telephony                |   4138 |      4.01 |          15.25 |                 27
+ highest low-review share |    8 | watches_gifts            |   5554 |      4.07 |          15.14 |                 27
+ highest low-review share |    9 | auto                     |   3848 |      4.10 |          14.24 |                 27
+ highest low-review share |   10 | consoles_games           |   1037 |      4.08 |          14.08 |                 27
+ lowest low-review share  |    1 | books_general_interest   |    504 |      4.47 |           8.13 |                 27
+ lowest low-review share  |    2 | luggage_accessories      |   1025 |      4.33 |           9.17 |                 27
+ lowest low-review share  |    3 | stationery               |   2274 |      4.26 |          11.13 |                 27
+ lowest low-review share  |    4 | fashion_bags_accessories |   1837 |      4.19 |          11.43 |                 27
+ lowest low-review share  |    5 | pet_shop                 |   1690 |      4.24 |          11.48 |                 27
+ lowest low-review share  |    6 | cool_stuff               |   3560 |      4.18 |          12.11 |                 27
+ lowest low-review share  |    7 | home_appliances          |    761 |      4.16 |          12.48 |                 27
+ lowest low-review share  |    8 | health_beauty            |   8695 |      4.19 |          12.51 |                 27
+ lowest low-review share  |    9 | toys                     |   3814 |      4.19 |          12.56 |                 27
+ lowest low-review share  |   10 | sports_leisure           |   7612 |      4.17 |          12.85 |                 27
+(20 rows)
+
+CREATE VIEW
+COPY 5
+ status_group | orders | avg_score | low_review_pct 
+--------------+--------+-----------+----------------
+ delivered    |  95568 |      4.16 |          12.80
+ shipped      |   1024 |      2.00 |          69.43
+ other        |    589 |      1.45 |          87.61
+ unavailable  |    588 |      1.53 |          84.86
+ canceled     |    561 |      1.81 |          76.11
+(5 rows)
+
+CREATE VIEW
+CREATE VIEW
+COPY 4
+      sizing_group       | low_reviews | pct_of_low_reviews | reviewed_orders | pct_of_reviewed_orders | low_review_rate_pct 
+-------------------------+-------------+--------------------+-----------------+------------------------+---------------------
+ a) undelivered          |        2153 |              14.97 |            2762 |                   2.81 |               77.95
+ b) late delivered       |        3981 |              27.68 |            6378 |                   6.49 |               62.42
+ c) on-time multi-seller |         584 |               4.06 |            1246 |                   1.27 |               46.87
+ d) everything else      |        7664 |              53.29 |           87944 |                  89.44 |                8.71
+(4 rows)
+
+psql:sql/12_review_drivers.sql:335: NOTICE:  Q7 check passed: groups add up to 14382 low reviews.
+DO
+CREATE VIEW
+COPY 4
+ delivery_group |    review_timing     | orders | pct_within_delivery_group | avg_score | low_review_pct 
+----------------+----------------------+--------+---------------------------+-----------+----------------
+ on_time        | before delivery      |    221 |                      0.25 |      3.93 |          17.65
+ on_time        | on or after delivery |  88961 |                     99.75 |      4.29 |           9.23
+ late           | before delivery      |   4749 |                     74.46 |      1.84 |          75.22
+ late           | on or after delivery |   1629 |                     25.54 |      3.53 |          25.11
+(4 rows)
+
+CREATE VIEW
+COPY 2
+ delivery_group | orders | median_days_after_estimate | median_days_after_delivery 
+----------------+--------+----------------------------+----------------------------
+ on_time        |  89182 |                        -12 |                          1
+ late           |   6378 |                          2 |                         -4
+(2 rows)
+
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+COPY 9
+ dimension | first_order_group  | customers | repeat_customers | repeat_rate_pct | eligible_180 | repeat_180 | repeat_180d_pct 
+-----------+--------------------+-----------+------------------+-----------------+--------------+------------+-----------------
+ lateness  | all                |     93104 |             2005 |            2.15 |        56194 |       1107 |            1.97
+ lateness  | late               |      6352 |              103 |            1.62 |         3928 |         62 |            1.58
+ lateness  | no delivery timing |         8 |                0 |            0.00 |            2 |          0 |            0.00
+ lateness  | on time            |     86744 |             1902 |            2.19 |        52264 |       1045 |            2.00
+ review    | 1-2                |     11870 |              204 |            1.72 |         7446 |        123 |            1.65
+ review    | 3                  |      7648 |              151 |            1.97 |         4888 |         95 |            1.94
+ review    | 4-5                |     72974 |             1637 |            2.24 |        43443 |        884 |            2.03
+ review    | all                |     93104 |             2005 |            2.15 |        56194 |       1107 |            1.97
+ review    | no review          |       612 |               13 |            2.12 |          417 |          5 |            1.20
+(9 rows)
+

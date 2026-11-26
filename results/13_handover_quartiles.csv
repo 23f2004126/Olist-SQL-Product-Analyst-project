@@ -1,0 +1,5 @@
+handover_quartile,sellers,min_seller_handover_pct,max_seller_handover_pct,single_seller_orders,late_handover_pct,late_delivery_pct,low_review_pct
+1,154,0.00,1.56,18208,0.62,4.90,10.16
+2,154,1.59,5.00,18877,3.30,5.98,11.48
+3,153,5.00,12.40,24711,8.05,7.24,12.47
+4,153,12.50,87.50,17207,24.19,9.43,16.31

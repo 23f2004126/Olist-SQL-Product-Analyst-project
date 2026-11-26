@@ -1,0 +1,6 @@
+segment,customers,pct_of_customers,pct_of_revenue,avg_revenue_per_customer,min_recency_days,max_recency_days
+Lapsed high-value,22369,24.03,39.77,234.37,220,602
+Recent high-value,22473,24.14,39.55,231.95,2,220
+Lapsed low-value,23415,25.15,8.40,47.29,220,603
+Recent low-value,22842,24.53,8.15,47.03,2,220
+Repeat buyers,2005,2.15,4.13,271.47,3,585

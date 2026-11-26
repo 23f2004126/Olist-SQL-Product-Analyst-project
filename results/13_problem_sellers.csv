@@ -1,0 +1,2 @@
+benchmark_low_review_pct,threshold_pct,scorecard_sellers,problem_sellers,pct_of_scorecard_sellers,pct_of_scorecard_orders,pct_of_scorecard_revenue,pct_of_scorecard_low_reviews,problem_late_delivery_pct,other_late_delivery_pct,problem_late_handover_pct,other_late_handover_pct
+12.34,24.68,614,31,5.05,4.36,5.15,10.62,12.38,6.63,27.89,7.84

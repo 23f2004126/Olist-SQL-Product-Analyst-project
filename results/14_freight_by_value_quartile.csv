@@ -1,0 +1,5 @@
+value_quartile,min_order_value,max_order_value,orders,freight_pct_of_item_value,pct_orders_freight_gt_30,pct_orders_freight_gt_50
+1,0.85,45.90,24053,53.41,86.01,51.91
+2,45.90,86.50,24053,28.33,33.84,6.97
+3,86.50,149.90,24053,19.93,14.51,3.35
+4,149.90,13440.00,24052,10.26,6.11,1.11

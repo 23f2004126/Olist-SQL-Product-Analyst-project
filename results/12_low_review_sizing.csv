@@ -1,0 +1,5 @@
+sizing_group,low_reviews,pct_of_low_reviews,reviewed_orders,pct_of_reviewed_orders,low_review_rate_pct
+a) undelivered,2153,14.97,2762,2.81,77.95
+b) late delivered,3981,27.68,6378,6.49,62.42
+c) on-time multi-seller,584,4.06,1246,1.27,46.87
+d) everything else,7664,53.29,87944,89.44,8.71

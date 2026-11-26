@@ -1,0 +1,5 @@
+value_quartile,min_value,max_value,customers,repeat_customers,repeat_rate_pct,repeat_rate_later_day_pct
+1,0.85,45.90,23276,734,3.15,2.22
+2,45.90,86.90,23276,727,3.12,2.13
+3,86.90,149.90,23276,673,2.89,2.05
+4,149.90,13440.00,23276,655,2.81,2.21
