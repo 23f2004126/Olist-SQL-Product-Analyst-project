@@ -1,0 +1,444 @@
+{
+  "_about": "Authored copy for the case-study site. scripts/export_site_data.py renders it to site/data/site.json. Numbers are never typed here: write {name} in a template and map name to a sourced number with a ref: kpis.<id>, tree.<id>, F1..F5.<key number id>, R1..R3.<evidence id>. Digits allowed in text are only the listed literals in the export script.",
+
+  "meta": {
+    "title": "Why Olist customers don't come back",
+    "nav_title": "Olist case study",
+    "subtitle": {
+      "template": "A SQL product analysis of {orders} delivered orders on a Brazilian marketplace: who returns, why deliveries run late, and what drives 1-2 star reviews.",
+      "refs": {"orders": "kpis.delivered_orders"}
+    },
+    "description": "SQL product case study of the Olist Brazilian e-commerce dataset: retention, delivery, reviews, sellers and revenue.",
+    "og_image": "og-image.png",
+    "og_image_alt": "Olist case study: a 3D map of seller-to-customer delivery routes across Brazil, with the headline numbers"
+  },
+
+  "hero": {
+    "eyebrow": "SQL product case study",
+    "kpis": [
+      {"ref": "kpis.delivered_orders", "label": "Delivered orders"},
+      {"ref": "kpis.unique_customers", "label": "Customers"},
+      {"ref": "kpis.repeat_rate_later_day", "label": "Came back on a later day"},
+      {"ref": "kpis.on_time_rate", "label": "Delivered on time"}
+    ],
+    "map_label": "Map of seller-to-customer deliveries across Brazil",
+    "scroll_hint": "Scroll to read the case",
+    "how_to_read": "How to read this page: each chapter tells the product story first. Open the panels under it for the data pipeline and the SQL."
+  },
+
+  "question": {
+    "label": "The question",
+    "title": "Revenue rests on first orders",
+    "body": [
+      {
+        "template": "Olist connects small Brazilian sellers to customers through one storefront. Between January 2017 and August 2018 it delivered {delivered} orders to {customers} customers, and only {repeat} of them came back on a later day.",
+        "refs": {"delivered": "kpis.delivered_orders", "customers": "kpis.unique_customers", "repeat": "kpis.repeat_rate_later_day"}
+      },
+      {
+        "template": "With {opc} orders per customer, revenue depends almost entirely on finding new buyers. This case asks what stands between a first order and a second one, and what the marketplace could change.",
+        "refs": {"opc": "tree.orders_per_customer"}
+      }
+    ],
+    "tree_title": "Metrics tree",
+    "tree_note": "Factors are rounded, so their product is close to, not exactly, the revenue."
+  },
+
+  "chapters": {
+    "F1": {
+      "title": "Customers buy once",
+      "cards": ["repeat_later_day", "same_day_share", "median_days_to_second", "repeat_revenue_share"],
+      "charts": ["repeat_units", "cohort_matrix"],
+      "why": {
+        "template": "Second and later orders bring in only {share} of revenue, so bringing past buyers back is largely untapped.",
+        "refs": {"share": "F1.repeat_revenue_share"}
+      }
+    },
+    "F2": {
+      "title": "Generous promises, late handovers",
+      "cards": ["on_time", "early_7plus", "late_after_limit", "late_on_time_handover"],
+      "charts": ["delay_buckets", "stage_medians"],
+      "why": {
+        "template": "Orders handed over after the seller's deadline run late {late} of the time against {ontime}, and handover is the step sellers control.",
+        "refs": {"late": "F2.late_after_limit", "ontime": "F2.late_on_time_handover"}
+      }
+    },
+    "F3": {
+      "title": "Reviews written while waiting",
+      "cards": ["low_7plus_early", "low_8plus_late", "late_reviewed_before", "late_share_of_low"],
+      "charts": ["low_by_delay", "late_review_timing"],
+      "why": {
+        "template": "{before} of late orders are rated before they arrive, so many low scores are given while the parcel is still on its way.",
+        "refs": {"before": "F3.late_reviewed_before"}
+      }
+    },
+    "F4": {
+      "title": "A few sellers carry the marketplace",
+      "cards": ["top1_share", "top20_share", "handover_top_share", "problem_low_share"],
+      "charts": ["seller_curve"],
+      "why": {
+        "template": "{sellers} sellers account for {share} of scorecard late handovers, so a handover standard can start with a small group.",
+        "refs": {"sellers": "F4.handover_top_sellers", "share": "F4.handover_top_share"}
+      }
+    },
+    "F5": {
+      "title": "Growth came from volume, not bigger baskets",
+      "cards": ["revenue_change", "orders_change", "aov_change", "freight_q1"],
+      "charts": ["monthly_multiples", "freight_by_value"],
+      "why": {
+        "template": "Freight adds {q1} to the cheapest quarter of orders, which makes free freight a meaningful incentive to test.",
+        "refs": {"q1": "F5.freight_q1"}
+      }
+    }
+  },
+
+  "charts": {
+    "_about": "One entry per chart. title and subtitle are templates over sourced numbers (refs as above); data names the chart rows in findings.json (findings[].charts[].id) the chart draws, or null; labels are plain text.",
+    "ui": {
+      "view_data": "View data",
+      "hide_data": "Hide chart data",
+      "data_table": "Data table",
+      "loading": "Loading chart",
+      "not_observed": "not observed"
+    },
+    "delay_buckets": {
+      "_about": "Shared by the F2 and F3 bucket charts. promise = the bucket on the promised date; late = buckets after it; short = phone labels (a space marks the line break).",
+      "promise": "on the day",
+      "late": ["1-3 days late", "4-7 days late", "8+ days late"],
+      "short": {
+        "7+ days early": "7+ early",
+        "1-6 days early": "1-6 early",
+        "on the day": "on day",
+        "1-3 days late": "1-3 late",
+        "4-7 days late": "4-7 late",
+        "8+ days late": "8+ late"
+      }
+    },
+    "items": {
+      "repeat_units": {
+        "finding": "F1",
+        "data": null,
+        "title": {"template": "About {n} in 100 come back on a later day", "refs": {"n": "F1.repeat_per_100"}},
+        "subtitle": {
+          "template": "100 dots for 100 customers. {returners} of {customers} customers ({rate}) placed a delivered order on a later calendar day than their first.",
+          "refs": {"returners": "F1.repeat_customers_later_day", "customers": "F1.customers", "rate": "F1.repeat_later_day"}
+        },
+        "numbers": {
+          "lit": "F1.repeat_per_100",
+          "rate": "F1.repeat_later_day",
+          "returners": "F1.repeat_customers_later_day",
+          "customers": "F1.customers"
+        },
+        "labels": {
+          "lit": "Came back on a later day",
+          "unlit": "Did not come back on a later day",
+          "table_measure": "Measure",
+          "table_value": "Value"
+        }
+      },
+      "cohort_matrix": {
+        "finding": "F1",
+        "data": "cohort_matrix",
+        "title": {"template": "No cohort gets more than {max} of its customers back in any later month", "refs": {"max": "F1.cohort_max_later_month"}},
+        "subtitle": {
+          "template": "Share of each first-order month's customers who placed a delivered order N months later. Blank cells are months the data had not reached yet.",
+          "refs": {}
+        },
+        "labels": {
+          "x": "Months since first order",
+          "y": "First order month",
+          "scale": "% of cohort ordering that month",
+          "month0": "Month 0: the first order (100%)",
+          "blank": "Not observable yet",
+          "cohort": "Cohort",
+          "customers": "Customers",
+          "month": "Month",
+          "share": "Ordered that month",
+          "month_prefix": "M"
+        }
+      },
+      "delay_buckets": {
+        "finding": "F2",
+        "data": "delay_buckets",
+        "title": {"template": "{early} of orders arrive 7+ days before the promised date", "refs": {"early": "F2.early_7plus"}},
+        "subtitle": {
+          "template": "Delivered orders by arrival against the estimated delivery date, as a share of {timed} orders with a delivery date.",
+          "refs": {"timed": "F2.timed_orders"}
+        },
+        "labels": {
+          "x": "Arrival against the promised date",
+          "y": "% of orders",
+          "promised": "Promised date",
+          "on_time": "On time or early",
+          "late": "Late",
+          "bucket": "Arrival",
+          "orders": "Orders",
+          "share": "Share of orders"
+        }
+      },
+      "stage_medians": {
+        "finding": "F2",
+        "data": "stage_medians",
+        "title": {
+          "template": "Late orders spend a median {late} days with the carrier, against {on_time} for on-time orders",
+          "refs": {"late": "F2.carrier_days_late", "on_time": "F2.carrier_days_on_time"}
+        },
+        "subtitle": {
+          "template": "Median days in each stage, {orders} orders with valid stage dates. Stage medians don't add up to the median total.",
+          "refs": {"orders": "F2.stage_orders"}
+        },
+        "labels": {
+          "x": "Median days",
+          "group": "Orders",
+          "orders": "Order count",
+          "groups": {"late": "Late orders", "on_time": "On-time orders"},
+          "stages": {
+            "median_purchase_to_approval": "Purchase to approval",
+            "median_approval_to_carrier": "Seller to carrier",
+            "median_carrier_to_customer": "Carrier to customer"
+          }
+        }
+      },
+      "low_by_delay": {
+        "finding": "F3",
+        "data": "low_by_delay",
+        "title": {
+          "template": "1-2 star reviews rise from {early} to {late} as delivery slips past the promise",
+          "refs": {"early": "F3.low_7plus_early", "late": "F3.low_8plus_late"}
+        },
+        "subtitle": {
+          "template": "Share of reviews with 1-2 stars, by arrival against the promised date. Delivered orders with a delivery date and a review.",
+          "refs": {}
+        },
+        "labels": {
+          "x": "Arrival against the promised date",
+          "y": "% of reviews with 1-2 stars",
+          "promised": "Promised date",
+          "on_time": "On time or early",
+          "late": "Late",
+          "bucket": "Arrival",
+          "orders": "Reviewed orders",
+          "avg": "Average score",
+          "low": "1-2 star share"
+        }
+      },
+      "late_review_timing": {
+        "finding": "F3",
+        "data": "late_review_timing",
+        "title": {
+          "template": "Late orders rated before they arrive average {before} stars, against {after} after",
+          "refs": {"before": "F3.score_before", "after": "F3.score_after"}
+        },
+        "subtitle": {
+          "template": "{share} of {late} late orders with a review were reviewed before the parcel arrived.",
+          "refs": {"share": "F3.late_reviewed_before", "late": "F3.late_reviewed_orders"}
+        },
+        "labels": {
+          "timing": {"before delivery": "Reviewed before delivery", "on or after delivery": "Reviewed on or after delivery"},
+          "share": "Share of late orders",
+          "avg": "Average score",
+          "low": "1-2 star share",
+          "orders": "Orders",
+          "group": "Review timing"
+        }
+      },
+      "seller_curve": {
+        "finding": "F4",
+        "data": "seller_curve",
+        "title": {
+          "template": "The top 1% of sellers earn {top1} of revenue, and the top 20% earn {top20}",
+          "refs": {"top1": "F4.top1_share", "top20": "F4.top20_share"}
+        },
+        "subtitle": {
+          "template": "Cumulative share of revenue, with sellers ranked from highest to lowest revenue ({sellers} sellers with a delivered sale).",
+          "refs": {"sellers": "F4.active_sellers"}
+        },
+        "numbers": {"sellers": "F4.active_sellers"},
+        "labels": {
+          "x": "Sellers ranked by revenue (% of sellers)",
+          "y": "Cumulative % of revenue",
+          "equal": "Equal shares",
+          "top": "Top",
+          "sellers": "Sellers",
+          "share": "Share of revenue",
+          "table_top": "Top % of sellers",
+          "table_note": "Marked points. The curve is drawn from the seller ranking, sampled at every 5th seller through the top 10% and at each whole percent after that."
+        }
+      },
+      "monthly_multiples": {
+        "finding": "F5",
+        "data": "monthly_revenue",
+        "title": {
+          "template": "Orders rose {orders} year on year while average order value moved {aov}",
+          "refs": {"orders": "F5.orders_change", "aov": "F5.aov_change"}
+        },
+        "subtitle": {
+          "template": "Delivered orders by purchase month, January 2017 to August 2018; year-on-year figures compare Jan-Aug. Every panel starts at zero.",
+          "refs": {}
+        },
+        "labels": {
+          "x": "Purchase month",
+          "month": "Month",
+          "panels": {"orders": "Orders", "revenue": "Revenue (BRL)", "aov": "Average order value (BRL)"}
+        }
+      },
+      "freight_by_value": {
+        "finding": "F5",
+        "data": "freight_by_value",
+        "title": {
+          "template": "Freight adds {q1} to the cheapest quarter of orders, against {q4} to the most expensive",
+          "refs": {"q1": "F5.freight_q1", "q4": "F5.freight_q4"}
+        },
+        "subtitle": {
+          "template": "Freight as a share of item value, by order-value quartile. Delivered orders.",
+          "refs": {}
+        },
+        "labels": {
+          "x": "Freight as % of item value",
+          "quartile": "Quartile",
+          "quartile_prefix": "Q",
+          "range": "Order value (BRL)",
+          "currency": "BRL",
+          "orders": "Orders",
+          "freight": "Freight / item value",
+          "gt50": "Orders with freight over 50%"
+        }
+      }
+    }
+  },
+
+  "recommendations": {
+    "label": "Recommendations",
+    "title": "Three changes to test",
+    "intro": "Each recommendation is a hypothesis with a test design, not a proven effect.",
+    "evidence_in": "Evidence in",
+    "matrix": {
+      "title": "Where the three changes sit",
+      "x_label": "Effort",
+      "y_label": "Expected impact (judgement)",
+      "impact_word": "impact",
+      "effort_word": "effort",
+      "note": "Effort comes from each recommendation's test design in docs/findings.md. Impact is the author's judgement of the likely size of the change, not a measured result.",
+      "_about": "impact is a judgement per recommendation (low, medium or high); effort is read from docs/findings.md. levels are the axis labels.",
+      "impact": {"R1": "medium", "R2": "high", "R3": "medium"},
+      "levels": {"low": "Low", "medium": "Medium", "high": "High"},
+      "quadrants": {
+        "quick_wins": "Quick wins",
+        "big_bets": "Bigger bets",
+        "small_tweaks": "Small tweaks",
+        "deprioritise": "Deprioritise"
+      }
+    }
+  },
+
+  "under_the_hood": {
+    "label": "Under the hood",
+    "title": "How the analysis is built",
+    "panels": [
+      {"id": "model", "title": "Data model", "text": "Nine source tables and the clean views built on them, each with a stated grain."},
+      {"id": "quality", "title": "Data-quality decisions", "text": "Every issue found in the raw data and the decision taken for it."},
+      {"id": "techniques", "title": "SQL techniques", "text": "Where each technique is used across the SQL files."}
+    ],
+    "model": {
+      "raw_table": "Raw table",
+      "clean_view": "Clean view",
+      "foreign_key": "Join key",
+      "built_from": "Built from",
+      "used_by": "Used by",
+      "rows": "rows",
+      "key_columns": "Key columns",
+      "joins": "Joins",
+      "grain": "Grain",
+      "hint": "Hover or focus a box to highlight its joins.",
+      "tables_heading": "Raw tables",
+      "views_heading": "Clean views"
+    },
+    "quality": {
+      "_about": "first: issue ids shown first, in this order; the rest follow in query order.",
+      "first": ["same_day_second_order", "customer_id_per_order"],
+      "problem": "Problem",
+      "decision": "Decision",
+      "ref": "Decision note"
+    },
+    "techniques": {
+      "see_it_used": "See it used",
+      "used_in": "Used in",
+      "view_file": "View the SQL file",
+      "chapter": "Chapter"
+    }
+  },
+
+  "limitations": {
+    "label": "Limitations",
+    "title": "What this analysis can't show"
+  },
+
+  "ui": {
+    "chapter": "Chapter",
+    "key_numbers": "Key numbers",
+    "checks_title": "Checks that passed",
+    "step": "Step",
+    "how_we_got_this": "How we got this",
+    "view_sql": "View SQL",
+    "why_it_matters": "Why it matters",
+    "see_recommendation": "See recommendation",
+    "rows": "rows",
+    "dropped": "dropped",
+    "source": "Source",
+    "result_preview": "First rows of the result",
+    "loading": "Loading",
+    "change": "Change",
+    "evidence": "Evidence",
+    "target_metric": "Target metric",
+    "expected_direction": "Expected direction",
+    "test_design": "Test design",
+    "risk": "Main risk",
+    "effort": "Effort",
+    "view_on_github": "View on GitHub",
+    "case_study_pdf": "Case study (PDF)",
+    "skip_to_content": "Skip to content",
+    "progress": "Reading progress"
+  },
+
+  "links": {
+    "github": "https://github.com/23f2004126/olist-sql-product-analytics",
+    "case_study_pdf": "olist-case-study.pdf",
+    "dataset": "https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce",
+    "dataset_license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "github_file_base": "https://github.com/23f2004126/olist-sql-product-analytics/blob/main/",
+    "site": "",
+    "geo": "https://github.com/tbrugz/geodata-br",
+    "author": "https://willowy-druid-25583e.netlify.app/"
+  },
+
+  "footer": {
+    "dataset_credit": "Data: Brazilian E-Commerce Public Dataset by Olist, on Kaggle.",
+    "dataset_license": "Licence: CC BY-NC-SA 4.0",
+    "credits_label": "Credits",
+    "geo_credit": "State boundaries: IBGE, via tbrugz/geodata-br (CC0).",
+    "built_by": "Built by Aanchal Routela"
+  },
+
+  "map": {
+    "caption": {
+      "template": "Sample of {n} delivered orders, seller to customer.",
+      "refs": {"n": "map.sample_orders"}
+    },
+    "phone_note": "Fewer routes are drawn on small screens.",
+    "legend": [
+      {"id": "on_time", "label": "On time", "ref": "map.on_time_pct"},
+      {"id": "late", "label": "Late", "ref": "map.late_pct"}
+    ],
+    "filter_label": "Routes",
+    "filter_all": "All orders",
+    "filter_late": "Late only",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
+    "controls_hint": "Drag to rotate. Use the buttons, pinch or Ctrl and scroll to zoom.",
+    "tooltip": {
+      "delivered_orders": "Delivered orders",
+      "late_rate": "Late rate",
+      "median_days": "Median delivery days"
+    },
+    "poster_alt": "Static view of seller-to-customer delivery routes across the states of Brazil"
+  }
+}

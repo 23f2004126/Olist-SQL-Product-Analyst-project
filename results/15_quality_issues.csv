@@ -1,0 +1,16 @@
+issue_id,issue,affected,unit,decision_ref,decision
+orders_outside_window,Orders purchased outside the analysis window (thin months at both ends),349,orders,C1,Analyse 2017-01-01 to 2018-08-31 only
+customer_id_per_order,customer_id is created per order; one person can have several,2997,people with 2+ customer_ids,C2,Identify customers by customer_unique_id
+orders_multiple_reviews,Orders with more than one review,547,orders,C3,Keep the latest review per order
+repeated_review_id,review_id values that appear on more than one order,789,review_ids,C3,"Never join on review_id; key reviews by (review_id, order_id)"
+payment_mismatch,Delivered in-window orders where items + freight differ from total paid by more than 0.01,294,orders,"C4, C11",Revenue uses item prices; mismatches left unexplained and listed as a limitation
+delivered_without_date,Orders with status delivered but no customer delivery date,8,orders,C5,Excluded from delivery-timing metrics
+canceled_with_delivery_date,Orders with status canceled that have a customer delivery date,6,orders,C5,Kept as canceled; not used for delivery timing
+products_without_category,Products with no category,610,products,C6,Shown as unknown
+untranslated_category,Products whose category has no English translation,13,products,C6,Fall back to the Portuguese name
+misspelled_columns,Source columns spelled lenght instead of length,2,columns,C7,Raw table unchanged; v_products exposes corrected names
+negative_stage_duration,Timed in-window orders with a negative stage duration,1344,orders,C9,Excluded from stage statistics only; reported as a limitation
+same_day_second_order,Second delivered orders placed on the same calendar day as the first,827,customers,C12,A repeat customer is one who returned on a later calendar day
+geo_exact_duplicates,Geolocation rows that exactly duplicate another row,261831,rows,v_geo,"v_geo averages distinct points, one row per zip prefix"
+customer_zip_missing_geo,Customer zip prefixes with no geolocation row,157,zip prefixes,Delivery notes,Orders without coordinates left out of distance analysis
+orders_without_items,"Orders with no order_items rows (all statuses, all dates)",775,orders,Section 4,Drop out of item-level analysis naturally; kept in status counts

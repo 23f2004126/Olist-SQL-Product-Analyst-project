@@ -1,0 +1,26 @@
+finding,step,label,row_count,rows_dropped,reason
+F1,1,All orders,99441,,
+F1,2,Purchased in the analysis window,99092,349,Purchased before 2017-01-01 or after 2018-08-31
+F1,3,Delivered orders,96211,2881,"Not delivered (shipped, canceled, unavailable, invoiced, processing, created, approved)"
+F1,4,Customers (customer_unique_id),93104,3107,Orders collapsed to one row per customer
+F1,5,Customers who returned on a later day,2005,91099,No delivered order on a later calendar day than the first
+F2,1,All orders,99441,,
+F2,2,Purchased in the analysis window,99092,349,Purchased before 2017-01-01 or after 2018-08-31
+F2,3,Delivered orders,96211,2881,Not delivered
+F2,4,With a customer delivery date,96203,8,Status delivered but no delivery date recorded
+F2,5,With a carrier handover date,96202,1,No carrier handover date recorded
+F2,6,Handed to the carrier after the shipping limit,8581,87621,Handed over on or before the shipping limit
+F3,1,All orders,99441,,
+F3,2,Purchased in the analysis window,99092,349,Purchased before 2017-01-01 or after 2018-08-31
+F3,3,With a review,98330,762,No review
+F3,4,Delivered with a delivery date,95560,2770,"Not delivered, or no delivery date"
+F3,5,Delivered late,6378,89182,Delivered on or before the estimated day
+F3,6,Review created before delivery,4749,1629,Review created on or after the delivery day
+F4,1,Sellers in the sellers table,3095,,
+F4,2,Sellers with a delivered in-window sale,2945,150,No delivered sale in the analysis window
+F4,3,Scorecard sellers (30+ single-seller delivered orders),614,2331,Fewer than 30 single-seller delivered orders
+F5,1,All orders,99441,,
+F5,2,Purchased in the analysis window,99092,349,Purchased before 2017-01-01 or after 2018-08-31
+F5,3,Delivered orders,96211,2881,Not delivered
+F5,4,Purchased in Jan-Aug 2017 or Jan-Aug 2018,74781,21430,"Purchased Sep-Dec 2017, outside the comparison months"
+F5,5,Purchased in Jan-Aug 2018,52783,21998,Purchased in Jan-Aug 2017 (the comparison base)

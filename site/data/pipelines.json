@@ -1,0 +1,644 @@
+{
+  "source": "results/15_pipelines.csv (sql/15_site_support.sql, Q2)",
+  "pipelines": {
+    "F1": [
+      {
+        "step": 1,
+        "label": "All orders",
+        "row_count": 99441,
+        "rows_dropped": null,
+        "drop_reason": null
+      },
+      {
+        "step": 2,
+        "label": "Purchased in the analysis window",
+        "row_count": 99092,
+        "rows_dropped": 349,
+        "drop_reason": "Purchased before 2017-01-01 or after 2018-08-31"
+      },
+      {
+        "step": 3,
+        "label": "Delivered orders",
+        "row_count": 96211,
+        "rows_dropped": 2881,
+        "drop_reason": "Not delivered (shipped, canceled, unavailable, invoiced, processing, created, approved)"
+      },
+      {
+        "step": 4,
+        "label": "Customers (customer_unique_id)",
+        "row_count": 93104,
+        "rows_dropped": 3107,
+        "drop_reason": "Orders collapsed to one row per customer"
+      },
+      {
+        "step": 5,
+        "label": "Customers who returned on a later day",
+        "row_count": 2005,
+        "rows_dropped": 91099,
+        "drop_reason": "No delivered order on a later calendar day than the first"
+      }
+    ],
+    "F2": [
+      {
+        "step": 1,
+        "label": "All orders",
+        "row_count": 99441,
+        "rows_dropped": null,
+        "drop_reason": null
+      },
+      {
+        "step": 2,
+        "label": "Purchased in the analysis window",
+        "row_count": 99092,
+        "rows_dropped": 349,
+        "drop_reason": "Purchased before 2017-01-01 or after 2018-08-31"
+      },
+      {
+        "step": 3,
+        "label": "Delivered orders",
+        "row_count": 96211,
+        "rows_dropped": 2881,
+        "drop_reason": "Not delivered"
+      },
+      {
+        "step": 4,
+        "label": "With a customer delivery date",
+        "row_count": 96203,
+        "rows_dropped": 8,
+        "drop_reason": "Status delivered but no delivery date recorded"
+      },
+      {
+        "step": 5,
+        "label": "With a carrier handover date",
+        "row_count": 96202,
+        "rows_dropped": 1,
+        "drop_reason": "No carrier handover date recorded"
+      },
+      {
+        "step": 6,
+        "label": "Handed to the carrier after the shipping limit",
+        "row_count": 8581,
+        "rows_dropped": 87621,
+        "drop_reason": "Handed over on or before the shipping limit"
+      }
+    ],
+    "F3": [
+      {
+        "step": 1,
+        "label": "All orders",
+        "row_count": 99441,
+        "rows_dropped": null,
+        "drop_reason": null
+      },
+      {
+        "step": 2,
+        "label": "Purchased in the analysis window",
+        "row_count": 99092,
+        "rows_dropped": 349,
+        "drop_reason": "Purchased before 2017-01-01 or after 2018-08-31"
+      },
+      {
+        "step": 3,
+        "label": "With a review",
+        "row_count": 98330,
+        "rows_dropped": 762,
+        "drop_reason": "No review"
+      },
+      {
+        "step": 4,
+        "label": "Delivered with a delivery date",
+        "row_count": 95560,
+        "rows_dropped": 2770,
+        "drop_reason": "Not delivered, or no delivery date"
+      },
+      {
+        "step": 5,
+        "label": "Delivered late",
+        "row_count": 6378,
+        "rows_dropped": 89182,
+        "drop_reason": "Delivered on or before the estimated day"
+      },
+      {
+        "step": 6,
+        "label": "Review created before delivery",
+        "row_count": 4749,
+        "rows_dropped": 1629,
+        "drop_reason": "Review created on or after the delivery day"
+      }
+    ],
+    "F4": [
+      {
+        "step": 1,
+        "label": "Sellers in the sellers table",
+        "row_count": 3095,
+        "rows_dropped": null,
+        "drop_reason": null
+      },
+      {
+        "step": 2,
+        "label": "Sellers with a delivered in-window sale",
+        "row_count": 2945,
+        "rows_dropped": 150,
+        "drop_reason": "No delivered sale in the analysis window"
+      },
+      {
+        "step": 3,
+        "label": "Scorecard sellers (30+ single-seller delivered orders)",
+        "row_count": 614,
+        "rows_dropped": 2331,
+        "drop_reason": "Fewer than 30 single-seller delivered orders"
+      }
+    ],
+    "F5": [
+      {
+        "step": 1,
+        "label": "All orders",
+        "row_count": 99441,
+        "rows_dropped": null,
+        "drop_reason": null
+      },
+      {
+        "step": 2,
+        "label": "Purchased in the analysis window",
+        "row_count": 99092,
+        "rows_dropped": 349,
+        "drop_reason": "Purchased before 2017-01-01 or after 2018-08-31"
+      },
+      {
+        "step": 3,
+        "label": "Delivered orders",
+        "row_count": 96211,
+        "rows_dropped": 2881,
+        "drop_reason": "Not delivered"
+      },
+      {
+        "step": 4,
+        "label": "Purchased in Jan-Aug 2017 or Jan-Aug 2018",
+        "row_count": 74781,
+        "rows_dropped": 21430,
+        "drop_reason": "Purchased Sep-Dec 2017, outside the comparison months"
+      },
+      {
+        "step": 5,
+        "label": "Purchased in Jan-Aug 2018",
+        "row_count": 52783,
+        "rows_dropped": 21998,
+        "drop_reason": "Purchased in Jan-Aug 2017 (the comparison base)"
+      }
+    ]
+  },
+  "checks": {
+    "F1": [
+      {
+        "text_template": "1 row per order in v_order_facts: {rows} rows, {keys} distinct keys",
+        "numbers": {
+          "rows": {
+            "label": "v_order_facts rows",
+            "value": 99092,
+            "display": "99,092",
+            "unit": "count",
+            "source": {
+              "file": "results/15_fanout_checks.csv",
+              "column": "row_count",
+              "where": {
+                "view_name": "v_order_facts"
+              }
+            }
+          },
+          "keys": {
+            "label": "v_order_facts distinct keys",
+            "value": 99092,
+            "display": "99,092",
+            "unit": "count",
+            "source": {
+              "file": "results/15_fanout_checks.csv",
+              "column": "distinct_keys",
+              "where": {
+                "view_name": "v_order_facts"
+              }
+            }
+          }
+        },
+        "text": "1 row per order in v_order_facts: 99,092 rows, 99,092 distinct keys"
+      },
+      {
+        "text_template": "Cohort sizes add up to {customers} customers",
+        "numbers": {
+          "customers": {
+            "label": "Customers with a delivered order",
+            "value": 93104,
+            "display": "93,104",
+            "unit": "count",
+            "source": {
+              "file": "results/10_same_day_check.csv",
+              "column": "customers",
+              "where": {}
+            }
+          }
+        },
+        "text": "Cohort sizes add up to 93,104 customers"
+      },
+      {
+        "text_template": "Every cohort is 100% active in month 0",
+        "numbers": {},
+        "text": "Every cohort is 100% active in month 0"
+      },
+      {
+        "text_template": "Later-day returners in the funnel match the retention query: {n}",
+        "numbers": {
+          "n": {
+            "label": "Customers who returned on a later day",
+            "value": 2005,
+            "display": "2,005",
+            "unit": "count",
+            "source": {
+              "file": "results/10_same_day_check.csv",
+              "column": "repeat_customers_later_day",
+              "where": {}
+            }
+          }
+        },
+        "text": "Later-day returners in the funnel match the retention query: 2,005"
+      }
+    ],
+    "F2": [
+      {
+        "text_template": "1 row per order in v_order_facts: {rows} rows, {keys} distinct keys",
+        "numbers": {
+          "rows": {
+            "label": "v_order_facts rows",
+            "value": 99092,
+            "display": "99,092",
+            "unit": "count",
+            "source": {
+              "file": "results/15_fanout_checks.csv",
+              "column": "row_count",
+              "where": {
+                "view_name": "v_order_facts"
+              }
+            }
+          },
+          "keys": {
+            "label": "v_order_facts distinct keys",
+            "value": 99092,
+            "display": "99,092",
+            "unit": "count",
+            "source": {
+              "file": "results/15_fanout_checks.csv",
+              "column": "distinct_keys",
+              "where": {
+                "view_name": "v_order_facts"
+              }
+            }
+          }
+        },
+        "text": "1 row per order in v_order_facts: 99,092 rows, 99,092 distinct keys"
+      },
+      {
+        "text_template": "Delay buckets add up to {timed} orders with a delivery date",
+        "numbers": {
+          "timed": {
+            "label": "Delivered orders with a delivery date",
+            "value": 96203,
+            "display": "96,203",
+            "unit": "count",
+            "source": {
+              "file": "results/11_overall.csv",
+              "column": "orders",
+              "where": {}
+            }
+          }
+        },
+        "text": "Delay buckets add up to 96,203 orders with a delivery date"
+      },
+      {
+        "text_template": "Stage medians use {used} orders: {timed} minus {negative} with a negative stage and {missing} with a missing stage",
+        "numbers": {
+          "used": {
+            "label": "Orders used for stage medians",
+            "value": 94844,
+            "display": "94,844",
+            "unit": "count",
+            "source": {
+              "file": "results/11_stage_exclusions.csv",
+              "column": "orders_used",
+              "where": {}
+            }
+          },
+          "timed": {
+            "label": "Orders with a delivery date",
+            "value": 96203,
+            "display": "96,203",
+            "unit": "count",
+            "source": {
+              "file": "results/11_stage_exclusions.csv",
+              "column": "timed_orders",
+              "where": {}
+            }
+          },
+          "negative": {
+            "label": "Excluded: negative stage",
+            "value": 1344,
+            "display": "1,344",
+            "unit": "count",
+            "source": {
+              "file": "results/11_stage_exclusions.csv",
+              "column": "excluded_negative_stage",
+              "where": {}
+            }
+          },
+          "missing": {
+            "label": "Excluded: missing stage",
+            "value": 15,
+            "display": "15",
+            "unit": "count",
+            "source": {
+              "file": "results/11_stage_exclusions.csv",
+              "column": "excluded_missing_stage_only",
+              "where": {}
+            }
+          }
+        },
+        "text": "Stage medians use 94,844 orders: 96,203 minus 1,344 with a negative stage and 15 with a missing stage"
+      }
+    ],
+    "F3": [
+      {
+        "text_template": "1 review per order in v_order_review: {rows} rows, {keys} distinct keys",
+        "numbers": {
+          "rows": {
+            "label": "v_order_review rows",
+            "value": 98673,
+            "display": "98,673",
+            "unit": "count",
+            "source": {
+              "file": "results/15_fanout_checks.csv",
+              "column": "row_count",
+              "where": {
+                "view_name": "v_order_review"
+              }
+            }
+          },
+          "keys": {
+            "label": "v_order_review distinct keys",
+            "value": 98673,
+            "display": "98,673",
+            "unit": "count",
+            "source": {
+              "file": "results/15_fanout_checks.csv",
+              "column": "distinct_keys",
+              "where": {
+                "view_name": "v_order_review"
+              }
+            }
+          }
+        },
+        "text": "1 review per order in v_order_review: 98,673 rows, 98,673 distinct keys"
+      },
+      {
+        "text_template": "Review groups add up to {n} reviewed orders",
+        "numbers": {
+          "n": {
+            "label": "Orders with a review",
+            "value": 98330,
+            "display": "98,330",
+            "unit": "count",
+            "source": {
+              "file": "results/baseline.csv",
+              "column": "value",
+              "where": {
+                "section": "reviews",
+                "dimension": "all",
+                "metric": "orders_with_review"
+              }
+            }
+          }
+        },
+        "text": "Review groups add up to 98,330 reviewed orders"
+      },
+      {
+        "text_template": "Late orders reviewed before ({before}) and after ({after}) delivery add up to {late}",
+        "numbers": {
+          "before": {
+            "label": "Late, reviewed before delivery",
+            "value": 4749,
+            "display": "4,749",
+            "unit": "count",
+            "source": {
+              "file": "results/12_review_timing.csv",
+              "column": "orders",
+              "where": {
+                "delivery_group": "late",
+                "review_timing": "before delivery"
+              }
+            }
+          },
+          "after": {
+            "label": "Late, reviewed on or after delivery",
+            "value": 1629,
+            "display": "1,629",
+            "unit": "count",
+            "source": {
+              "file": "results/12_review_timing.csv",
+              "column": "orders",
+              "where": {
+                "delivery_group": "late",
+                "review_timing": "on or after delivery"
+              }
+            }
+          },
+          "late": {
+            "label": "Late delivered orders with a review",
+            "value": 6378,
+            "display": "6,378",
+            "unit": "count",
+            "source": {
+              "file": "results/12_review_creation_gap.csv",
+              "column": "orders",
+              "where": {
+                "delivery_group": "late"
+              }
+            }
+          }
+        },
+        "text": "Late orders reviewed before (4,749) and after (1,629) delivery add up to 6,378"
+      }
+    ],
+    "F4": [
+      {
+        "text_template": "1 row per order and seller in v_seller_orders: {rows} rows, {keys} distinct keys",
+        "numbers": {
+          "rows": {
+            "label": "v_seller_orders rows",
+            "value": 100010,
+            "display": "100,010",
+            "unit": "count",
+            "source": {
+              "file": "results/15_fanout_checks.csv",
+              "column": "row_count",
+              "where": {
+                "view_name": "v_seller_orders"
+              }
+            }
+          },
+          "keys": {
+            "label": "v_seller_orders distinct keys",
+            "value": 100010,
+            "display": "100,010",
+            "unit": "count",
+            "source": {
+              "file": "results/15_fanout_checks.csv",
+              "column": "distinct_keys",
+              "where": {
+                "view_name": "v_seller_orders"
+              }
+            }
+          }
+        },
+        "text": "1 row per order and seller in v_seller_orders: 100,010 rows, 100,010 distinct keys"
+      },
+      {
+        "text_template": "Seller revenue adds back to {revenue} BRL",
+        "numbers": {
+          "revenue": {
+            "label": "Revenue (BRL, item price)",
+            "value": 13181027.13,
+            "display": "13,181,027.13",
+            "unit": "brl",
+            "source": {
+              "file": "results/baseline.csv",
+              "column": "value",
+              "where": {
+                "section": "money",
+                "dimension": "all",
+                "metric": "revenue"
+              }
+            }
+          }
+        },
+        "text": "Seller revenue adds back to 13,181,027.13 BRL"
+      },
+      {
+        "text_template": "The curve reaches 100% at the last of {n} sellers",
+        "numbers": {
+          "n": {
+            "label": "Sellers with a delivered sale in the window",
+            "value": 2945,
+            "display": "2,945",
+            "unit": "count",
+            "source": {
+              "file": "results/13_concentration.csv",
+              "column": "total_sellers",
+              "where": {
+                "top_pct": "1"
+              }
+            }
+          }
+        },
+        "text": "The curve reaches 100% at the last of 2,945 sellers"
+      },
+      {
+        "text_template": "The curve matches the top 1%, 5%, 10% and 20% shares from the concentration query",
+        "numbers": {},
+        "text": "The curve matches the top 1%, 5%, 10% and 20% shares from the concentration query"
+      }
+    ],
+    "F5": [
+      {
+        "text_template": "1 row per order item in v_order_lines: {rows} rows, {keys} distinct keys",
+        "numbers": {
+          "rows": {
+            "label": "v_order_lines rows",
+            "value": 112650,
+            "display": "112,650",
+            "unit": "count",
+            "source": {
+              "file": "results/15_fanout_checks.csv",
+              "column": "row_count",
+              "where": {
+                "view_name": "v_order_lines"
+              }
+            }
+          },
+          "keys": {
+            "label": "v_order_lines distinct keys",
+            "value": 112650,
+            "display": "112,650",
+            "unit": "count",
+            "source": {
+              "file": "results/15_fanout_checks.csv",
+              "column": "distinct_keys",
+              "where": {
+                "view_name": "v_order_lines"
+              }
+            }
+          }
+        },
+        "text": "1 row per order item in v_order_lines: 112,650 rows, 112,650 distinct keys"
+      },
+      {
+        "text_template": "Monthly revenue adds back to {revenue} BRL",
+        "numbers": {
+          "revenue": {
+            "label": "Revenue (BRL, item price)",
+            "value": 13181027.13,
+            "display": "13,181,027.13",
+            "unit": "brl",
+            "source": {
+              "file": "results/baseline.csv",
+              "column": "value",
+              "where": {
+                "section": "money",
+                "dimension": "all",
+                "metric": "revenue"
+              }
+            }
+          }
+        },
+        "text": "Monthly revenue adds back to 13,181,027.13 BRL"
+      },
+      {
+        "text_template": "Monthly orders add up to {n} delivered orders",
+        "numbers": {
+          "n": {
+            "label": "Delivered orders",
+            "value": 96211,
+            "display": "96,211",
+            "unit": "count",
+            "source": {
+              "file": "results/baseline.csv",
+              "column": "value",
+              "where": {
+                "section": "volume",
+                "dimension": "all",
+                "metric": "delivered_orders"
+              }
+            }
+          }
+        },
+        "text": "Monthly orders add up to 96,211 delivered orders"
+      },
+      {
+        "text_template": "Freight quartiles hold all {n} delivered orders",
+        "numbers": {
+          "n": {
+            "label": "Delivered orders",
+            "value": 96211,
+            "display": "96,211",
+            "unit": "count",
+            "source": {
+              "file": "results/baseline.csv",
+              "column": "value",
+              "where": {
+                "section": "volume",
+                "dimension": "all",
+                "metric": "delivered_orders"
+              }
+            }
+          }
+        },
+        "text": "Freight quartiles hold all 96,211 delivered orders"
+      }
+    ]
+  }
+}

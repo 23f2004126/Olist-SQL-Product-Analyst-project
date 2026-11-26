@@ -1,0 +1,509 @@
+{
+  "techniques": [
+    {
+      "technique": "CTE",
+      "description": "WITH name AS (...) names a step of the query so it reads top to bottom.",
+      "chapters": [
+        "F2",
+        "F5"
+      ],
+      "uses": [
+        {
+          "file": "sql/03_clean_views.sql",
+          "section": "v_order_payments_agg"
+        },
+        {
+          "file": "sql/03_clean_views.sql",
+          "section": "v_orders"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q4. MONTHLY COHORT MATRIX"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q6. SELLER HANDLING"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q8b: distance buckets"
+        },
+        {
+          "file": "sql/12_review_drivers.sql",
+          "section": "Q5. BY MAIN CATEGORY"
+        },
+        {
+          "file": "sql/12_review_drivers.sql",
+          "section": "Q9. FIRST ORDER AND RETURN"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q4. PROBLEM SELLERS"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q5. LATE-HANDOVER CONCENTRATION"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q8. SELLER ACTIVITY"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q1. MONTHLY TREND AND YEAR-ON-YEAR"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q6. CUSTOMER VALUE CONCENTRATION"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q8. BY CUSTOMER STATE"
+        }
+      ]
+    },
+    {
+      "technique": "ROW_NUMBER",
+      "description": "Numbers rows within a group: order sequence per customer, rank per seller, latest review per order.",
+      "chapters": [
+        "F4"
+      ],
+      "uses": [
+        {
+          "file": "sql/03_clean_views.sql",
+          "section": "v_order_payments_agg"
+        },
+        {
+          "file": "sql/03_clean_views.sql",
+          "section": "v_order_review"
+        },
+        {
+          "file": "sql/03_clean_views.sql",
+          "section": "v_order_main_category"
+        },
+        {
+          "file": "sql/03_clean_views.sql",
+          "section": "v_order_facts"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "BUILDING BLOCK A: delivered_orders"
+        },
+        {
+          "file": "sql/12_review_drivers.sql",
+          "section": "Q5. BY MAIN CATEGORY"
+        },
+        {
+          "file": "sql/12_review_drivers.sql",
+          "section": "Q9. FIRST ORDER AND RETURN"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q1. CONCENTRATION"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q5. LATE-HANDOVER CONCENTRATION"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "BUILDING BLOCK A: delivered"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q2. BY CATEGORY"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q6. CUSTOMER VALUE CONCENTRATION"
+        },
+        {
+          "file": "sql/15_site_support.sql",
+          "section": "Q4. DATA-QUALITY ISSUES AND DECISIONS"
+        }
+      ]
+    },
+    {
+      "technique": "LAG",
+      "description": "Reads the previous row's value: time since the previous order, month-over-month change.",
+      "chapters": [
+        "F5"
+      ],
+      "uses": [
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "BUILDING BLOCK A: delivered_orders"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q1. MONTHLY TREND AND YEAR-ON-YEAR"
+        },
+        {
+          "file": "sql/15_site_support.sql",
+          "section": "Q2. PIPELINES (\"how we got this\")"
+        },
+        {
+          "file": "sql/15_site_support.sql",
+          "section": "Q4. DATA-QUALITY ISSUES AND DECISIONS"
+        }
+      ]
+    },
+    {
+      "technique": "NTILE",
+      "description": "Splits rows into equal-sized groups: value quartiles, RFM scores, handover quartiles.",
+      "chapters": [],
+      "uses": [
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q6d: by first-order value quartile"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q6. HANDOVER AND REVIEWS AT SELLER LEVEL"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q4. FREIGHT BURDEN"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q7. RFM SEGMENTS"
+        }
+      ]
+    },
+    {
+      "technique": "PERCENTILE_CONT",
+      "description": "Exact median and percentiles (interpolated) instead of averages that outliers distort.",
+      "chapters": [
+        "F2"
+      ],
+      "uses": [
+        {
+          "file": "sql/04_baseline.sql",
+          "section": "6. Delivery"
+        },
+        {
+          "file": "sql/04_baseline.sql",
+          "section": "8. Reconciliation"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q2a: percentiles"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q3b. HOW FAR APART ARE SAME-DAY SECOND ORDERS?"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q1. OVERALL"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q2. MONTHLY TREND"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q3a: medians"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q4. BY CUSTOMER STATE"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q5b: median days per stage, by on-time vs late"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q6. SELLER HANDLING"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q7. SAME STATE vs CROSS STATE"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q8b: distance buckets"
+        },
+        {
+          "file": "sql/12_review_drivers.sql",
+          "section": "Q8b. WHEN IS THE REVIEW CREATED, RELATIVE TO THE PROMISE AND THE DELIVERY?"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q3. SCORECARD"
+        },
+        {
+          "file": "sql/15_site_support.sql",
+          "section": "Q7. DELIVERY BY CUSTOMER STATE, ALL 27 STATES (hero map tooltip)"
+        }
+      ]
+    },
+    {
+      "technique": "Running SUM",
+      "description": "SUM(...) OVER (ORDER BY ...) for cumulative shares (concentration curves, top-N category share).",
+      "chapters": [
+        "F4"
+      ],
+      "uses": [
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q1. CONCENTRATION"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q2. BY CATEGORY"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q6. CUSTOMER VALUE CONCENTRATION"
+        }
+      ]
+    },
+    {
+      "technique": "FILTER",
+      "description": "COUNT(*) FILTER (WHERE ...) computes several conditional counts in one pass.",
+      "chapters": [
+        "F1",
+        "F2",
+        "F5"
+      ],
+      "uses": [
+        {
+          "file": "sql/02_data_quality.sql",
+          "section": "2a. orders: key plus all five timestamps"
+        },
+        {
+          "file": "sql/02_data_quality.sql",
+          "section": "2b. order_items: keys plus shipping limit and money"
+        },
+        {
+          "file": "sql/02_data_quality.sql",
+          "section": "2c. order_payments: key plus money"
+        },
+        {
+          "file": "sql/02_data_quality.sql",
+          "section": "2d. order_reviews: keys, score, timestamps, comments"
+        },
+        {
+          "file": "sql/02_data_quality.sql",
+          "section": "5b. Status vs delivery timestamp: does status agree with the dates?"
+        },
+        {
+          "file": "sql/04_baseline.sql",
+          "section": "5. Repeat rate"
+        },
+        {
+          "file": "sql/04_baseline.sql",
+          "section": "6. Delivery"
+        },
+        {
+          "file": "sql/04_baseline.sql",
+          "section": "7. Reviews"
+        },
+        {
+          "file": "sql/04_baseline.sql",
+          "section": "8. Reconciliation"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "BUILDING BLOCK B: delivered_customers"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q1. ORDERS PER CUSTOMER"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q3. SAME-DAY CHECK"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q3b. HOW FAR APART ARE SAME-DAY SECOND ORDERS?"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q4. MONTHLY COHORT MATRIX"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q5. FIXED-WINDOW REPEAT RATE (90 and 180 days)"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q6a: by main category of the first order (500+ customers only)"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q6b: by customer state at first order (all states; check customer counts"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q6c: by main payment type of the first order"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q6d: by first-order value quartile"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q7. REVENUE FROM REPEAT CUSTOMERS"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q1. OVERALL"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q2. MONTHLY TREND"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q4. BY CUSTOMER STATE"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q5a: how many orders are excluded and why"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q6. SELLER HANDLING"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q7. SAME STATE vs CROSS STATE"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q8a: coverage. Is there enough coordinate data to use?"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q8b: distance buckets"
+        },
+        {
+          "file": "sql/12_review_drivers.sql",
+          "section": "Q9. FIRST ORDER AND RETURN"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "BUILDING BLOCK B: seller_stats"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q4. PROBLEM SELLERS"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q5. LATE-HANDOVER CONCENTRATION"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q8. SELLER ACTIVITY"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "BUILDING BLOCK C: customers"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q1. MONTHLY TREND AND YEAR-ON-YEAR"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q3. CATEGORY GROWTH"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q4. FREIGHT BURDEN"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q7. RFM SEGMENTS"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q8. BY CUSTOMER STATE"
+        },
+        {
+          "file": "sql/15_site_support.sql",
+          "section": "Q5. MAP SAMPLE (3D arcs, seller -> customer)"
+        },
+        {
+          "file": "sql/15_site_support.sql",
+          "section": "Q6. MAP SAMPLE SUMMARY (legend and caption of the hero map)"
+        },
+        {
+          "file": "sql/15_site_support.sql",
+          "section": "Q7. DELIVERY BY CUSTOMER STATE, ALL 27 STATES (hero map tooltip)"
+        }
+      ]
+    },
+    {
+      "technique": "Cohort matrix",
+      "description": "Customers or sellers grouped by first month, tracked by months since; unobservable cells left NULL.",
+      "chapters": [],
+      "uses": [
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q4. MONTHLY COHORT MATRIX"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "Q8. SELLER ACTIVITY"
+        }
+      ]
+    },
+    {
+      "technique": "Fan-out check",
+      "description": "Row count = distinct grain keys = expected count, for every clean view.",
+      "chapters": [],
+      "uses": [
+        {
+          "file": "sql/03_clean_views.sql",
+          "section": "FAN-OUT CHECKS"
+        }
+      ]
+    },
+    {
+      "technique": "DO-block assertion",
+      "description": "A PL/pgSQL DO block that RAISEs an exception, stopping the script when a check fails.",
+      "chapters": [],
+      "uses": [
+        {
+          "file": "sql/03_clean_views.sql",
+          "section": "FAN-OUT CHECKS"
+        },
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "section": "Q1. ORDERS PER CUSTOMER"
+        },
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "section": "Q3. PROMISE ACCURACY"
+        },
+        {
+          "file": "sql/12_review_drivers.sql",
+          "section": "Q7. SIZING: WHERE DO LOW REVIEWS COME FROM?"
+        },
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "section": "BUILDING BLOCK A: seller_orders"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "BUILDING BLOCK C: customers"
+        },
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "section": "Q7. RFM SEGMENTS"
+        },
+        {
+          "file": "sql/15_site_support.sql",
+          "section": "Q8. FAN-OUT CHECKS FOR THE SITE (\"checks that passed\" under each funnel)"
+        }
+      ]
+    }
+  ]
+}

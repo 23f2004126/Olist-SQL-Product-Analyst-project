@@ -1,0 +1,563 @@
+{
+  "meta": {
+    "title": "Why Olist customers don't come back",
+    "nav_title": "Olist case study",
+    "description": "SQL product case study of the Olist Brazilian e-commerce dataset: retention, delivery, reviews, sellers and revenue.",
+    "og_image": "og-image.png",
+    "og_image_alt": "Olist case study: a 3D map of seller-to-customer delivery routes across Brazil, with the headline numbers",
+    "subtitle": {
+      "text_template": "A SQL product analysis of {orders} delivered orders on a Brazilian marketplace: who returns, why deliveries run late, and what drives 1-2 star reviews.",
+      "numbers": {
+        "orders": {
+          "label": "Delivered orders",
+          "value": 96211,
+          "display": "96,211",
+          "unit": "count",
+          "source": {
+            "file": "results/baseline.csv",
+            "column": "value",
+            "where": {
+              "section": "volume",
+              "dimension": "all",
+              "metric": "delivered_orders"
+            }
+          }
+        }
+      },
+      "text": "A SQL product analysis of 96,211 delivered orders on a Brazilian marketplace: who returns, why deliveries run late, and what drives 1-2 star reviews."
+    }
+  },
+  "hero": {
+    "eyebrow": "SQL product case study",
+    "map_label": "Map of seller-to-customer deliveries across Brazil",
+    "scroll_hint": "Scroll to read the case",
+    "how_to_read": "How to read this page: each chapter tells the product story first. Open the panels under it for the data pipeline and the SQL.",
+    "kpis": [
+      {
+        "label": "Delivered orders",
+        "number": {
+          "label": "Delivered orders",
+          "value": 96211,
+          "display": "96,211",
+          "unit": "count",
+          "source": {
+            "file": "results/baseline.csv",
+            "column": "value",
+            "where": {
+              "section": "volume",
+              "dimension": "all",
+              "metric": "delivered_orders"
+            }
+          }
+        }
+      },
+      {
+        "label": "Customers",
+        "number": {
+          "label": "Customers",
+          "value": 93104,
+          "display": "93,104",
+          "unit": "count",
+          "source": {
+            "file": "results/baseline.csv",
+            "column": "value",
+            "where": {
+              "section": "volume",
+              "dimension": "all",
+              "metric": "unique_customers"
+            }
+          }
+        }
+      },
+      {
+        "label": "Came back on a later day",
+        "number": {
+          "label": "Customers who returned on a later day",
+          "value": 2.15,
+          "display": "2.15%",
+          "unit": "pct",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "repeat_rate_later_day_pct",
+            "where": {}
+          }
+        }
+      },
+      {
+        "label": "Delivered on time",
+        "number": {
+          "label": "On-time delivery",
+          "value": 93.21,
+          "display": "93.21%",
+          "unit": "pct",
+          "source": {
+            "file": "results/baseline.csv",
+            "column": "value",
+            "where": {
+              "section": "delivery",
+              "dimension": "all",
+              "metric": "on_time_rate_pct"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "question": {
+    "label": "The question",
+    "title": "Revenue rests on first orders",
+    "tree_title": "Metrics tree",
+    "tree_note": "Factors are rounded, so their product is close to, not exactly, the revenue.",
+    "body": [
+      {
+        "text_template": "Olist connects small Brazilian sellers to customers through one storefront. Between January 2017 and August 2018 it delivered {delivered} orders to {customers} customers, and only {repeat} of them came back on a later day.",
+        "numbers": {
+          "delivered": {
+            "label": "Delivered orders",
+            "value": 96211,
+            "display": "96,211",
+            "unit": "count",
+            "source": {
+              "file": "results/baseline.csv",
+              "column": "value",
+              "where": {
+                "section": "volume",
+                "dimension": "all",
+                "metric": "delivered_orders"
+              }
+            }
+          },
+          "customers": {
+            "label": "Customers",
+            "value": 93104,
+            "display": "93,104",
+            "unit": "count",
+            "source": {
+              "file": "results/baseline.csv",
+              "column": "value",
+              "where": {
+                "section": "volume",
+                "dimension": "all",
+                "metric": "unique_customers"
+              }
+            }
+          },
+          "repeat": {
+            "label": "Customers who returned on a later day",
+            "value": 2.15,
+            "display": "2.15%",
+            "unit": "pct",
+            "source": {
+              "file": "results/10_same_day_check.csv",
+              "column": "repeat_rate_later_day_pct",
+              "where": {}
+            }
+          }
+        },
+        "text": "Olist connects small Brazilian sellers to customers through one storefront. Between January 2017 and August 2018 it delivered 96,211 orders to 93,104 customers, and only 2.15% of them came back on a later day."
+      },
+      {
+        "text_template": "With {opc} orders per customer, revenue depends almost entirely on finding new buyers. This case asks what stands between a first order and a second one, and what the marketplace could change.",
+        "numbers": {
+          "opc": {
+            "label": "Orders per customer",
+            "value": 1.0334,
+            "display": "1.0334",
+            "unit": "ratio",
+            "source": {
+              "file": "results/15_metrics_tree.csv",
+              "column": "orders_per_customer",
+              "where": {}
+            }
+          }
+        },
+        "text": "With 1.0334 orders per customer, revenue depends almost entirely on finding new buyers. This case asks what stands between a first order and a second one, and what the marketplace could change."
+      }
+    ]
+  },
+  "chapters": [
+    {
+      "id": "F1",
+      "title": "Customers buy once",
+      "cards": [
+        "repeat_later_day",
+        "same_day_share",
+        "median_days_to_second",
+        "repeat_revenue_share"
+      ],
+      "charts": [
+        "repeat_units",
+        "cohort_matrix"
+      ],
+      "why": {
+        "text_template": "Second and later orders bring in only {share} of revenue, so bringing past buyers back is largely untapped.",
+        "numbers": {
+          "share": {
+            "label": "Revenue from second and later orders",
+            "value": 2.89,
+            "display": "2.89%",
+            "unit": "pct",
+            "source": {
+              "file": "results/10_repeat_revenue.csv",
+              "column": "repeat_order_revenue_pct",
+              "where": {}
+            }
+          }
+        },
+        "text": "Second and later orders bring in only 2.89% of revenue, so bringing past buyers back is largely untapped."
+      },
+      "recommendation": "R3"
+    },
+    {
+      "id": "F2",
+      "title": "Generous promises, late handovers",
+      "cards": [
+        "on_time",
+        "early_7plus",
+        "late_after_limit",
+        "late_on_time_handover"
+      ],
+      "charts": [
+        "delay_buckets",
+        "stage_medians"
+      ],
+      "why": {
+        "text_template": "Orders handed over after the seller's deadline run late {late} of the time against {ontime}, and handover is the step sellers control.",
+        "numbers": {
+          "late": {
+            "label": "Late rate, handed over after the limit",
+            "value": 21.1,
+            "display": "21.10%",
+            "unit": "pct",
+            "source": {
+              "file": "results/11_seller_handling.csv",
+              "column": "late_rate_pct",
+              "where": {
+                "handover": "after limit"
+              }
+            }
+          },
+          "ontime": {
+            "label": "Late rate, handed over on time",
+            "value": 5.39,
+            "display": "5.39%",
+            "unit": "pct",
+            "source": {
+              "file": "results/11_seller_handling.csv",
+              "column": "late_rate_pct",
+              "where": {
+                "handover": "on or before limit"
+              }
+            }
+          }
+        },
+        "text": "Orders handed over after the seller's deadline run late 21.10% of the time against 5.39%, and handover is the step sellers control."
+      },
+      "recommendation": "R2"
+    },
+    {
+      "id": "F3",
+      "title": "Reviews written while waiting",
+      "cards": [
+        "low_7plus_early",
+        "low_8plus_late",
+        "late_reviewed_before",
+        "late_share_of_low"
+      ],
+      "charts": [
+        "low_by_delay",
+        "late_review_timing"
+      ],
+      "why": {
+        "text_template": "{before} of late orders are rated before they arrive, so many low scores are given while the parcel is still on its way.",
+        "numbers": {
+          "before": {
+            "label": "Late orders reviewed before delivery",
+            "value": 74.46,
+            "display": "74.46%",
+            "unit": "pct",
+            "source": {
+              "file": "results/12_review_timing.csv",
+              "column": "pct_within_delivery_group",
+              "where": {
+                "delivery_group": "late",
+                "review_timing": "before delivery"
+              }
+            }
+          }
+        },
+        "text": "74.46% of late orders are rated before they arrive, so many low scores are given while the parcel is still on its way."
+      },
+      "recommendation": "R1"
+    },
+    {
+      "id": "F4",
+      "title": "A few sellers carry the marketplace",
+      "cards": [
+        "top1_share",
+        "top20_share",
+        "handover_top_share",
+        "problem_low_share"
+      ],
+      "charts": [
+        "seller_curve"
+      ],
+      "why": {
+        "text_template": "{sellers} sellers account for {share} of scorecard late handovers, so a handover standard can start with a small group.",
+        "numbers": {
+          "sellers": {
+            "label": "Sellers with the most late handovers (top 10% of scorecard)",
+            "value": 62,
+            "display": "62",
+            "unit": "count",
+            "source": {
+              "file": "results/13_handover_concentration.csv",
+              "column": "top10pct_sellers",
+              "where": {}
+            }
+          },
+          "share": {
+            "label": "Their share of scorecard late handovers",
+            "value": 55.42,
+            "display": "55.42%",
+            "unit": "pct",
+            "source": {
+              "file": "results/13_handover_concentration.csv",
+              "column": "pct_of_scorecard_late_handovers",
+              "where": {}
+            }
+          }
+        },
+        "text": "62 sellers account for 55.42% of scorecard late handovers, so a handover standard can start with a small group."
+      },
+      "recommendation": "R2"
+    },
+    {
+      "id": "F5",
+      "title": "Growth came from volume, not bigger baskets",
+      "cards": [
+        "revenue_change",
+        "orders_change",
+        "aov_change",
+        "freight_q1"
+      ],
+      "charts": [
+        "monthly_multiples",
+        "freight_by_value"
+      ],
+      "why": {
+        "text_template": "Freight adds {q1} to the cheapest quarter of orders, which makes free freight a meaningful incentive to test.",
+        "numbers": {
+          "q1": {
+            "label": "Freight share, cheapest quarter of orders",
+            "value": 53.41,
+            "display": "53.41%",
+            "unit": "pct",
+            "source": {
+              "file": "results/14_freight_by_value_quartile.csv",
+              "column": "freight_pct_of_item_value",
+              "where": {
+                "value_quartile": "1"
+              }
+            }
+          }
+        },
+        "text": "Freight adds 53.41% to the cheapest quarter of orders, which makes free freight a meaningful incentive to test."
+      },
+      "recommendation": "R3"
+    }
+  ],
+  "recommendations": {
+    "label": "Recommendations",
+    "title": "Three changes to test",
+    "intro": "Each recommendation is a hypothesis with a test design, not a proven effect.",
+    "evidence_in": "Evidence in",
+    "matrix": {
+      "title": "Where the three changes sit",
+      "x_label": "Effort",
+      "y_label": "Expected impact (judgement)",
+      "impact_word": "impact",
+      "effort_word": "effort",
+      "note": "Effort comes from each recommendation's test design in docs/findings.md. Impact is the author's judgement of the likely size of the change, not a measured result.",
+      "_about": "impact is a judgement per recommendation (low, medium or high); effort is read from docs/findings.md. levels are the axis labels.",
+      "impact": {
+        "R1": "medium",
+        "R2": "high",
+        "R3": "medium"
+      },
+      "levels": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "quadrants": {
+        "quick_wins": "Quick wins",
+        "big_bets": "Bigger bets",
+        "small_tweaks": "Small tweaks",
+        "deprioritise": "Deprioritise"
+      }
+    }
+  },
+  "under_the_hood": {
+    "label": "Under the hood",
+    "title": "How the analysis is built",
+    "panels": [
+      {
+        "id": "model",
+        "title": "Data model",
+        "text": "Nine source tables and the clean views built on them, each with a stated grain."
+      },
+      {
+        "id": "quality",
+        "title": "Data-quality decisions",
+        "text": "Every issue found in the raw data and the decision taken for it."
+      },
+      {
+        "id": "techniques",
+        "title": "SQL techniques",
+        "text": "Where each technique is used across the SQL files."
+      }
+    ],
+    "model": {
+      "raw_table": "Raw table",
+      "clean_view": "Clean view",
+      "foreign_key": "Join key",
+      "built_from": "Built from",
+      "used_by": "Used by",
+      "rows": "rows",
+      "key_columns": "Key columns",
+      "joins": "Joins",
+      "grain": "Grain",
+      "hint": "Hover or focus a box to highlight its joins.",
+      "tables_heading": "Raw tables",
+      "views_heading": "Clean views"
+    },
+    "quality": {
+      "_about": "first: issue ids shown first, in this order; the rest follow in query order.",
+      "first": [
+        "same_day_second_order",
+        "customer_id_per_order"
+      ],
+      "problem": "Problem",
+      "decision": "Decision",
+      "ref": "Decision note"
+    },
+    "techniques": {
+      "see_it_used": "See it used",
+      "used_in": "Used in",
+      "view_file": "View the SQL file",
+      "chapter": "Chapter"
+    }
+  },
+  "limitations": {
+    "label": "Limitations",
+    "title": "What this analysis can't show"
+  },
+  "ui": {
+    "chapter": "Chapter",
+    "key_numbers": "Key numbers",
+    "checks_title": "Checks that passed",
+    "step": "Step",
+    "how_we_got_this": "How we got this",
+    "view_sql": "View SQL",
+    "why_it_matters": "Why it matters",
+    "see_recommendation": "See recommendation",
+    "rows": "rows",
+    "dropped": "dropped",
+    "source": "Source",
+    "result_preview": "First rows of the result",
+    "loading": "Loading",
+    "change": "Change",
+    "evidence": "Evidence",
+    "target_metric": "Target metric",
+    "expected_direction": "Expected direction",
+    "test_design": "Test design",
+    "risk": "Main risk",
+    "effort": "Effort",
+    "view_on_github": "View on GitHub",
+    "case_study_pdf": "Case study (PDF)",
+    "skip_to_content": "Skip to content",
+    "progress": "Reading progress"
+  },
+  "links": {
+    "github": "https://github.com/23f2004126/olist-sql-product-analytics",
+    "case_study_pdf": "olist-case-study.pdf",
+    "dataset": "https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce",
+    "dataset_license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "github_file_base": "https://github.com/23f2004126/olist-sql-product-analytics/blob/main/",
+    "site": "",
+    "geo": "https://github.com/tbrugz/geodata-br",
+    "author": "https://willowy-druid-25583e.netlify.app/"
+  },
+  "footer": {
+    "dataset_credit": "Data: Brazilian E-Commerce Public Dataset by Olist, on Kaggle.",
+    "dataset_license": "Licence: CC BY-NC-SA 4.0",
+    "credits_label": "Credits",
+    "geo_credit": "State boundaries: IBGE, via tbrugz/geodata-br (CC0).",
+    "built_by": "Built by Aanchal Routela"
+  },
+  "map": {
+    "phone_note": "Fewer routes are drawn on small screens.",
+    "filter_label": "Routes",
+    "filter_all": "All orders",
+    "filter_late": "Late only",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
+    "controls_hint": "Drag to rotate. Use the buttons, pinch or Ctrl and scroll to zoom.",
+    "tooltip": {
+      "delivered_orders": "Delivered orders",
+      "late_rate": "Late rate",
+      "median_days": "Median delivery days"
+    },
+    "poster_alt": "Static view of seller-to-customer delivery routes across the states of Brazil",
+    "caption": {
+      "text_template": "Sample of {n} delivered orders, seller to customer.",
+      "numbers": {
+        "n": {
+          "label": "Orders in the map sample",
+          "value": 3000,
+          "display": "3,000",
+          "unit": "count",
+          "source": {
+            "file": "results/15_map_sample_summary.csv",
+            "column": "sample_orders",
+            "where": {}
+          }
+        }
+      },
+      "text": "Sample of 3,000 delivered orders, seller to customer."
+    },
+    "legend": [
+      {
+        "id": "on_time",
+        "label": "On time",
+        "number": {
+          "label": "On-time share of the map sample",
+          "value": 93.63,
+          "display": "93.63%",
+          "unit": "pct",
+          "source": {
+            "file": "results/15_map_sample_summary.csv",
+            "column": "on_time_pct",
+            "where": {}
+          }
+        }
+      },
+      {
+        "id": "late",
+        "label": "Late",
+        "number": {
+          "label": "Late share of the map sample",
+          "value": 6.37,
+          "display": "6.37%",
+          "unit": "pct",
+          "source": {
+            "file": "results/15_map_sample_summary.csv",
+            "column": "late_pct",
+            "where": {}
+          }
+        }
+      }
+    ]
+  }
+}

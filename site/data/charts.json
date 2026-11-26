@@ -1,0 +1,2712 @@
+{
+  "ui": {
+    "view_data": "View data",
+    "hide_data": "Hide chart data",
+    "data_table": "Data table",
+    "loading": "Loading chart",
+    "not_observed": "not observed"
+  },
+  "delay_buckets": {
+    "_about": "Shared by the F2 and F3 bucket charts. promise = the bucket on the promised date; late = buckets after it; short = phone labels (a space marks the line break).",
+    "promise": "on the day",
+    "late": [
+      "1-3 days late",
+      "4-7 days late",
+      "8+ days late"
+    ],
+    "short": {
+      "7+ days early": "7+ early",
+      "1-6 days early": "1-6 early",
+      "on the day": "on day",
+      "1-3 days late": "1-3 late",
+      "4-7 days late": "4-7 late",
+      "8+ days late": "8+ late"
+    }
+  },
+  "items": {
+    "repeat_units": {
+      "id": "repeat_units",
+      "finding": "F1",
+      "data": null,
+      "title": {
+        "text_template": "About {n} in 100 come back on a later day",
+        "numbers": {
+          "n": {
+            "label": "Customers in 100 who came back on a later day (rounded)",
+            "value": 2,
+            "display": "2",
+            "unit": "count",
+            "derived": {
+              "rule": "round half up to a whole number",
+              "from": {
+                "label": "Returned on a later day",
+                "value": 2.15,
+                "display": "2.15%",
+                "unit": "pct",
+                "source": {
+                  "file": "results/10_same_day_check.csv",
+                  "column": "repeat_rate_later_day_pct",
+                  "where": {}
+                }
+              }
+            }
+          }
+        },
+        "text": "About 2 in 100 come back on a later day"
+      },
+      "subtitle": {
+        "text_template": "100 dots for 100 customers. {returners} of {customers} customers ({rate}) placed a delivered order on a later calendar day than their first.",
+        "numbers": {
+          "returners": {
+            "label": "Customers who returned on a later day",
+            "value": 2005,
+            "display": "2,005",
+            "unit": "count",
+            "source": {
+              "file": "results/10_same_day_check.csv",
+              "column": "repeat_customers_later_day",
+              "where": {}
+            }
+          },
+          "customers": {
+            "label": "Customers with a delivered order",
+            "value": 93104,
+            "display": "93,104",
+            "unit": "count",
+            "source": {
+              "file": "results/10_same_day_check.csv",
+              "column": "customers",
+              "where": {}
+            }
+          },
+          "rate": {
+            "label": "Returned on a later day",
+            "value": 2.15,
+            "display": "2.15%",
+            "unit": "pct",
+            "source": {
+              "file": "results/10_same_day_check.csv",
+              "column": "repeat_rate_later_day_pct",
+              "where": {}
+            }
+          }
+        },
+        "text": "100 dots for 100 customers. 2,005 of 93,104 customers (2.15%) placed a delivered order on a later calendar day than their first."
+      },
+      "labels": {
+        "lit": "Came back on a later day",
+        "unlit": "Did not come back on a later day",
+        "table_measure": "Measure",
+        "table_value": "Value"
+      },
+      "numbers": {
+        "lit": {
+          "label": "Customers in 100 who came back on a later day (rounded)",
+          "value": 2,
+          "display": "2",
+          "unit": "count",
+          "derived": {
+            "rule": "round half up to a whole number",
+            "from": {
+              "label": "Returned on a later day",
+              "value": 2.15,
+              "display": "2.15%",
+              "unit": "pct",
+              "source": {
+                "file": "results/10_same_day_check.csv",
+                "column": "repeat_rate_later_day_pct",
+                "where": {}
+              }
+            }
+          }
+        },
+        "rate": {
+          "label": "Returned on a later day",
+          "value": 2.15,
+          "display": "2.15%",
+          "unit": "pct",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "repeat_rate_later_day_pct",
+            "where": {}
+          }
+        },
+        "returners": {
+          "label": "Customers who returned on a later day",
+          "value": 2005,
+          "display": "2,005",
+          "unit": "count",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "repeat_customers_later_day",
+            "where": {}
+          }
+        },
+        "customers": {
+          "label": "Customers with a delivered order",
+          "value": 93104,
+          "display": "93,104",
+          "unit": "count",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "customers",
+            "where": {}
+          }
+        }
+      }
+    },
+    "cohort_matrix": {
+      "id": "cohort_matrix",
+      "finding": "F1",
+      "data": "cohort_matrix",
+      "title": {
+        "text_template": "No cohort gets more than {max} of its customers back in any later month",
+        "numbers": {
+          "max": {
+            "label": "Highest share of a cohort ordering in any later month",
+            "value": 0.72,
+            "display": "0.72%",
+            "unit": "pct",
+            "source": {
+              "file": "results/10_cohort_matrix_pct.csv",
+              "column": "m1",
+              "where": {
+                "cohort_month": "2017-10-01"
+              }
+            }
+          }
+        },
+        "text": "No cohort gets more than 0.72% of its customers back in any later month"
+      },
+      "subtitle": {
+        "text_template": "Share of each first-order month's customers who placed a delivered order N months later. Blank cells are months the data had not reached yet.",
+        "numbers": {},
+        "text": "Share of each first-order month's customers who placed a delivered order N months later. Blank cells are months the data had not reached yet."
+      },
+      "labels": {
+        "x": "Months since first order",
+        "y": "First order month",
+        "scale": "% of cohort ordering that month",
+        "month0": "Month 0: the first order (100%)",
+        "blank": "Not observable yet",
+        "cohort": "Cohort",
+        "customers": "Customers",
+        "month": "Month",
+        "share": "Ordered that month",
+        "month_prefix": "M"
+      },
+      "numbers": {}
+    },
+    "delay_buckets": {
+      "id": "delay_buckets",
+      "finding": "F2",
+      "data": "delay_buckets",
+      "title": {
+        "text_template": "{early} of orders arrive 7+ days before the promised date",
+        "numbers": {
+          "early": {
+            "label": "Delivered 7+ days early",
+            "value": 78.88,
+            "display": "78.88%",
+            "unit": "pct",
+            "source": {
+              "file": "results/11_delay_buckets.csv",
+              "column": "pct_of_orders",
+              "where": {
+                "bucket": "7+ days early"
+              }
+            }
+          }
+        },
+        "text": "78.88% of orders arrive 7+ days before the promised date"
+      },
+      "subtitle": {
+        "text_template": "Delivered orders by arrival against the estimated delivery date, as a share of {timed} orders with a delivery date.",
+        "numbers": {
+          "timed": {
+            "label": "Delivered orders with a delivery date",
+            "value": 96203,
+            "display": "96,203",
+            "unit": "count",
+            "source": {
+              "file": "results/11_overall.csv",
+              "column": "orders",
+              "where": {}
+            }
+          }
+        },
+        "text": "Delivered orders by arrival against the estimated delivery date, as a share of 96,203 orders with a delivery date."
+      },
+      "labels": {
+        "x": "Arrival against the promised date",
+        "y": "% of orders",
+        "promised": "Promised date",
+        "on_time": "On time or early",
+        "late": "Late",
+        "bucket": "Arrival",
+        "orders": "Orders",
+        "share": "Share of orders"
+      },
+      "numbers": {}
+    },
+    "stage_medians": {
+      "id": "stage_medians",
+      "finding": "F2",
+      "data": "stage_medians",
+      "title": {
+        "text_template": "Late orders spend a median {late} days with the carrier, against {on_time} for on-time orders",
+        "numbers": {
+          "late": {
+            "label": "Median carrier-to-customer days, late orders",
+            "value": 26.21,
+            "display": "26.21",
+            "unit": "days",
+            "source": {
+              "file": "results/11_stage_medians.csv",
+              "column": "median_carrier_to_customer",
+              "where": {
+                "delivery_group": "late"
+              }
+            }
+          },
+          "on_time": {
+            "label": "Median carrier-to-customer days, on-time orders",
+            "value": 6.96,
+            "display": "6.96",
+            "unit": "days",
+            "source": {
+              "file": "results/11_stage_medians.csv",
+              "column": "median_carrier_to_customer",
+              "where": {
+                "delivery_group": "on_time"
+              }
+            }
+          }
+        },
+        "text": "Late orders spend a median 26.21 days with the carrier, against 6.96 for on-time orders"
+      },
+      "subtitle": {
+        "text_template": "Median days in each stage, {orders} orders with valid stage dates. Stage medians don't add up to the median total.",
+        "numbers": {
+          "orders": {
+            "label": "Orders with valid stage dates",
+            "value": 94844,
+            "display": "94,844",
+            "unit": "count",
+            "source": {
+              "file": "results/11_stage_medians.csv",
+              "column": "orders",
+              "where": {
+                "delivery_group": "all"
+              }
+            }
+          }
+        },
+        "text": "Median days in each stage, 94,844 orders with valid stage dates. Stage medians don't add up to the median total."
+      },
+      "labels": {
+        "x": "Median days",
+        "group": "Orders",
+        "orders": "Order count",
+        "groups": {
+          "late": "Late orders",
+          "on_time": "On-time orders"
+        },
+        "stages": {
+          "median_purchase_to_approval": "Purchase to approval",
+          "median_approval_to_carrier": "Seller to carrier",
+          "median_carrier_to_customer": "Carrier to customer"
+        }
+      },
+      "numbers": {}
+    },
+    "low_by_delay": {
+      "id": "low_by_delay",
+      "finding": "F3",
+      "data": "low_by_delay",
+      "title": {
+        "text_template": "1-2 star reviews rise from {early} to {late} as delivery slips past the promise",
+        "numbers": {
+          "early": {
+            "label": "1-2 star share, 7+ days early",
+            "value": 8.98,
+            "display": "8.98%",
+            "unit": "pct",
+            "source": {
+              "file": "results/12_by_delay_bucket.csv",
+              "column": "low_review_pct",
+              "where": {
+                "bucket": "7+ days early"
+              }
+            }
+          },
+          "late": {
+            "label": "1-2 star share, 8+ days late",
+            "value": 79.27,
+            "display": "79.27%",
+            "unit": "pct",
+            "source": {
+              "file": "results/12_by_delay_bucket.csv",
+              "column": "low_review_pct",
+              "where": {
+                "bucket": "8+ days late"
+              }
+            }
+          }
+        },
+        "text": "1-2 star reviews rise from 8.98% to 79.27% as delivery slips past the promise"
+      },
+      "subtitle": {
+        "text_template": "Share of reviews with 1-2 stars, by arrival against the promised date. Delivered orders with a delivery date and a review.",
+        "numbers": {},
+        "text": "Share of reviews with 1-2 stars, by arrival against the promised date. Delivered orders with a delivery date and a review."
+      },
+      "labels": {
+        "x": "Arrival against the promised date",
+        "y": "% of reviews with 1-2 stars",
+        "promised": "Promised date",
+        "on_time": "On time or early",
+        "late": "Late",
+        "bucket": "Arrival",
+        "orders": "Reviewed orders",
+        "avg": "Average score",
+        "low": "1-2 star share"
+      },
+      "numbers": {}
+    },
+    "late_review_timing": {
+      "id": "late_review_timing",
+      "finding": "F3",
+      "data": "late_review_timing",
+      "title": {
+        "text_template": "Late orders rated before they arrive average {before} stars, against {after} after",
+        "numbers": {
+          "before": {
+            "label": "Average score, late and reviewed before delivery",
+            "value": 1.84,
+            "display": "1.84",
+            "unit": "score",
+            "source": {
+              "file": "results/12_review_timing.csv",
+              "column": "avg_score",
+              "where": {
+                "delivery_group": "late",
+                "review_timing": "before delivery"
+              }
+            }
+          },
+          "after": {
+            "label": "Average score, late and reviewed after delivery",
+            "value": 3.53,
+            "display": "3.53",
+            "unit": "score",
+            "source": {
+              "file": "results/12_review_timing.csv",
+              "column": "avg_score",
+              "where": {
+                "delivery_group": "late",
+                "review_timing": "on or after delivery"
+              }
+            }
+          }
+        },
+        "text": "Late orders rated before they arrive average 1.84 stars, against 3.53 after"
+      },
+      "subtitle": {
+        "text_template": "{share} of {late} late orders with a review were reviewed before the parcel arrived.",
+        "numbers": {
+          "share": {
+            "label": "Late orders reviewed before delivery",
+            "value": 74.46,
+            "display": "74.46%",
+            "unit": "pct",
+            "source": {
+              "file": "results/12_review_timing.csv",
+              "column": "pct_within_delivery_group",
+              "where": {
+                "delivery_group": "late",
+                "review_timing": "before delivery"
+              }
+            }
+          },
+          "late": {
+            "label": "Late delivered orders with a review",
+            "value": 6378,
+            "display": "6,378",
+            "unit": "count",
+            "source": {
+              "file": "results/12_review_creation_gap.csv",
+              "column": "orders",
+              "where": {
+                "delivery_group": "late"
+              }
+            }
+          }
+        },
+        "text": "74.46% of 6,378 late orders with a review were reviewed before the parcel arrived."
+      },
+      "labels": {
+        "timing": {
+          "before delivery": "Reviewed before delivery",
+          "on or after delivery": "Reviewed on or after delivery"
+        },
+        "share": "Share of late orders",
+        "avg": "Average score",
+        "low": "1-2 star share",
+        "orders": "Orders",
+        "group": "Review timing"
+      },
+      "numbers": {}
+    },
+    "seller_curve": {
+      "id": "seller_curve",
+      "finding": "F4",
+      "data": "seller_curve",
+      "title": {
+        "text_template": "The top 1% of sellers earn {top1} of revenue, and the top 20% earn {top20}",
+        "numbers": {
+          "top1": {
+            "label": "Revenue share, top 1% of sellers",
+            "value": 25.93,
+            "display": "25.93%",
+            "unit": "pct",
+            "source": {
+              "file": "results/13_concentration.csv",
+              "column": "revenue_share_pct",
+              "where": {
+                "top_pct": "1"
+              }
+            }
+          },
+          "top20": {
+            "label": "Revenue share, top 20% of sellers",
+            "value": 82.2,
+            "display": "82.20%",
+            "unit": "pct",
+            "source": {
+              "file": "results/13_concentration.csv",
+              "column": "revenue_share_pct",
+              "where": {
+                "top_pct": "20"
+              }
+            }
+          }
+        },
+        "text": "The top 1% of sellers earn 25.93% of revenue, and the top 20% earn 82.20%"
+      },
+      "subtitle": {
+        "text_template": "Cumulative share of revenue, with sellers ranked from highest to lowest revenue ({sellers} sellers with a delivered sale).",
+        "numbers": {
+          "sellers": {
+            "label": "Sellers with a delivered sale in the window",
+            "value": 2945,
+            "display": "2,945",
+            "unit": "count",
+            "source": {
+              "file": "results/13_concentration.csv",
+              "column": "total_sellers",
+              "where": {
+                "top_pct": "1"
+              }
+            }
+          }
+        },
+        "text": "Cumulative share of revenue, with sellers ranked from highest to lowest revenue (2,945 sellers with a delivered sale)."
+      },
+      "labels": {
+        "x": "Sellers ranked by revenue (% of sellers)",
+        "y": "Cumulative % of revenue",
+        "equal": "Equal shares",
+        "top": "Top",
+        "sellers": "Sellers",
+        "share": "Share of revenue",
+        "table_top": "Top % of sellers",
+        "table_note": "Marked points. The curve is drawn from the seller ranking, sampled at every 5th seller through the top 10% and at each whole percent after that."
+      },
+      "numbers": {
+        "sellers": {
+          "label": "Sellers with a delivered sale in the window",
+          "value": 2945,
+          "display": "2,945",
+          "unit": "count",
+          "source": {
+            "file": "results/13_concentration.csv",
+            "column": "total_sellers",
+            "where": {
+              "top_pct": "1"
+            }
+          }
+        }
+      }
+    },
+    "monthly_multiples": {
+      "id": "monthly_multiples",
+      "finding": "F5",
+      "data": "monthly_revenue",
+      "title": {
+        "text_template": "Orders rose {orders} year on year while average order value moved {aov}",
+        "numbers": {
+          "orders": {
+            "label": "Orders change",
+            "value": 139.94,
+            "display": "139.94%",
+            "unit": "pct",
+            "source": {
+              "file": "results/14_yoy_jan_aug.csv",
+              "column": "orders_change_pct",
+              "where": {}
+            }
+          },
+          "aov": {
+            "label": "Average order value change",
+            "value": 0.49,
+            "display": "0.49%",
+            "unit": "pct",
+            "source": {
+              "file": "results/14_yoy_jan_aug.csv",
+              "column": "aov_change_pct",
+              "where": {}
+            }
+          }
+        },
+        "text": "Orders rose 139.94% year on year while average order value moved 0.49%"
+      },
+      "subtitle": {
+        "text_template": "Delivered orders by purchase month, January 2017 to August 2018; year-on-year figures compare Jan-Aug. Every panel starts at zero.",
+        "numbers": {},
+        "text": "Delivered orders by purchase month, January 2017 to August 2018; year-on-year figures compare Jan-Aug. Every panel starts at zero."
+      },
+      "labels": {
+        "x": "Purchase month",
+        "month": "Month",
+        "panels": {
+          "orders": "Orders",
+          "revenue": "Revenue (BRL)",
+          "aov": "Average order value (BRL)"
+        }
+      },
+      "numbers": {}
+    },
+    "freight_by_value": {
+      "id": "freight_by_value",
+      "finding": "F5",
+      "data": "freight_by_value",
+      "title": {
+        "text_template": "Freight adds {q1} to the cheapest quarter of orders, against {q4} to the most expensive",
+        "numbers": {
+          "q1": {
+            "label": "Freight share, cheapest quarter of orders",
+            "value": 53.41,
+            "display": "53.41%",
+            "unit": "pct",
+            "source": {
+              "file": "results/14_freight_by_value_quartile.csv",
+              "column": "freight_pct_of_item_value",
+              "where": {
+                "value_quartile": "1"
+              }
+            }
+          },
+          "q4": {
+            "label": "Freight share, most expensive quarter of orders",
+            "value": 10.26,
+            "display": "10.26%",
+            "unit": "pct",
+            "source": {
+              "file": "results/14_freight_by_value_quartile.csv",
+              "column": "freight_pct_of_item_value",
+              "where": {
+                "value_quartile": "4"
+              }
+            }
+          }
+        },
+        "text": "Freight adds 53.41% to the cheapest quarter of orders, against 10.26% to the most expensive"
+      },
+      "subtitle": {
+        "text_template": "Freight as a share of item value, by order-value quartile. Delivered orders.",
+        "numbers": {},
+        "text": "Freight as a share of item value, by order-value quartile. Delivered orders."
+      },
+      "labels": {
+        "x": "Freight as % of item value",
+        "quartile": "Quartile",
+        "quartile_prefix": "Q",
+        "range": "Order value (BRL)",
+        "currency": "BRL",
+        "orders": "Orders",
+        "freight": "Freight / item value",
+        "gt50": "Orders with freight over 50%"
+      },
+      "numbers": {}
+    }
+  },
+  "source": "chart rows copied from results/*.csv (each chart lists its file, columns and row filter)",
+  "data": {
+    "F1": [
+      {
+        "id": "time_to_second",
+        "title": "Days from first to second order",
+        "type": "bar",
+        "x": "bucket",
+        "y": "pct_of_second_orders",
+        "source": {
+          "file": "results/10_time_to_second_order_buckets.csv",
+          "columns": [
+            "bucket",
+            "customers",
+            "pct_of_second_orders"
+          ],
+          "where": {}
+        },
+        "rows": [
+          {
+            "bucket": "same day",
+            "customers": 827,
+            "pct_of_second_orders": 29.65
+          },
+          {
+            "bucket": "1-7",
+            "customers": 198,
+            "pct_of_second_orders": 7.1
+          },
+          {
+            "bucket": "8-30",
+            "customers": 387,
+            "pct_of_second_orders": 13.88
+          },
+          {
+            "bucket": "31-90",
+            "customers": 492,
+            "pct_of_second_orders": 17.64
+          },
+          {
+            "bucket": "91-180",
+            "customers": 413,
+            "pct_of_second_orders": 14.81
+          },
+          {
+            "bucket": "180+",
+            "customers": 472,
+            "pct_of_second_orders": 16.92
+          }
+        ]
+      },
+      {
+        "id": "cohort_matrix",
+        "title": "Share of each monthly cohort active N months later (%)",
+        "type": "heatmap",
+        "x": "months_since_first_order",
+        "y": "pct_of_cohort",
+        "source": {
+          "file": "results/10_cohort_matrix_pct.csv",
+          "columns": [
+            "cohort_month",
+            "cohort_customers",
+            "m0",
+            "m1",
+            "m2",
+            "m3",
+            "m4",
+            "m5",
+            "m6",
+            "m7",
+            "m8",
+            "m9",
+            "m10",
+            "m11",
+            "m12"
+          ],
+          "where": {}
+        },
+        "rows": [
+          {
+            "cohort_month": "2017-01-01",
+            "cohort_customers": 718,
+            "m0": 100.0,
+            "m1": 0.28,
+            "m2": 0.28,
+            "m3": 0.14,
+            "m4": 0.42,
+            "m5": 0.14,
+            "m6": 0.42,
+            "m7": 0.14,
+            "m8": 0.14,
+            "m9": 0.0,
+            "m10": 0.42,
+            "m11": 0.14,
+            "m12": 0.7
+          },
+          {
+            "cohort_month": "2017-02-01",
+            "cohort_customers": 1628,
+            "m0": 100.0,
+            "m1": 0.18,
+            "m2": 0.31,
+            "m3": 0.12,
+            "m4": 0.43,
+            "m5": 0.12,
+            "m6": 0.25,
+            "m7": 0.18,
+            "m8": 0.12,
+            "m9": 0.18,
+            "m10": 0.12,
+            "m11": 0.31,
+            "m12": 0.12
+          },
+          {
+            "cohort_month": "2017-03-01",
+            "cohort_customers": 2503,
+            "m0": 100.0,
+            "m1": 0.44,
+            "m2": 0.36,
+            "m3": 0.4,
+            "m4": 0.36,
+            "m5": 0.16,
+            "m6": 0.16,
+            "m7": 0.32,
+            "m8": 0.32,
+            "m9": 0.08,
+            "m10": 0.36,
+            "m11": 0.12,
+            "m12": 0.2
+          },
+          {
+            "cohort_month": "2017-04-01",
+            "cohort_customers": 2257,
+            "m0": 100.0,
+            "m1": 0.62,
+            "m2": 0.22,
+            "m3": 0.18,
+            "m4": 0.27,
+            "m5": 0.27,
+            "m6": 0.35,
+            "m7": 0.31,
+            "m8": 0.31,
+            "m9": 0.18,
+            "m10": 0.27,
+            "m11": 0.09,
+            "m12": 0.04
+          },
+          {
+            "cohort_month": "2017-05-01",
+            "cohort_customers": 3451,
+            "m0": 100.0,
+            "m1": 0.46,
+            "m2": 0.46,
+            "m3": 0.29,
+            "m4": 0.29,
+            "m5": 0.32,
+            "m6": 0.41,
+            "m7": 0.14,
+            "m8": 0.26,
+            "m9": 0.26,
+            "m10": 0.26,
+            "m11": 0.35,
+            "m12": 0.23
+          },
+          {
+            "cohort_month": "2017-06-01",
+            "cohort_customers": 3037,
+            "m0": 100.0,
+            "m1": 0.49,
+            "m2": 0.4,
+            "m3": 0.43,
+            "m4": 0.3,
+            "m5": 0.4,
+            "m6": 0.36,
+            "m7": 0.23,
+            "m8": 0.13,
+            "m9": 0.2,
+            "m10": 0.3,
+            "m11": 0.36,
+            "m12": 0.16
+          },
+          {
+            "cohort_month": "2017-07-01",
+            "cohort_customers": 3753,
+            "m0": 100.0,
+            "m1": 0.53,
+            "m2": 0.35,
+            "m3": 0.24,
+            "m4": 0.29,
+            "m5": 0.21,
+            "m6": 0.32,
+            "m7": 0.11,
+            "m8": 0.19,
+            "m9": 0.27,
+            "m10": 0.21,
+            "m11": 0.29,
+            "m12": 0.13
+          },
+          {
+            "cohort_month": "2017-08-01",
+            "cohort_customers": 4057,
+            "m0": 100.0,
+            "m1": 0.69,
+            "m2": 0.35,
+            "m3": 0.27,
+            "m4": 0.35,
+            "m5": 0.52,
+            "m6": 0.3,
+            "m7": 0.27,
+            "m8": 0.15,
+            "m9": 0.15,
+            "m10": 0.25,
+            "m11": 0.2,
+            "m12": 0.12
+          },
+          {
+            "cohort_month": "2017-09-01",
+            "cohort_customers": 4005,
+            "m0": 100.0,
+            "m1": 0.7,
+            "m2": 0.55,
+            "m3": 0.27,
+            "m4": 0.45,
+            "m5": 0.22,
+            "m6": 0.22,
+            "m7": 0.25,
+            "m8": 0.27,
+            "m9": 0.2,
+            "m10": 0.25,
+            "m11": 0.07,
+            "m12": null
+          },
+          {
+            "cohort_month": "2017-10-01",
+            "cohort_customers": 4328,
+            "m0": 100.0,
+            "m1": 0.72,
+            "m2": 0.25,
+            "m3": 0.09,
+            "m4": 0.23,
+            "m5": 0.21,
+            "m6": 0.21,
+            "m7": 0.37,
+            "m8": 0.28,
+            "m9": 0.18,
+            "m10": 0.21,
+            "m11": null,
+            "m12": null
+          },
+          {
+            "cohort_month": "2017-11-01",
+            "cohort_customers": 7061,
+            "m0": 100.0,
+            "m1": 0.57,
+            "m2": 0.37,
+            "m3": 0.17,
+            "m4": 0.17,
+            "m5": 0.18,
+            "m6": 0.11,
+            "m7": 0.18,
+            "m8": 0.13,
+            "m9": 0.06,
+            "m10": null,
+            "m11": null,
+            "m12": null
+          },
+          {
+            "cohort_month": "2017-12-01",
+            "cohort_customers": 5338,
+            "m0": 100.0,
+            "m1": 0.21,
+            "m2": 0.28,
+            "m3": 0.34,
+            "m4": 0.26,
+            "m5": 0.21,
+            "m6": 0.17,
+            "m7": 0.02,
+            "m8": 0.19,
+            "m9": null,
+            "m10": null,
+            "m11": null,
+            "m12": null
+          },
+          {
+            "cohort_month": "2018-01-01",
+            "cohort_customers": 6843,
+            "m0": 100.0,
+            "m1": 0.34,
+            "m2": 0.37,
+            "m3": 0.29,
+            "m4": 0.29,
+            "m5": 0.16,
+            "m6": 0.18,
+            "m7": 0.23,
+            "m8": null,
+            "m9": null,
+            "m10": null,
+            "m11": null,
+            "m12": null
+          },
+          {
+            "cohort_month": "2018-02-01",
+            "cohort_customers": 6288,
+            "m0": 100.0,
+            "m1": 0.35,
+            "m2": 0.4,
+            "m3": 0.3,
+            "m4": 0.25,
+            "m5": 0.22,
+            "m6": 0.21,
+            "m7": null,
+            "m8": null,
+            "m9": null,
+            "m10": null,
+            "m11": null,
+            "m12": null
+          },
+          {
+            "cohort_month": "2018-03-01",
+            "cohort_customers": 6775,
+            "m0": 100.0,
+            "m1": 0.4,
+            "m2": 0.3,
+            "m3": 0.3,
+            "m4": 0.12,
+            "m5": 0.12,
+            "m6": null,
+            "m7": null,
+            "m8": null,
+            "m9": null,
+            "m10": null,
+            "m11": null,
+            "m12": null
+          },
+          {
+            "cohort_month": "2018-04-01",
+            "cohort_customers": 6582,
+            "m0": 100.0,
+            "m1": 0.59,
+            "m2": 0.3,
+            "m3": 0.24,
+            "m4": 0.14,
+            "m5": null,
+            "m6": null,
+            "m7": null,
+            "m8": null,
+            "m9": null,
+            "m10": null,
+            "m11": null,
+            "m12": null
+          },
+          {
+            "cohort_month": "2018-05-01",
+            "cohort_customers": 6508,
+            "m0": 100.0,
+            "m1": 0.52,
+            "m2": 0.26,
+            "m3": 0.18,
+            "m4": null,
+            "m5": null,
+            "m6": null,
+            "m7": null,
+            "m8": null,
+            "m9": null,
+            "m10": null,
+            "m11": null,
+            "m12": null
+          },
+          {
+            "cohort_month": "2018-06-01",
+            "cohort_customers": 5879,
+            "m0": 100.0,
+            "m1": 0.43,
+            "m2": 0.27,
+            "m3": null,
+            "m4": null,
+            "m5": null,
+            "m6": null,
+            "m7": null,
+            "m8": null,
+            "m9": null,
+            "m10": null,
+            "m11": null,
+            "m12": null
+          },
+          {
+            "cohort_month": "2018-07-01",
+            "cohort_customers": 5949,
+            "m0": 100.0,
+            "m1": 0.52,
+            "m2": null,
+            "m3": null,
+            "m4": null,
+            "m5": null,
+            "m6": null,
+            "m7": null,
+            "m8": null,
+            "m9": null,
+            "m10": null,
+            "m11": null,
+            "m12": null
+          },
+          {
+            "cohort_month": "2018-08-01",
+            "cohort_customers": 6144,
+            "m0": 100.0,
+            "m1": null,
+            "m2": null,
+            "m3": null,
+            "m4": null,
+            "m5": null,
+            "m6": null,
+            "m7": null,
+            "m8": null,
+            "m9": null,
+            "m10": null,
+            "m11": null,
+            "m12": null
+          }
+        ]
+      }
+    ],
+    "F2": [
+      {
+        "id": "delay_buckets",
+        "title": "Delivery vs promised date",
+        "type": "bar",
+        "x": "bucket",
+        "y": "pct_of_orders",
+        "source": {
+          "file": "results/11_delay_buckets.csv",
+          "columns": [
+            "bucket",
+            "orders",
+            "pct_of_orders"
+          ],
+          "where": {}
+        },
+        "rows": [
+          {
+            "bucket": "7+ days early",
+            "orders": 75882,
+            "pct_of_orders": 78.88
+          },
+          {
+            "bucket": "1-6 days early",
+            "orders": 12499,
+            "pct_of_orders": 12.99
+          },
+          {
+            "bucket": "on the day",
+            "orders": 1291,
+            "pct_of_orders": 1.34
+          },
+          {
+            "bucket": "1-3 days late",
+            "orders": 1869,
+            "pct_of_orders": 1.94
+          },
+          {
+            "bucket": "4-7 days late",
+            "orders": 1802,
+            "pct_of_orders": 1.87
+          },
+          {
+            "bucket": "8+ days late",
+            "orders": 2860,
+            "pct_of_orders": 2.97
+          }
+        ]
+      },
+      {
+        "id": "stage_medians",
+        "title": "Median days per stage, late vs on-time orders",
+        "type": "stacked_bar",
+        "x": "median_days",
+        "y": "delivery_group",
+        "source": {
+          "file": "results/11_stage_medians.csv",
+          "columns": [
+            "delivery_group",
+            "orders",
+            "median_purchase_to_approval",
+            "median_approval_to_carrier",
+            "median_carrier_to_customer"
+          ],
+          "where": {
+            "delivery_group": [
+              "late",
+              "on_time"
+            ]
+          }
+        },
+        "rows": [
+          {
+            "delivery_group": "late",
+            "orders": 6508,
+            "median_purchase_to_approval": 0.02,
+            "median_approval_to_carrier": 3.06,
+            "median_carrier_to_customer": 26.21
+          },
+          {
+            "delivery_group": "on_time",
+            "orders": 88336,
+            "median_purchase_to_approval": 0.01,
+            "median_approval_to_carrier": 1.79,
+            "median_carrier_to_customer": 6.96
+          }
+        ]
+      },
+      {
+        "id": "late_by_state",
+        "title": "Late rate by customer state (500+ orders)",
+        "type": "bar",
+        "x": "state",
+        "y": "late_rate_pct",
+        "source": {
+          "file": "results/11_by_state.csv",
+          "columns": [
+            "state",
+            "orders",
+            "median_delivery_days",
+            "median_promised_days",
+            "late_rate_pct"
+          ],
+          "where": {}
+        },
+        "rows": [
+          {
+            "state": "MA",
+            "orders": 713,
+            "median_delivery_days": 19.18,
+            "median_promised_days": 31.0,
+            "late_rate_pct": 17.53
+          },
+          {
+            "state": "CE",
+            "orders": 1273,
+            "median_delivery_days": 18.17,
+            "median_promised_days": 32.0,
+            "late_rate_pct": 13.83
+          },
+          {
+            "state": "BA",
+            "orders": 3253,
+            "median_delivery_days": 16.91,
+            "median_promised_days": 30.0,
+            "late_rate_pct": 12.17
+          },
+          {
+            "state": "RJ",
+            "orders": 12310,
+            "median_delivery_days": 12.04,
+            "median_promised_days": 25.0,
+            "late_rate_pct": 12.14
+          },
+          {
+            "state": "PA",
+            "orders": 942,
+            "median_delivery_days": 21.07,
+            "median_promised_days": 37.0,
+            "late_rate_pct": 11.25
+          },
+          {
+            "state": "ES",
+            "orders": 1992,
+            "median_delivery_days": 13.64,
+            "median_promised_days": 26.0,
+            "late_rate_pct": 10.74
+          },
+          {
+            "state": "PB",
+            "orders": 516,
+            "median_delivery_days": 18.15,
+            "median_promised_days": 33.0,
+            "late_rate_pct": 10.47
+          },
+          {
+            "state": "MS",
+            "orders": 701,
+            "median_delivery_days": 13.94,
+            "median_promised_days": 26.0,
+            "late_rate_pct": 9.7
+          },
+          {
+            "state": "PE",
+            "orders": 1587,
+            "median_delivery_days": 15.7,
+            "median_promised_days": 32.0,
+            "late_rate_pct": 9.64
+          },
+          {
+            "state": "SC",
+            "orders": 3537,
+            "median_delivery_days": 13.01,
+            "median_promised_days": 26.0,
+            "late_rate_pct": 8.23
+          },
+          {
+            "state": "GO",
+            "orders": 1950,
+            "median_delivery_days": 13.95,
+            "median_promised_days": 27.0,
+            "late_rate_pct": 6.56
+          },
+          {
+            "state": "RS",
+            "orders": 5327,
+            "median_delivery_days": 13.17,
+            "median_promised_days": 29.0,
+            "late_rate_pct": 6.1
+          },
+          {
+            "state": "MT",
+            "orders": 885,
+            "median_delivery_days": 16.12,
+            "median_promised_days": 32.0,
+            "late_rate_pct": 5.99
+          },
+          {
+            "state": "DF",
+            "orders": 2074,
+            "median_delivery_days": 11.36,
+            "median_promised_days": 25.0,
+            "late_rate_pct": 5.69
+          },
+          {
+            "state": "MG",
+            "orders": 11319,
+            "median_delivery_days": 10.31,
+            "median_promised_days": 24.0,
+            "late_rate_pct": 4.59
+          },
+          {
+            "state": "SP",
+            "orders": 40399,
+            "median_delivery_days": 7.2,
+            "median_promised_days": 19.0,
+            "late_rate_pct": 4.5
+          },
+          {
+            "state": "PR",
+            "orders": 4903,
+            "median_delivery_days": 10.42,
+            "median_promised_days": 25.0,
+            "late_rate_pct": 4.06
+          }
+        ]
+      }
+    ],
+    "F3": [
+      {
+        "id": "low_by_delay",
+        "title": "1-2 star share by delivery vs promise",
+        "type": "bar",
+        "x": "bucket",
+        "y": "low_review_pct",
+        "source": {
+          "file": "results/12_by_delay_bucket.csv",
+          "columns": [
+            "bucket",
+            "orders",
+            "avg_score",
+            "low_review_pct"
+          ],
+          "where": {
+            "bucket": [
+              "7+ days early",
+              "1-6 days early",
+              "on the day",
+              "1-3 days late",
+              "4-7 days late",
+              "8+ days late"
+            ]
+          }
+        },
+        "rows": [
+          {
+            "bucket": "7+ days early",
+            "orders": 75487,
+            "avg_score": 4.31,
+            "low_review_pct": 8.98
+          },
+          {
+            "bucket": "1-6 days early",
+            "orders": 12415,
+            "avg_score": 4.18,
+            "low_review_pct": 10.58
+          },
+          {
+            "bucket": "on the day",
+            "orders": 1280,
+            "avg_score": 4.03,
+            "low_review_pct": 12.42
+          },
+          {
+            "bucket": "1-3 days late",
+            "orders": 1851,
+            "avg_score": 3.29,
+            "low_review_pct": 32.14
+          },
+          {
+            "bucket": "4-7 days late",
+            "orders": 1748,
+            "avg_score": 2.1,
+            "low_review_pct": 67.68
+          },
+          {
+            "bucket": "8+ days late",
+            "orders": 2779,
+            "avg_score": 1.7,
+            "low_review_pct": 79.27
+          }
+        ]
+      },
+      {
+        "id": "late_review_timing",
+        "title": "Late orders: reviewed before vs after delivery",
+        "type": "split",
+        "x": "review_timing",
+        "y": "pct_within_delivery_group",
+        "source": {
+          "file": "results/12_review_timing.csv",
+          "columns": [
+            "review_timing",
+            "orders",
+            "pct_within_delivery_group",
+            "avg_score",
+            "low_review_pct"
+          ],
+          "where": {
+            "delivery_group": "late"
+          }
+        },
+        "rows": [
+          {
+            "review_timing": "before delivery",
+            "orders": 4749,
+            "pct_within_delivery_group": 74.46,
+            "avg_score": 1.84,
+            "low_review_pct": 75.22
+          },
+          {
+            "review_timing": "on or after delivery",
+            "orders": 1629,
+            "pct_within_delivery_group": 25.54,
+            "avg_score": 3.53,
+            "low_review_pct": 25.11
+          }
+        ]
+      },
+      {
+        "id": "low_review_sizing",
+        "title": "Where 1-2 star reviews come from",
+        "type": "bar",
+        "x": "sizing_group",
+        "y": "pct_of_low_reviews",
+        "source": {
+          "file": "results/12_low_review_sizing.csv",
+          "columns": [
+            "sizing_group",
+            "low_reviews",
+            "pct_of_low_reviews",
+            "low_review_rate_pct"
+          ],
+          "where": {}
+        },
+        "rows": [
+          {
+            "sizing_group": "a) undelivered",
+            "low_reviews": 2153,
+            "pct_of_low_reviews": 14.97,
+            "low_review_rate_pct": 77.95
+          },
+          {
+            "sizing_group": "b) late delivered",
+            "low_reviews": 3981,
+            "pct_of_low_reviews": 27.68,
+            "low_review_rate_pct": 62.42
+          },
+          {
+            "sizing_group": "c) on-time multi-seller",
+            "low_reviews": 584,
+            "pct_of_low_reviews": 4.06,
+            "low_review_rate_pct": 46.87
+          },
+          {
+            "sizing_group": "d) everything else",
+            "low_reviews": 7664,
+            "pct_of_low_reviews": 53.29,
+            "low_review_rate_pct": 8.71
+          }
+        ]
+      }
+    ],
+    "F4": [
+      {
+        "id": "seller_concentration",
+        "title": "Share of revenue from the top sellers",
+        "type": "bar",
+        "x": "top_pct",
+        "y": "revenue_share_pct",
+        "source": {
+          "file": "results/13_concentration.csv",
+          "columns": [
+            "top_pct",
+            "sellers_in_group",
+            "revenue_share_pct"
+          ],
+          "where": {}
+        },
+        "rows": [
+          {
+            "top_pct": 1,
+            "sellers_in_group": 30,
+            "revenue_share_pct": 25.93
+          },
+          {
+            "top_pct": 5,
+            "sellers_in_group": 148,
+            "revenue_share_pct": 52.99
+          },
+          {
+            "top_pct": 10,
+            "sellers_in_group": 295,
+            "revenue_share_pct": 67.04
+          },
+          {
+            "top_pct": 20,
+            "sellers_in_group": 589,
+            "revenue_share_pct": 82.2
+          }
+        ]
+      },
+      {
+        "id": "seller_curve",
+        "title": "Cumulative revenue share by seller rank (sampled ranks)",
+        "type": "line",
+        "x": "revenue_rank",
+        "y": "cumulative_share_pct",
+        "source": {
+          "file": "results/13_seller_revenue_rank.csv",
+          "columns": [
+            "revenue_rank",
+            "revenue",
+            "cumulative_share_pct"
+          ],
+          "where": {
+            "revenue_rank": [
+              "1",
+              "5",
+              "10",
+              "15",
+              "20",
+              "25",
+              "30",
+              "35",
+              "40",
+              "45",
+              "50",
+              "55",
+              "59",
+              "60",
+              "65",
+              "70",
+              "75",
+              "80",
+              "85",
+              "89",
+              "90",
+              "95",
+              "100",
+              "105",
+              "110",
+              "115",
+              "118",
+              "120",
+              "125",
+              "130",
+              "135",
+              "140",
+              "145",
+              "148",
+              "150",
+              "155",
+              "160",
+              "165",
+              "170",
+              "175",
+              "177",
+              "180",
+              "185",
+              "190",
+              "195",
+              "200",
+              "205",
+              "207",
+              "210",
+              "215",
+              "220",
+              "225",
+              "230",
+              "235",
+              "236",
+              "240",
+              "245",
+              "250",
+              "255",
+              "260",
+              "265",
+              "266",
+              "270",
+              "275",
+              "280",
+              "285",
+              "290",
+              "295",
+              "324",
+              "354",
+              "383",
+              "413",
+              "442",
+              "472",
+              "501",
+              "531",
+              "560",
+              "589",
+              "619",
+              "648",
+              "678",
+              "707",
+              "737",
+              "766",
+              "796",
+              "825",
+              "855",
+              "884",
+              "913",
+              "943",
+              "972",
+              "1002",
+              "1031",
+              "1061",
+              "1090",
+              "1120",
+              "1149",
+              "1178",
+              "1208",
+              "1237",
+              "1267",
+              "1296",
+              "1326",
+              "1355",
+              "1385",
+              "1414",
+              "1444",
+              "1473",
+              "1502",
+              "1532",
+              "1561",
+              "1591",
+              "1620",
+              "1650",
+              "1679",
+              "1709",
+              "1738",
+              "1767",
+              "1797",
+              "1826",
+              "1856",
+              "1885",
+              "1915",
+              "1944",
+              "1974",
+              "2003",
+              "2033",
+              "2062",
+              "2091",
+              "2121",
+              "2150",
+              "2180",
+              "2209",
+              "2239",
+              "2268",
+              "2298",
+              "2327",
+              "2356",
+              "2386",
+              "2415",
+              "2445",
+              "2474",
+              "2504",
+              "2533",
+              "2563",
+              "2592",
+              "2622",
+              "2651",
+              "2680",
+              "2710",
+              "2739",
+              "2769",
+              "2798",
+              "2828",
+              "2857",
+              "2887",
+              "2916",
+              "2945"
+            ]
+          }
+        },
+        "rows": [
+          {
+            "revenue_rank": 1,
+            "revenue": 226987.93,
+            "cumulative_share_pct": 1.7221
+          },
+          {
+            "revenue_rank": 5,
+            "revenue": 186570.05,
+            "cumulative_share_pct": 7.7331
+          },
+          {
+            "revenue_rank": 10,
+            "revenue": 131836.71,
+            "cumulative_share_pct": 13.3025
+          },
+          {
+            "revenue_rank": 15,
+            "revenue": 107573.9,
+            "cumulative_share_pct": 17.6451
+          },
+          {
+            "revenue_rank": 20,
+            "revenue": 79144.9,
+            "cumulative_share_pct": 21.2837
+          },
+          {
+            "revenue_rank": 25,
+            "revenue": 62081.46,
+            "cumulative_share_pct": 23.8084
+          },
+          {
+            "revenue_rank": 30,
+            "revenue": 54440.28,
+            "cumulative_share_pct": 25.9272
+          },
+          {
+            "revenue_rank": 35,
+            "revenue": 51232.78,
+            "cumulative_share_pct": 27.9382
+          },
+          {
+            "revenue_rank": 40,
+            "revenue": 48019.0,
+            "cumulative_share_pct": 29.8269
+          },
+          {
+            "revenue_rank": 45,
+            "revenue": 45285.37,
+            "cumulative_share_pct": 31.56
+          },
+          {
+            "revenue_rank": 50,
+            "revenue": 43048.18,
+            "cumulative_share_pct": 33.2263
+          },
+          {
+            "revenue_rank": 55,
+            "revenue": 39926.39,
+            "cumulative_share_pct": 34.8069
+          },
+          {
+            "revenue_rank": 59,
+            "revenue": 38990.72,
+            "cumulative_share_pct": 36.001
+          },
+          {
+            "revenue_rank": 60,
+            "revenue": 38559.07,
+            "cumulative_share_pct": 36.2935
+          },
+          {
+            "revenue_rank": 65,
+            "revenue": 36289.15,
+            "cumulative_share_pct": 37.6851
+          },
+          {
+            "revenue_rank": 70,
+            "revenue": 33005.32,
+            "cumulative_share_pct": 38.9856
+          },
+          {
+            "revenue_rank": 75,
+            "revenue": 31424.75,
+            "cumulative_share_pct": 40.2184
+          },
+          {
+            "revenue_rank": 80,
+            "revenue": 30849.22,
+            "cumulative_share_pct": 41.401
+          },
+          {
+            "revenue_rank": 85,
+            "revenue": 29205.1,
+            "cumulative_share_pct": 42.5388
+          },
+          {
+            "revenue_rank": 89,
+            "revenue": 27184.5,
+            "cumulative_share_pct": 43.3978
+          },
+          {
+            "revenue_rank": 90,
+            "revenue": 26833.61,
+            "cumulative_share_pct": 43.6014
+          },
+          {
+            "revenue_rank": 95,
+            "revenue": 25933.67,
+            "cumulative_share_pct": 44.5957
+          },
+          {
+            "revenue_rank": 100,
+            "revenue": 24904.29,
+            "cumulative_share_pct": 45.5567
+          },
+          {
+            "revenue_rank": 105,
+            "revenue": 24075.0,
+            "cumulative_share_pct": 46.4876
+          },
+          {
+            "revenue_rank": 110,
+            "revenue": 22600.63,
+            "cumulative_share_pct": 47.3686
+          },
+          {
+            "revenue_rank": 115,
+            "revenue": 21940.8,
+            "cumulative_share_pct": 48.209
+          },
+          {
+            "revenue_rank": 118,
+            "revenue": 21648.67,
+            "cumulative_share_pct": 48.7027
+          },
+          {
+            "revenue_rank": 120,
+            "revenue": 21480.96,
+            "cumulative_share_pct": 49.029
+          },
+          {
+            "revenue_rank": 125,
+            "revenue": 20260.0,
+            "cumulative_share_pct": 49.8226
+          },
+          {
+            "revenue_rank": 130,
+            "revenue": 18988.4,
+            "cumulative_share_pct": 50.5645
+          },
+          {
+            "revenue_rank": 135,
+            "revenue": 18335.9,
+            "cumulative_share_pct": 51.2695
+          },
+          {
+            "revenue_rank": 140,
+            "revenue": 17560.34,
+            "cumulative_share_pct": 51.945
+          },
+          {
+            "revenue_rank": 145,
+            "revenue": 17233.56,
+            "cumulative_share_pct": 52.6034
+          },
+          {
+            "revenue_rank": 148,
+            "revenue": 17000.0,
+            "cumulative_share_pct": 52.991
+          },
+          {
+            "revenue_rank": 150,
+            "revenue": 16788.0,
+            "cumulative_share_pct": 53.2467
+          },
+          {
+            "revenue_rank": 155,
+            "revenue": 16040.84,
+            "cumulative_share_pct": 53.8607
+          },
+          {
+            "revenue_rank": 160,
+            "revenue": 15645.8,
+            "cumulative_share_pct": 54.4618
+          },
+          {
+            "revenue_rank": 165,
+            "revenue": 15404.0,
+            "cumulative_share_pct": 55.051
+          },
+          {
+            "revenue_rank": 170,
+            "revenue": 15081.44,
+            "cumulative_share_pct": 55.6255
+          },
+          {
+            "revenue_rank": 175,
+            "revenue": 14504.2,
+            "cumulative_share_pct": 56.1875
+          },
+          {
+            "revenue_rank": 177,
+            "revenue": 14438.84,
+            "cumulative_share_pct": 56.4069
+          },
+          {
+            "revenue_rank": 180,
+            "revenue": 14267.3,
+            "cumulative_share_pct": 56.7329
+          },
+          {
+            "revenue_rank": 185,
+            "revenue": 13894.71,
+            "cumulative_share_pct": 57.2658
+          },
+          {
+            "revenue_rank": 190,
+            "revenue": 13585.16,
+            "cumulative_share_pct": 57.7846
+          },
+          {
+            "revenue_rank": 195,
+            "revenue": 13410.55,
+            "cumulative_share_pct": 58.2953
+          },
+          {
+            "revenue_rank": 200,
+            "revenue": 13272.7,
+            "cumulative_share_pct": 58.801
+          },
+          {
+            "revenue_rank": 205,
+            "revenue": 12991.61,
+            "cumulative_share_pct": 59.2995
+          },
+          {
+            "revenue_rank": 207,
+            "revenue": 12966.4,
+            "cumulative_share_pct": 59.4963
+          },
+          {
+            "revenue_rank": 210,
+            "revenue": 12842.43,
+            "cumulative_share_pct": 59.7901
+          },
+          {
+            "revenue_rank": 215,
+            "revenue": 12656.33,
+            "cumulative_share_pct": 60.2727
+          },
+          {
+            "revenue_rank": 220,
+            "revenue": 12446.85,
+            "cumulative_share_pct": 60.7486
+          },
+          {
+            "revenue_rank": 225,
+            "revenue": 12227.82,
+            "cumulative_share_pct": 61.2169
+          },
+          {
+            "revenue_rank": 230,
+            "revenue": 12170.21,
+            "cumulative_share_pct": 61.6792
+          },
+          {
+            "revenue_rank": 235,
+            "revenue": 12076.5,
+            "cumulative_share_pct": 62.1381
+          },
+          {
+            "revenue_rank": 236,
+            "revenue": 12039.33,
+            "cumulative_share_pct": 62.2294
+          },
+          {
+            "revenue_rank": 240,
+            "revenue": 11821.5,
+            "cumulative_share_pct": 62.5894
+          },
+          {
+            "revenue_rank": 245,
+            "revenue": 11793.89,
+            "cumulative_share_pct": 63.0371
+          },
+          {
+            "revenue_rank": 250,
+            "revenue": 11464.62,
+            "cumulative_share_pct": 63.4772
+          },
+          {
+            "revenue_rank": 255,
+            "revenue": 11296.5,
+            "cumulative_share_pct": 63.9084
+          },
+          {
+            "revenue_rank": 260,
+            "revenue": 11062.0,
+            "cumulative_share_pct": 64.3317
+          },
+          {
+            "revenue_rank": 265,
+            "revenue": 10838.41,
+            "cumulative_share_pct": 64.7462
+          },
+          {
+            "revenue_rank": 266,
+            "revenue": 10813.53,
+            "cumulative_share_pct": 64.8282
+          },
+          {
+            "revenue_rank": 270,
+            "revenue": 10454.2,
+            "cumulative_share_pct": 65.1508
+          },
+          {
+            "revenue_rank": 275,
+            "revenue": 10295.01,
+            "cumulative_share_pct": 65.5439
+          },
+          {
+            "revenue_rank": 280,
+            "revenue": 10132.19,
+            "cumulative_share_pct": 65.9301
+          },
+          {
+            "revenue_rank": 285,
+            "revenue": 9845.71,
+            "cumulative_share_pct": 66.3086
+          },
+          {
+            "revenue_rank": 290,
+            "revenue": 9704.6,
+            "cumulative_share_pct": 66.6802
+          },
+          {
+            "revenue_rank": 295,
+            "revenue": 9575.5,
+            "cumulative_share_pct": 67.0447
+          },
+          {
+            "revenue_rank": 324,
+            "revenue": 8888.3,
+            "cumulative_share_pct": 69.0778
+          },
+          {
+            "revenue_rank": 354,
+            "revenue": 8142.33,
+            "cumulative_share_pct": 71.0125
+          },
+          {
+            "revenue_rank": 383,
+            "revenue": 7625.35,
+            "cumulative_share_pct": 72.736
+          },
+          {
+            "revenue_rank": 413,
+            "revenue": 7212.23,
+            "cumulative_share_pct": 74.4201
+          },
+          {
+            "revenue_rank": 442,
+            "revenue": 6731.15,
+            "cumulative_share_pct": 75.9511
+          },
+          {
+            "revenue_rank": 472,
+            "revenue": 6350.06,
+            "cumulative_share_pct": 77.4377
+          },
+          {
+            "revenue_rank": 501,
+            "revenue": 5837.67,
+            "cumulative_share_pct": 78.774
+          },
+          {
+            "revenue_rank": 531,
+            "revenue": 5284.6,
+            "cumulative_share_pct": 80.0295
+          },
+          {
+            "revenue_rank": 560,
+            "revenue": 4922.48,
+            "cumulative_share_pct": 81.1488
+          },
+          {
+            "revenue_rank": 589,
+            "revenue": 4643.2,
+            "cumulative_share_pct": 82.1989
+          },
+          {
+            "revenue_rank": 619,
+            "revenue": 4349.5,
+            "cumulative_share_pct": 83.223
+          },
+          {
+            "revenue_rank": 648,
+            "revenue": 4097.0,
+            "cumulative_share_pct": 84.1494
+          },
+          {
+            "revenue_rank": 678,
+            "revenue": 3871.12,
+            "cumulative_share_pct": 85.0523
+          },
+          {
+            "revenue_rank": 707,
+            "revenue": 3697.2,
+            "cumulative_share_pct": 85.8806
+          },
+          {
+            "revenue_rank": 737,
+            "revenue": 3514.0,
+            "cumulative_share_pct": 86.7002
+          },
+          {
+            "revenue_rank": 766,
+            "revenue": 3248.8,
+            "cumulative_share_pct": 87.4426
+          },
+          {
+            "revenue_rank": 796,
+            "revenue": 3020.0,
+            "cumulative_share_pct": 88.1528
+          },
+          {
+            "revenue_rank": 825,
+            "revenue": 2821.2,
+            "cumulative_share_pct": 88.7952
+          },
+          {
+            "revenue_rank": 855,
+            "revenue": 2677.92,
+            "cumulative_share_pct": 89.4181
+          },
+          {
+            "revenue_rank": 884,
+            "revenue": 2500.9,
+            "cumulative_share_pct": 89.9893
+          },
+          {
+            "revenue_rank": 913,
+            "revenue": 2356.61,
+            "cumulative_share_pct": 90.5209
+          },
+          {
+            "revenue_rank": 943,
+            "revenue": 2184.0,
+            "cumulative_share_pct": 91.0362
+          },
+          {
+            "revenue_rank": 972,
+            "revenue": 2073.3,
+            "cumulative_share_pct": 91.5046
+          },
+          {
+            "revenue_rank": 1002,
+            "revenue": 1918.08,
+            "cumulative_share_pct": 91.9629
+          },
+          {
+            "revenue_rank": 1031,
+            "revenue": 1833.43,
+            "cumulative_share_pct": 92.3745
+          },
+          {
+            "revenue_rank": 1061,
+            "revenue": 1718.3,
+            "cumulative_share_pct": 92.7787
+          },
+          {
+            "revenue_rank": 1090,
+            "revenue": 1642.0,
+            "cumulative_share_pct": 93.1475
+          },
+          {
+            "revenue_rank": 1120,
+            "revenue": 1554.69,
+            "cumulative_share_pct": 93.5112
+          },
+          {
+            "revenue_rank": 1149,
+            "revenue": 1475.0,
+            "cumulative_share_pct": 93.8436
+          },
+          {
+            "revenue_rank": 1178,
+            "revenue": 1400.6,
+            "cumulative_share_pct": 94.1606
+          },
+          {
+            "revenue_rank": 1208,
+            "revenue": 1340.6,
+            "cumulative_share_pct": 94.4717
+          },
+          {
+            "revenue_rank": 1237,
+            "revenue": 1281.59,
+            "cumulative_share_pct": 94.7592
+          },
+          {
+            "revenue_rank": 1267,
+            "revenue": 1218.78,
+            "cumulative_share_pct": 95.0441
+          },
+          {
+            "revenue_rank": 1296,
+            "revenue": 1170.0,
+            "cumulative_share_pct": 95.3071
+          },
+          {
+            "revenue_rank": 1326,
+            "revenue": 1106.3,
+            "cumulative_share_pct": 95.5661
+          },
+          {
+            "revenue_rank": 1355,
+            "revenue": 1060.0,
+            "cumulative_share_pct": 95.804
+          },
+          {
+            "revenue_rank": 1385,
+            "revenue": 999.5,
+            "cumulative_share_pct": 96.0388
+          },
+          {
+            "revenue_rank": 1414,
+            "revenue": 951.7,
+            "cumulative_share_pct": 96.2544
+          },
+          {
+            "revenue_rank": 1444,
+            "revenue": 899.7,
+            "cumulative_share_pct": 96.4641
+          },
+          {
+            "revenue_rank": 1473,
+            "revenue": 849.7,
+            "cumulative_share_pct": 96.6557
+          },
+          {
+            "revenue_rank": 1502,
+            "revenue": 819.0,
+            "cumulative_share_pct": 96.8398
+          },
+          {
+            "revenue_rank": 1532,
+            "revenue": 788.89,
+            "cumulative_share_pct": 97.0223
+          },
+          {
+            "revenue_rank": 1561,
+            "revenue": 768.0,
+            "cumulative_share_pct": 97.194
+          },
+          {
+            "revenue_rank": 1591,
+            "revenue": 734.8,
+            "cumulative_share_pct": 97.365
+          },
+          {
+            "revenue_rank": 1620,
+            "revenue": 696.6,
+            "cumulative_share_pct": 97.5228
+          },
+          {
+            "revenue_rank": 1650,
+            "revenue": 657.0,
+            "cumulative_share_pct": 97.6765
+          },
+          {
+            "revenue_rank": 1679,
+            "revenue": 623.7,
+            "cumulative_share_pct": 97.8177
+          },
+          {
+            "revenue_rank": 1709,
+            "revenue": 587.46,
+            "cumulative_share_pct": 97.9553
+          },
+          {
+            "revenue_rank": 1738,
+            "revenue": 559.0,
+            "cumulative_share_pct": 98.0813
+          },
+          {
+            "revenue_rank": 1767,
+            "revenue": 522.0,
+            "cumulative_share_pct": 98.2
+          },
+          {
+            "revenue_rank": 1797,
+            "revenue": 495.0,
+            "cumulative_share_pct": 98.3164
+          },
+          {
+            "revenue_rank": 1826,
+            "revenue": 468.46,
+            "cumulative_share_pct": 98.4226
+          },
+          {
+            "revenue_rank": 1856,
+            "revenue": 448.9,
+            "cumulative_share_pct": 98.5264
+          },
+          {
+            "revenue_rank": 1885,
+            "revenue": 419.0,
+            "cumulative_share_pct": 98.6211
+          },
+          {
+            "revenue_rank": 1915,
+            "revenue": 399.0,
+            "cumulative_share_pct": 98.7144
+          },
+          {
+            "revenue_rank": 1944,
+            "revenue": 379.8,
+            "cumulative_share_pct": 98.8002
+          },
+          {
+            "revenue_rank": 1974,
+            "revenue": 356.3,
+            "cumulative_share_pct": 98.8835
+          },
+          {
+            "revenue_rank": 2003,
+            "revenue": 339.92,
+            "cumulative_share_pct": 98.9602
+          },
+          {
+            "revenue_rank": 2033,
+            "revenue": 318.0,
+            "cumulative_share_pct": 99.0349
+          },
+          {
+            "revenue_rank": 2062,
+            "revenue": 305.24,
+            "cumulative_share_pct": 99.1032
+          },
+          {
+            "revenue_rank": 2091,
+            "revenue": 289.9,
+            "cumulative_share_pct": 99.1687
+          },
+          {
+            "revenue_rank": 2121,
+            "revenue": 269.9,
+            "cumulative_share_pct": 99.2328
+          },
+          {
+            "revenue_rank": 2150,
+            "revenue": 254.5,
+            "cumulative_share_pct": 99.2906
+          },
+          {
+            "revenue_rank": 2180,
+            "revenue": 241.2,
+            "cumulative_share_pct": 99.3471
+          },
+          {
+            "revenue_rank": 2209,
+            "revenue": 226.0,
+            "cumulative_share_pct": 99.3988
+          },
+          {
+            "revenue_rank": 2239,
+            "revenue": 209.0,
+            "cumulative_share_pct": 99.4482
+          },
+          {
+            "revenue_rank": 2268,
+            "revenue": 199.67,
+            "cumulative_share_pct": 99.4929
+          },
+          {
+            "revenue_rank": 2298,
+            "revenue": 189.9,
+            "cumulative_share_pct": 99.5374
+          },
+          {
+            "revenue_rank": 2327,
+            "revenue": 180.0,
+            "cumulative_share_pct": 99.578
+          },
+          {
+            "revenue_rank": 2356,
+            "revenue": 170.0,
+            "cumulative_share_pct": 99.6168
+          },
+          {
+            "revenue_rank": 2386,
+            "revenue": 159.9,
+            "cumulative_share_pct": 99.6543
+          },
+          {
+            "revenue_rank": 2415,
+            "revenue": 150.0,
+            "cumulative_share_pct": 99.6884
+          },
+          {
+            "revenue_rank": 2445,
+            "revenue": 139.9,
+            "cumulative_share_pct": 99.7216
+          },
+          {
+            "revenue_rank": 2474,
+            "revenue": 134.8,
+            "cumulative_share_pct": 99.752
+          },
+          {
+            "revenue_rank": 2504,
+            "revenue": 124.0,
+            "cumulative_share_pct": 99.7814
+          },
+          {
+            "revenue_rank": 2533,
+            "revenue": 119.2,
+            "cumulative_share_pct": 99.8078
+          },
+          {
+            "revenue_rank": 2563,
+            "revenue": 108.0,
+            "cumulative_share_pct": 99.8338
+          },
+          {
+            "revenue_rank": 2592,
+            "revenue": 97.9,
+            "cumulative_share_pct": 99.8562
+          },
+          {
+            "revenue_rank": 2622,
+            "revenue": 89.9,
+            "cumulative_share_pct": 99.8774
+          },
+          {
+            "revenue_rank": 2651,
+            "revenue": 80.9,
+            "cumulative_share_pct": 99.8965
+          },
+          {
+            "revenue_rank": 2680,
+            "revenue": 75.0,
+            "cumulative_share_pct": 99.9138
+          },
+          {
+            "revenue_rank": 2710,
+            "revenue": 69.0,
+            "cumulative_share_pct": 99.9301
+          },
+          {
+            "revenue_rank": 2739,
+            "revenue": 59.9,
+            "cumulative_share_pct": 99.944
+          },
+          {
+            "revenue_rank": 2769,
+            "revenue": 54.3,
+            "cumulative_share_pct": 99.9571
+          },
+          {
+            "revenue_rank": 2798,
+            "revenue": 48.98,
+            "cumulative_share_pct": 99.9682
+          },
+          {
+            "revenue_rank": 2828,
+            "revenue": 39.9,
+            "cumulative_share_pct": 99.9784
+          },
+          {
+            "revenue_rank": 2857,
+            "revenue": 32.0,
+            "cumulative_share_pct": 99.9864
+          },
+          {
+            "revenue_rank": 2887,
+            "revenue": 23.92,
+            "cumulative_share_pct": 99.9928
+          },
+          {
+            "revenue_rank": 2916,
+            "revenue": 16.9,
+            "cumulative_share_pct": 99.9973
+          },
+          {
+            "revenue_rank": 2945,
+            "revenue": 6.5,
+            "cumulative_share_pct": 100.0
+          }
+        ]
+      },
+      {
+        "id": "handover_quartiles",
+        "title": "Sellers grouped by late-handover rate",
+        "type": "bar",
+        "x": "handover_quartile",
+        "y": "late_delivery_pct",
+        "source": {
+          "file": "results/13_handover_quartiles.csv",
+          "columns": [
+            "handover_quartile",
+            "sellers",
+            "late_handover_pct",
+            "late_delivery_pct",
+            "low_review_pct"
+          ],
+          "where": {}
+        },
+        "rows": [
+          {
+            "handover_quartile": 1,
+            "sellers": 154,
+            "late_handover_pct": 0.62,
+            "late_delivery_pct": 4.9,
+            "low_review_pct": 10.16
+          },
+          {
+            "handover_quartile": 2,
+            "sellers": 154,
+            "late_handover_pct": 3.3,
+            "late_delivery_pct": 5.98,
+            "low_review_pct": 11.48
+          },
+          {
+            "handover_quartile": 3,
+            "sellers": 153,
+            "late_handover_pct": 8.05,
+            "late_delivery_pct": 7.24,
+            "low_review_pct": 12.47
+          },
+          {
+            "handover_quartile": 4,
+            "sellers": 153,
+            "late_handover_pct": 24.19,
+            "late_delivery_pct": 9.43,
+            "low_review_pct": 16.31
+          }
+        ]
+      }
+    ],
+    "F5": [
+      {
+        "id": "monthly_revenue",
+        "title": "Delivered revenue by purchase month (BRL)",
+        "type": "line",
+        "x": "purchase_month",
+        "y": "revenue",
+        "source": {
+          "file": "results/14_monthly_revenue.csv",
+          "columns": [
+            "purchase_month",
+            "orders",
+            "revenue",
+            "aov",
+            "revenue_mom_pct"
+          ],
+          "where": {}
+        },
+        "rows": [
+          {
+            "purchase_month": "2017-01-01",
+            "orders": 750,
+            "revenue": 111798.36,
+            "aov": 149.06,
+            "revenue_mom_pct": null
+          },
+          {
+            "purchase_month": "2017-02-01",
+            "orders": 1653,
+            "revenue": 234223.4,
+            "aov": 141.7,
+            "revenue_mom_pct": 109.51
+          },
+          {
+            "purchase_month": "2017-03-01",
+            "orders": 2546,
+            "revenue": 359198.85,
+            "aov": 141.08,
+            "revenue_mom_pct": 53.36
+          },
+          {
+            "purchase_month": "2017-04-01",
+            "orders": 2303,
+            "revenue": 340669.68,
+            "aov": 147.92,
+            "revenue_mom_pct": -5.16
+          },
+          {
+            "purchase_month": "2017-05-01",
+            "orders": 3546,
+            "revenue": 489338.25,
+            "aov": 138.0,
+            "revenue_mom_pct": 43.64
+          },
+          {
+            "purchase_month": "2017-06-01",
+            "orders": 3135,
+            "revenue": 421923.37,
+            "aov": 134.58,
+            "revenue_mom_pct": -13.78
+          },
+          {
+            "purchase_month": "2017-07-01",
+            "orders": 3872,
+            "revenue": 481604.52,
+            "aov": 124.38,
+            "revenue_mom_pct": 14.15
+          },
+          {
+            "purchase_month": "2017-08-01",
+            "orders": 4193,
+            "revenue": 554699.7,
+            "aov": 132.29,
+            "revenue_mom_pct": 15.18
+          },
+          {
+            "purchase_month": "2017-09-01",
+            "orders": 4150,
+            "revenue": 607399.67,
+            "aov": 146.36,
+            "revenue_mom_pct": 9.5
+          },
+          {
+            "purchase_month": "2017-10-01",
+            "orders": 4478,
+            "revenue": 648247.65,
+            "aov": 144.76,
+            "revenue_mom_pct": 6.73
+          },
+          {
+            "purchase_month": "2017-11-01",
+            "orders": 7289,
+            "revenue": 987765.37,
+            "aov": 135.51,
+            "revenue_mom_pct": 52.37
+          },
+          {
+            "purchase_month": "2017-12-01",
+            "orders": 5513,
+            "revenue": 726033.19,
+            "aov": 131.69,
+            "revenue_mom_pct": -26.5
+          },
+          {
+            "purchase_month": "2018-01-01",
+            "orders": 7069,
+            "revenue": 924645.0,
+            "aov": 130.8,
+            "revenue_mom_pct": 27.36
+          },
+          {
+            "purchase_month": "2018-02-01",
+            "orders": 6555,
+            "revenue": 826437.13,
+            "aov": 126.08,
+            "revenue_mom_pct": -10.62
+          },
+          {
+            "purchase_month": "2018-03-01",
+            "orders": 7003,
+            "revenue": 953356.25,
+            "aov": 136.14,
+            "revenue_mom_pct": 15.36
+          },
+          {
+            "purchase_month": "2018-04-01",
+            "orders": 6798,
+            "revenue": 973534.09,
+            "aov": 143.21,
+            "revenue_mom_pct": 2.12
+          },
+          {
+            "purchase_month": "2018-05-01",
+            "orders": 6749,
+            "revenue": 977544.69,
+            "aov": 144.84,
+            "revenue_mom_pct": 0.41
+          },
+          {
+            "purchase_month": "2018-06-01",
+            "orders": 6099,
+            "revenue": 856077.86,
+            "aov": 140.36,
+            "revenue_mom_pct": -12.43
+          },
+          {
+            "purchase_month": "2018-07-01",
+            "orders": 6159,
+            "revenue": 867953.46,
+            "aov": 140.92,
+            "revenue_mom_pct": 1.39
+          },
+          {
+            "purchase_month": "2018-08-01",
+            "orders": 6351,
+            "revenue": 838576.64,
+            "aov": 132.04,
+            "revenue_mom_pct": -3.38
+          }
+        ]
+      },
+      {
+        "id": "freight_by_value",
+        "title": "Freight as share of item value, by order-value quartile",
+        "type": "bar",
+        "x": "value_quartile",
+        "y": "freight_pct_of_item_value",
+        "source": {
+          "file": "results/14_freight_by_value_quartile.csv",
+          "columns": [
+            "value_quartile",
+            "min_order_value",
+            "max_order_value",
+            "orders",
+            "freight_pct_of_item_value",
+            "pct_orders_freight_gt_50"
+          ],
+          "where": {}
+        },
+        "rows": [
+          {
+            "value_quartile": 1,
+            "min_order_value": 0.85,
+            "max_order_value": 45.9,
+            "orders": 24053,
+            "freight_pct_of_item_value": 53.41,
+            "pct_orders_freight_gt_50": 51.91
+          },
+          {
+            "value_quartile": 2,
+            "min_order_value": 45.9,
+            "max_order_value": 86.5,
+            "orders": 24053,
+            "freight_pct_of_item_value": 28.33,
+            "pct_orders_freight_gt_50": 6.97
+          },
+          {
+            "value_quartile": 3,
+            "min_order_value": 86.5,
+            "max_order_value": 149.9,
+            "orders": 24053,
+            "freight_pct_of_item_value": 19.93,
+            "pct_orders_freight_gt_50": 3.35
+          },
+          {
+            "value_quartile": 4,
+            "min_order_value": 149.9,
+            "max_order_value": 13440.0,
+            "orders": 24052,
+            "freight_pct_of_item_value": 10.26,
+            "pct_orders_freight_gt_50": 1.11
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,319 @@
+{
+  "queries": [
+    {
+      "finding": "F1",
+      "file": "sql/10_retention_cohorts.sql",
+      "query": "Q3",
+      "title": "Q3. SAME-DAY CHECK",
+      "sql": "-- =============================================================================\n-- Q3. SAME-DAY CHECK\n-- Question: How many \"second orders\" fall on the same calendar day as the\n--           first? What is the repeat rate if only a return on a later\n--           day counts?\n-- Logic:    same-day share = second orders with days_to_second = 0 / all\n--           second orders. Later-day repeat = customers with ANY delivered\n--           order on a later calendar day (first_later_day_return_at is not\n--           NULL). A customer whose 2nd order was same-day but whose 3rd was\n--           later still counts.\n-- Result:   827 of 2,789 second orders (29.65%) are same-day.\n--           Repeat rate, any day:   2,789 / 93,104 = 3.00%\n--           Repeat rate, later day: 2,005 / 93,104 = 2.15%\n-- =============================================================================\nCREATE TEMP VIEW q3_same_day_check AS\nSELECT\n    (SELECT COUNT(*) FROM second_orders)                                   AS second_orders,\n    (SELECT COUNT(*) FROM second_orders WHERE days_to_second = 0)          AS same_day_second_orders,\n    (SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE days_to_second = 0) / COUNT(*), 2)\n       FROM second_orders)                                                 AS same_day_pct_of_second_orders,\n    COUNT(*)                                                               AS customers,\n    COUNT(*) FILTER (WHERE delivered_orders >= 2)                          AS repeat_customers_any_day,\n    ROUND(100.0 * COUNT(*) FILTER (WHERE delivered_orders >= 2) / COUNT(*), 2)\n                                                                           AS repeat_rate_any_day_pct,\n    COUNT(*) FILTER (WHERE first_later_day_return_at IS NOT NULL)          AS repeat_customers_later_day,\n    ROUND(100.0 * COUNT(*) FILTER (WHERE first_later_day_return_at IS NOT NULL) / COUNT(*), 2)\n                                                                           AS repeat_rate_later_day_pct\nFROM delivered_customers;\n\n\\copy (SELECT * FROM q3_same_day_check) TO 'results/10_same_day_check.csv' WITH (FORMAT csv, HEADER true)\nSELECT * FROM q3_same_day_check;\n",
+      "annotations": [
+        {
+          "line_number": 28,
+          "line": "FROM delivered_customers;",
+          "note": "One row per customer: delivered_customers collapses each customer's delivered orders, with the date of the first return on a LATER day (MIN(purchased_at) FILTER (WHERE purchase_date > first_purchase_date))."
+        },
+        {
+          "line_number": 18,
+          "line": "(SELECT COUNT(*) FROM second_orders WHERE days_to_second = 0)          AS same_day_second_orders,",
+          "note": "Second orders on the same calendar day as the first; days_to_second comes from LAG over the customer's delivered orders."
+        },
+        {
+          "line_number": 22,
+          "line": "COUNT(*) FILTER (WHERE delivered_orders >= 2)                          AS repeat_customers_any_day,",
+          "note": "Any-day repeat: two or more delivered orders, even if placed minutes apart."
+        },
+        {
+          "line_number": 25,
+          "line": "COUNT(*) FILTER (WHERE first_later_day_return_at IS NOT NULL)          AS repeat_customers_later_day,",
+          "note": "Later-day repeat (decision C12): at least one delivered order on a later calendar day."
+        }
+      ],
+      "result": {
+        "file": "results/10_same_day_check.csv",
+        "columns": [
+          "second_orders",
+          "same_day_second_orders",
+          "same_day_pct_of_second_orders",
+          "customers",
+          "repeat_customers_any_day",
+          "repeat_rate_any_day_pct",
+          "repeat_customers_later_day",
+          "repeat_rate_later_day_pct"
+        ],
+        "rows": [
+          {
+            "second_orders": "2789",
+            "same_day_second_orders": "827",
+            "same_day_pct_of_second_orders": "29.65",
+            "customers": "93104",
+            "repeat_customers_any_day": "2789",
+            "repeat_rate_any_day_pct": "3.00",
+            "repeat_customers_later_day": "2005",
+            "repeat_rate_later_day_pct": "2.15"
+          }
+        ],
+        "total_rows": 1
+      }
+    },
+    {
+      "finding": "F2",
+      "file": "sql/11_delivery_performance.sql",
+      "query": "Q6",
+      "title": "Q6. SELLER HANDLING",
+      "sql": "-- =============================================================================\n-- Q6. SELLER HANDLING\n-- Question: How often does the seller hand the order to the carrier after\n--           the shipping limit, and are those orders late more often?\n-- Logic:    latest_shipping_limit = the latest shipping_limit_date among the\n--           order's items (v_order_items_agg). Handover is \"after the limit\"\n--           when order_delivered_carrier_date > latest_shipping_limit\n--           (timestamp comparison). Orders with no carrier date are left\n--           out and counted. Compare the late-delivery rate for the two\n--           groups. This shows an association only.\n-- Result:   After limit: 8,581 orders (8.92%), late rate 21.10%, median\n--           16.88 days. On or before: 87,621 (91.08%), late rate 5.39%,\n--           median 9.82 days. No carrier date: 1 order.\n-- =============================================================================\nCREATE TEMP VIEW q6_seller_handling AS\nWITH h AS (\n    SELECT\n        is_late,\n        delivery_days,\n        CASE\n            WHEN order_delivered_carrier_date IS NULL\n              OR latest_shipping_limit IS NULL                      THEN 'no carrier date'\n            WHEN order_delivered_carrier_date > latest_shipping_limit THEN 'after limit'\n            ELSE 'on or before limit'\n        END AS handover\n    FROM timed_orders\n)\nSELECT\n    handover,\n    COUNT(*)                                                                          AS orders,\n    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2)                                AS pct_of_orders,\n    ROUND(100.0 * COUNT(*) FILTER (WHERE is_late) / COUNT(*), 2)                      AS late_rate_pct,\n    ROUND((percentile_cont(0.5) WITHIN GROUP (ORDER BY delivery_days))::numeric, 2)   AS median_delivery_days\nFROM h\nGROUP BY handover;\n\n\\copy (SELECT * FROM q6_seller_handling ORDER BY handover) TO 'results/11_seller_handling.csv' WITH (FORMAT csv, HEADER true)\nSELECT * FROM q6_seller_handling ORDER BY handover;\n",
+      "annotations": [
+        {
+          "line_number": 22,
+          "line": "OR latest_shipping_limit IS NULL                      THEN 'no carrier date'",
+          "note": "Orders without a carrier date can't be judged, so they get their own group instead of being silently dropped."
+        },
+        {
+          "line_number": 23,
+          "line": "WHEN order_delivered_carrier_date > latest_shipping_limit THEN 'after limit'",
+          "note": "Late handover: the carrier received the order after the seller's latest shipping deadline."
+        },
+        {
+          "line_number": 31,
+          "line": "ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2)                                AS pct_of_orders,",
+          "note": "Share of orders: the group count divided by the grand total, a window SUM over the grouped counts."
+        },
+        {
+          "line_number": 32,
+          "line": "ROUND(100.0 * COUNT(*) FILTER (WHERE is_late) / COUNT(*), 2)                      AS late_rate_pct,",
+          "note": "Late-delivery rate inside each handover group (calendar-day rule)."
+        }
+      ],
+      "result": {
+        "file": "results/11_seller_handling.csv",
+        "columns": [
+          "handover",
+          "orders",
+          "pct_of_orders",
+          "late_rate_pct",
+          "median_delivery_days"
+        ],
+        "rows": [
+          {
+            "handover": "after limit",
+            "orders": "8581",
+            "pct_of_orders": "8.92",
+            "late_rate_pct": "21.10",
+            "median_delivery_days": "16.88"
+          },
+          {
+            "handover": "no carrier date",
+            "orders": "1",
+            "pct_of_orders": "0.00",
+            "late_rate_pct": "100.00",
+            "median_delivery_days": "52.45"
+          },
+          {
+            "handover": "on or before limit",
+            "orders": "87621",
+            "pct_of_orders": "91.08",
+            "late_rate_pct": "5.39",
+            "median_delivery_days": "9.82"
+          }
+        ],
+        "total_rows": 3
+      }
+    },
+    {
+      "finding": "F3",
+      "file": "sql/12_review_drivers.sql",
+      "query": "Q8",
+      "title": "Q8. REVIEW TIMING",
+      "sql": "-- =============================================================================\n-- Q8. REVIEW TIMING\n-- Question: How often is the review created before the order was delivered,\n--           and how do those reviews score?\n-- Logic:    Delivered orders with a delivery date only. Compare calendar\n--           days, because review_creation_date is almost always 00:00:00:\n--           \"before delivery\" = review date < delivered date. Groups:\n--           on-time / late x before / on-or-after delivery. pct_within is\n--           the share inside the on-time or late group.\n-- Result:   On time: 221 (0.25%) reviewed before delivery, low 17.65%;\n--           88,961 (99.75%) on or after, low 9.23%.\n--           Late: 4,749 (74.46%) reviewed BEFORE delivery, avg 1.84, low\n--           75.22%; 1,629 (25.54%) on or after, avg 3.53, low 25.11%.\n-- =============================================================================\nCREATE TEMP VIEW q8_review_timing AS\nSELECT\n    CASE WHEN is_late THEN 'late' ELSE 'on_time' END                            AS delivery_group,\n    CASE WHEN review_creation_date::date < order_delivered_customer_date::date\n         THEN 'before delivery' ELSE 'on or after delivery' END                 AS review_timing,\n    COUNT(*)                                                                    AS orders,\n    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY is_late), 2)      AS pct_within_delivery_group,\n    ROUND(AVG(review_score), 2)                                                 AS avg_score,\n    ROUND(100.0 * AVG(is_low_review), 2)                                        AS low_review_pct\nFROM reviewed_orders\nWHERE has_delivery_timing\nGROUP BY is_late, 2;\n\n\\copy (SELECT * FROM q8_review_timing ORDER BY delivery_group DESC, review_timing) TO 'results/12_review_timing.csv' WITH (FORMAT csv, HEADER true)\nSELECT * FROM q8_review_timing ORDER BY delivery_group DESC, review_timing;\n",
+      "annotations": [
+        {
+          "line_number": 18,
+          "line": "CASE WHEN review_creation_date::date < order_delivered_customer_date::date",
+          "note": "Review created on a calendar day before the parcel arrived."
+        },
+        {
+          "line_number": 21,
+          "line": "ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY is_late), 2)      AS pct_within_delivery_group,",
+          "note": "PARTITION BY is_late makes the share add up to 100% within on-time and within late orders separately."
+        },
+        {
+          "line_number": 23,
+          "line": "ROUND(100.0 * AVG(is_low_review), 2)                                        AS low_review_pct",
+          "note": "is_low_review is 1 for a 1-2 star review and 0 otherwise, so its average is the low-review share."
+        },
+        {
+          "line_number": 25,
+          "line": "WHERE has_delivery_timing",
+          "note": "Only delivered orders with a delivery date can be compared with the review date."
+        }
+      ],
+      "result": {
+        "file": "results/12_review_timing.csv",
+        "columns": [
+          "delivery_group",
+          "review_timing",
+          "orders",
+          "pct_within_delivery_group",
+          "avg_score",
+          "low_review_pct"
+        ],
+        "rows": [
+          {
+            "delivery_group": "on_time",
+            "review_timing": "before delivery",
+            "orders": "221",
+            "pct_within_delivery_group": "0.25",
+            "avg_score": "3.93",
+            "low_review_pct": "17.65"
+          },
+          {
+            "delivery_group": "on_time",
+            "review_timing": "on or after delivery",
+            "orders": "88961",
+            "pct_within_delivery_group": "99.75",
+            "avg_score": "4.29",
+            "low_review_pct": "9.23"
+          },
+          {
+            "delivery_group": "late",
+            "review_timing": "before delivery",
+            "orders": "4749",
+            "pct_within_delivery_group": "74.46",
+            "avg_score": "1.84",
+            "low_review_pct": "75.22"
+          },
+          {
+            "delivery_group": "late",
+            "review_timing": "on or after delivery",
+            "orders": "1629",
+            "pct_within_delivery_group": "25.54",
+            "avg_score": "3.53",
+            "low_review_pct": "25.11"
+          }
+        ],
+        "total_rows": 4
+      }
+    },
+    {
+      "finding": "F4",
+      "file": "sql/13_seller_scorecard.sql",
+      "query": "Q1",
+      "title": "Q1. CONCENTRATION",
+      "sql": "-- =============================================================================\n-- Q1. CONCENTRATION\n-- Question: How much revenue comes from the biggest sellers?\n-- Logic:    Rank sellers by revenue (highest first; seller_id breaks ties).\n--           Running SUM(revenue) OVER (ORDER BY rank) / total revenue =\n--           cumulative share. \"Top p%\" = the first CEIL(p * sellers)\n--           sellers, and its share is the cumulative share at that rank.\n--           The full ranking is saved for a Lorenz-style chart.\n-- Result:   2,945 sellers (matches baseline active sellers).\n--           Top 1% (30 sellers)   = 25.93% of revenue\n--           Top 5% (148)          = 52.99%\n--           Top 10% (295)         = 67.04%\n--           Top 20% (589)         = 82.20%\n-- =============================================================================\nCREATE TEMP VIEW seller_revenue_rank AS\nSELECT\n    seller_id,\n    revenue,\n    ROW_NUMBER() OVER (ORDER BY revenue DESC, seller_id)                        AS revenue_rank,\n    COUNT(*)     OVER ()                                                        AS total_sellers,\n    -- Running total: sum of revenue from rank 1 down to this row\n    SUM(revenue) OVER (ORDER BY revenue DESC, seller_id\n                       ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)       AS cumulative_revenue,\n    SUM(revenue) OVER ()                                                        AS total_revenue\nFROM seller_stats;\n\n\\copy (SELECT revenue_rank, seller_id, revenue, ROUND(100.0 * cumulative_revenue / total_revenue, 4) AS cumulative_share_pct FROM seller_revenue_rank ORDER BY revenue_rank) TO 'results/13_seller_revenue_rank.csv' WITH (FORMAT csv, HEADER true)\n\nCREATE TEMP VIEW q1_concentration AS\nSELECT\n    p.top_pct,\n    r.revenue_rank                                             AS sellers_in_group,\n    r.total_sellers,\n    ROUND(100.0 * r.cumulative_revenue / r.total_revenue, 2)   AS revenue_share_pct\nFROM (VALUES (1), (5), (10), (20)) AS p(top_pct)             -- the four cut-offs\nJOIN seller_revenue_rank r\n  ON r.revenue_rank = CEIL(r.total_sellers * p.top_pct / 100.0);\n\n\\copy (SELECT * FROM q1_concentration ORDER BY top_pct) TO 'results/13_concentration.csv' WITH (FORMAT csv, HEADER true)\nSELECT * FROM q1_concentration ORDER BY top_pct;\n",
+      "annotations": [
+        {
+          "line_number": 19,
+          "line": "ROW_NUMBER() OVER (ORDER BY revenue DESC, seller_id)                        AS revenue_rank,",
+          "note": "Rank sellers by revenue, biggest first; seller_id breaks ties so the ranking is always the same."
+        },
+        {
+          "line_number": 23,
+          "line": "ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)       AS cumulative_revenue,",
+          "note": "Running total: revenue of every seller from rank 1 down to this one."
+        },
+        {
+          "line_number": 35,
+          "line": "FROM (VALUES (1), (5), (10), (20)) AS p(top_pct)             -- the four cut-offs",
+          "note": "A four-row inline table of the cut-offs to report."
+        },
+        {
+          "line_number": 37,
+          "line": "ON r.revenue_rank = CEIL(r.total_sellers * p.top_pct / 100.0);",
+          "note": "Read the cumulative share at the last seller inside each top p%."
+        }
+      ],
+      "result": {
+        "file": "results/13_concentration.csv",
+        "columns": [
+          "top_pct",
+          "sellers_in_group",
+          "total_sellers",
+          "revenue_share_pct"
+        ],
+        "rows": [
+          {
+            "top_pct": "1",
+            "sellers_in_group": "30",
+            "total_sellers": "2945",
+            "revenue_share_pct": "25.93"
+          },
+          {
+            "top_pct": "5",
+            "sellers_in_group": "148",
+            "total_sellers": "2945",
+            "revenue_share_pct": "52.99"
+          },
+          {
+            "top_pct": "10",
+            "sellers_in_group": "295",
+            "total_sellers": "2945",
+            "revenue_share_pct": "67.04"
+          },
+          {
+            "top_pct": "20",
+            "sellers_in_group": "589",
+            "total_sellers": "2945",
+            "revenue_share_pct": "82.20"
+          }
+        ],
+        "total_rows": 4
+      }
+    },
+    {
+      "finding": "F5",
+      "file": "sql/14_revenue_rfm.sql",
+      "query": "Q1",
+      "title": "Q1. MONTHLY TREND AND YEAR-ON-YEAR",
+      "sql": "-- =============================================================================\n-- Q1. MONTHLY TREND AND YEAR-ON-YEAR\n-- Question: How did orders, revenue and AOV move month by month, and how\n--           does Jan-Aug 2018 compare with Jan-Aug 2017?\n-- Logic:    Q1a: group by purchase month. LAG(revenue) OVER (ORDER BY month)\n--           returns the previous month's revenue on each row; MoM change =\n--           (this - previous) / previous. The first month has no previous,\n--           so its change is NULL.\n--           Q1b: sum each 8-month period, then compare.\n-- Result:   Q1a: revenue climbs through 2017 to a peak of 987,765.37 in\n--           2017-11 (+52.37% MoM), then drops -26.50% in 2017-12. In 2018\n--           monthly revenue stays between 826,437.13 and 977,544.69; MoM\n--           changes are -12.43% to +27.36%. AOV ranges 124.38-149.06.\n--           Q1b: Jan-Aug 2018 vs 2017: orders 21,998 -> 52,783 (+139.94%),\n--           revenue 2,993,456.13 -> 7,218,125.12 (+141.13%), AOV 136.08 ->\n--           136.75 (+0.49%). Growth came from more orders, not bigger ones.\n-- =============================================================================\nCREATE TEMP VIEW q1a_monthly AS\nWITH m AS (\n    SELECT\n        purchase_month,\n        COUNT(*)          AS orders,\n        SUM(item_value)   AS revenue\n    FROM delivered\n    GROUP BY purchase_month\n)\nSELECT\n    purchase_month,\n    orders,\n    revenue,\n    ROUND(revenue / orders, 2)                                         AS aov,\n    LAG(revenue) OVER (ORDER BY purchase_month)                        AS prev_month_revenue,\n    ROUND(100.0 * (revenue - LAG(revenue) OVER (ORDER BY purchase_month))\n          / LAG(revenue) OVER (ORDER BY purchase_month), 2)            AS revenue_mom_pct\nFROM m;\n\n\\copy (SELECT * FROM q1a_monthly ORDER BY purchase_month) TO 'results/14_monthly_revenue.csv' WITH (FORMAT csv, HEADER true)\nSELECT * FROM q1a_monthly ORDER BY purchase_month;\n\nCREATE TEMP VIEW q1b_yoy AS\nWITH p AS (\n    SELECT\n        COUNT(*)        FILTER (WHERE purchase_month BETWEEN DATE '2017-01-01' AND DATE '2017-08-01') AS orders_2017,\n        COUNT(*)        FILTER (WHERE purchase_month BETWEEN DATE '2018-01-01' AND DATE '2018-08-01') AS orders_2018,\n        SUM(item_value) FILTER (WHERE purchase_month BETWEEN DATE '2017-01-01' AND DATE '2017-08-01') AS revenue_2017,\n        SUM(item_value) FILTER (WHERE purchase_month BETWEEN DATE '2018-01-01' AND DATE '2018-08-01') AS revenue_2018\n    FROM delivered\n)\nSELECT\n    orders_2017,\n    orders_2018,\n    ROUND(100.0 * (orders_2018 - orders_2017) / orders_2017, 2)                         AS orders_change_pct,\n    revenue_2017,\n    revenue_2018,\n    ROUND(100.0 * (revenue_2018 - revenue_2017) / revenue_2017, 2)                      AS revenue_change_pct,\n    ROUND(revenue_2017 / orders_2017, 2)                                                AS aov_2017,\n    ROUND(revenue_2018 / orders_2018, 2)                                                AS aov_2018,\n    ROUND(100.0 * ((revenue_2018 / orders_2018) - (revenue_2017 / orders_2017))\n          / (revenue_2017 / orders_2017), 2)                                            AS aov_change_pct\nFROM p;\n\n\\copy (SELECT * FROM q1b_yoy) TO 'results/14_yoy_jan_aug.csv' WITH (FORMAT csv, HEADER true)\nSELECT * FROM q1b_yoy;\n",
+      "annotations": [
+        {
+          "line_number": 32,
+          "line": "LAG(revenue) OVER (ORDER BY purchase_month)                        AS prev_month_revenue,",
+          "note": "LAG puts the previous month's revenue on each row for the month-over-month change."
+        },
+        {
+          "line_number": 43,
+          "line": "COUNT(*)        FILTER (WHERE purchase_month BETWEEN DATE '2017-01-01' AND DATE '2017-08-01') AS orders_2017,",
+          "note": "FILTER counts only Jan-Aug 2017 orders in the same pass that counts 2018."
+        },
+        {
+          "line_number": 55,
+          "line": "ROUND(100.0 * (revenue_2018 - revenue_2017) / revenue_2017, 2)                      AS revenue_change_pct,",
+          "note": "Year-on-year revenue change over the same eight months."
+        },
+        {
+          "line_number": 59,
+          "line": "/ (revenue_2017 / orders_2017), 2)                                            AS aov_change_pct",
+          "note": "Average order value change: shows whether growth came from bigger orders or more orders."
+        }
+      ],
+      "result": {
+        "file": "results/14_yoy_jan_aug.csv",
+        "columns": [
+          "orders_2017",
+          "orders_2018",
+          "orders_change_pct",
+          "revenue_2017",
+          "revenue_2018",
+          "revenue_change_pct",
+          "aov_2017",
+          "aov_2018",
+          "aov_change_pct"
+        ],
+        "rows": [
+          {
+            "orders_2017": "21998",
+            "orders_2018": "52783",
+            "orders_change_pct": "139.94",
+            "revenue_2017": "2993456.13",
+            "revenue_2018": "7218125.12",
+            "revenue_change_pct": "141.13",
+            "aov_2017": "136.08",
+            "aov_2018": "136.75",
+            "aov_change_pct": "0.49"
+          }
+        ],
+        "total_rows": 1
+      }
+    }
+  ]
+}

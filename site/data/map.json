@@ -1,0 +1,1112 @@
+{
+  "source": "results/15_state_delivery.csv (sql/15_site_support.sql, Q7)",
+  "states": {
+    "AC": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 80,
+        "display": "80",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "AC"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 3.75,
+        "display": "3.75%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "AC"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 18.36,
+        "display": "18.36",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "AC"
+          }
+        }
+      }
+    },
+    "AL": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 396,
+        "display": "396",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "AL"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 21.46,
+        "display": "21.46%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "AL"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 22.33,
+        "display": "22.33",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "AL"
+          }
+        }
+      }
+    },
+    "AM": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 145,
+        "display": "145",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "AM"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 2.76,
+        "display": "2.76%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "AM"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 25.88,
+        "display": "25.88",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "AM"
+          }
+        }
+      }
+    },
+    "AP": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 67,
+        "display": "67",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "AP"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 2.99,
+        "display": "2.99%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "AP"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 24.35,
+        "display": "24.35",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "AP"
+          }
+        }
+      }
+    },
+    "BA": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 3253,
+        "display": "3,253",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "BA"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 12.17,
+        "display": "12.17%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "BA"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 16.91,
+        "display": "16.91",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "BA"
+          }
+        }
+      }
+    },
+    "CE": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 1273,
+        "display": "1,273",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "CE"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 13.83,
+        "display": "13.83%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "CE"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 18.17,
+        "display": "18.17",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "CE"
+          }
+        }
+      }
+    },
+    "DF": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 2074,
+        "display": "2,074",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "DF"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 5.69,
+        "display": "5.69%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "DF"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 11.36,
+        "display": "11.36",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "DF"
+          }
+        }
+      }
+    },
+    "ES": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 1992,
+        "display": "1,992",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "ES"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 10.74,
+        "display": "10.74%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "ES"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 13.64,
+        "display": "13.64",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "ES"
+          }
+        }
+      }
+    },
+    "GO": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 1950,
+        "display": "1,950",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "GO"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 6.56,
+        "display": "6.56%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "GO"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 13.95,
+        "display": "13.95",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "GO"
+          }
+        }
+      }
+    },
+    "MA": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 713,
+        "display": "713",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "MA"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 17.53,
+        "display": "17.53%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "MA"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 19.18,
+        "display": "19.18",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "MA"
+          }
+        }
+      }
+    },
+    "MG": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 11319,
+        "display": "11,319",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "MG"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 4.59,
+        "display": "4.59%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "MG"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 10.31,
+        "display": "10.31",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "MG"
+          }
+        }
+      }
+    },
+    "MS": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 701,
+        "display": "701",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "MS"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 9.7,
+        "display": "9.70%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "MS"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 13.94,
+        "display": "13.94",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "MS"
+          }
+        }
+      }
+    },
+    "MT": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 885,
+        "display": "885",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "MT"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 5.99,
+        "display": "5.99%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "MT"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 16.12,
+        "display": "16.12",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "MT"
+          }
+        }
+      }
+    },
+    "PA": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 942,
+        "display": "942",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "PA"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 11.25,
+        "display": "11.25%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "PA"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 21.07,
+        "display": "21.07",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "PA"
+          }
+        }
+      }
+    },
+    "PB": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 516,
+        "display": "516",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "PB"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 10.47,
+        "display": "10.47%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "PB"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 18.15,
+        "display": "18.15",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "PB"
+          }
+        }
+      }
+    },
+    "PE": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 1587,
+        "display": "1,587",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "PE"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 9.64,
+        "display": "9.64%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "PE"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 15.7,
+        "display": "15.70",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "PE"
+          }
+        }
+      }
+    },
+    "PI": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 475,
+        "display": "475",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "PI"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 13.89,
+        "display": "13.89%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "PI"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 16.28,
+        "display": "16.28",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "PI"
+          }
+        }
+      }
+    },
+    "PR": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 4903,
+        "display": "4,903",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "PR"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 4.06,
+        "display": "4.06%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "PR"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 10.42,
+        "display": "10.42",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "PR"
+          }
+        }
+      }
+    },
+    "RJ": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 12310,
+        "display": "12,310",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "RJ"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 12.14,
+        "display": "12.14%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "RJ"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 12.04,
+        "display": "12.04",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "RJ"
+          }
+        }
+      }
+    },
+    "RN": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 470,
+        "display": "470",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "RN"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 9.36,
+        "display": "9.36%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "RN"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 16.05,
+        "display": "16.05",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "RN"
+          }
+        }
+      }
+    },
+    "RO": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 243,
+        "display": "243",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "RO"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 2.88,
+        "display": "2.88%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "RO"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 17.58,
+        "display": "17.58",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "RO"
+          }
+        }
+      }
+    },
+    "RR": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 40,
+        "display": "40",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "RR"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 12.5,
+        "display": "12.50%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "RR"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 25.13,
+        "display": "25.13",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "RR"
+          }
+        }
+      }
+    },
+    "RS": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 5328,
+        "display": "5,328",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "RS"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 6.1,
+        "display": "6.10%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "RS"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 13.17,
+        "display": "13.17",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "RS"
+          }
+        }
+      }
+    },
+    "SC": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 3537,
+        "display": "3,537",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "SC"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 8.23,
+        "display": "8.23%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "SC"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 13.01,
+        "display": "13.01",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "SC"
+          }
+        }
+      }
+    },
+    "SE": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 332,
+        "display": "332",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "SE"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 15.36,
+        "display": "15.36%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "SE"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 17.93,
+        "display": "17.93",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "SE"
+          }
+        }
+      }
+    },
+    "SP": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 40406,
+        "display": "40,406",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "SP"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 4.5,
+        "display": "4.50%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "SP"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 7.2,
+        "display": "7.20",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "SP"
+          }
+        }
+      }
+    },
+    "TO": {
+      "delivered_orders": {
+        "label": "Delivered orders",
+        "value": 274,
+        "display": "274",
+        "unit": "count",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "delivered_orders",
+          "where": {
+            "state": "TO"
+          }
+        }
+      },
+      "late_rate_pct": {
+        "label": "Late rate",
+        "value": 9.85,
+        "display": "9.85%",
+        "unit": "pct",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "late_rate_pct",
+          "where": {
+            "state": "TO"
+          }
+        }
+      },
+      "median_delivery_days": {
+        "label": "Median delivery days",
+        "value": 15.87,
+        "display": "15.87",
+        "unit": "days",
+        "source": {
+          "file": "results/15_state_delivery.csv",
+          "column": "median_delivery_days",
+          "where": {
+            "state": "TO"
+          }
+        }
+      }
+    }
+  }
+}

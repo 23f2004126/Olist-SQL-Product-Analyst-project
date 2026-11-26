@@ -1,0 +1,1402 @@
+{
+  "findings": [
+    {
+      "id": "F1",
+      "topic": "Retention",
+      "headline_template": "Only {repeat_later_day} of customers came back on a later day, and {same_day_share} of second orders were placed on the same day as the first.",
+      "headline": "Only 2.15% of customers came back on a later day, and 29.65% of second orders were placed on the same day as the first.",
+      "key_numbers": {
+        "repeat_later_day": {
+          "label": "Returned on a later day",
+          "value": 2.15,
+          "display": "2.15%",
+          "unit": "pct",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "repeat_rate_later_day_pct",
+            "where": {}
+          }
+        },
+        "repeat_customers_later_day": {
+          "label": "Customers who returned on a later day",
+          "value": 2005,
+          "display": "2,005",
+          "unit": "count",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "repeat_customers_later_day",
+            "where": {}
+          }
+        },
+        "customers": {
+          "label": "Customers with a delivered order",
+          "value": 93104,
+          "display": "93,104",
+          "unit": "count",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "customers",
+            "where": {}
+          }
+        },
+        "repeat_any_day": {
+          "label": "Returned on any day (incl. same day)",
+          "value": 3.0,
+          "display": "3.00%",
+          "unit": "pct",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "repeat_rate_any_day_pct",
+            "where": {}
+          }
+        },
+        "same_day_share": {
+          "label": "Second orders placed the same day as the first",
+          "value": 29.65,
+          "display": "29.65%",
+          "unit": "pct",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "same_day_pct_of_second_orders",
+            "where": {}
+          }
+        },
+        "median_days_to_second": {
+          "label": "Median days to second order",
+          "value": 29,
+          "display": "29",
+          "unit": "days",
+          "source": {
+            "file": "results/10_time_to_second_order_percentiles.csv",
+            "column": "median_days",
+            "where": {}
+          }
+        },
+        "repeat_180_later_day": {
+          "label": "Returned on a later day within 180 days",
+          "value": 1.97,
+          "display": "1.97%",
+          "unit": "pct",
+          "source": {
+            "file": "results/10_fixed_window_repeat.csv",
+            "column": "repeat_180d_later_day_pct",
+            "where": {
+              "cohort": "overall"
+            }
+          }
+        },
+        "repeat_revenue_share": {
+          "label": "Revenue from second and later orders",
+          "value": 2.89,
+          "display": "2.89%",
+          "unit": "pct",
+          "source": {
+            "file": "results/10_repeat_revenue.csv",
+            "column": "repeat_order_revenue_pct",
+            "where": {}
+          }
+        },
+        "cohort_max_later_month": {
+          "label": "Highest share of a cohort ordering in any later month",
+          "value": 0.72,
+          "display": "0.72%",
+          "unit": "pct",
+          "source": {
+            "file": "results/10_cohort_matrix_pct.csv",
+            "column": "m1",
+            "where": {
+              "cohort_month": "2017-10-01"
+            }
+          }
+        },
+        "repeat_per_100": {
+          "label": "Customers in 100 who came back on a later day (rounded)",
+          "value": 2,
+          "display": "2",
+          "unit": "count",
+          "derived": {
+            "rule": "round half up to a whole number",
+            "from": {
+              "label": "Returned on a later day",
+              "value": 2.15,
+              "display": "2.15%",
+              "unit": "pct",
+              "source": {
+                "file": "results/10_same_day_check.csv",
+                "column": "repeat_rate_later_day_pct",
+                "where": {}
+              }
+            }
+          }
+        }
+      },
+      "source": [
+        {
+          "file": "sql/10_retention_cohorts.sql",
+          "queries": [
+            "Q1",
+            "Q2",
+            "Q3",
+            "Q5",
+            "Q7"
+          ]
+        }
+      ],
+      "doesnt_show": "Why customers do not return, whether customers bought before 2017, or whether same-day second orders are one checkout split into several orders.",
+      "recommendations": [
+        "R3"
+      ]
+    },
+    {
+      "id": "F2",
+      "topic": "Delivery promises and handover",
+      "headline_template": "Orders arrived a median {median_actual} days after purchase against a {median_promised}-day promise, but orders handed to the carrier after the seller's shipping limit were late {late_after_limit} of the time, against {late_on_time_handover}.",
+      "headline": "Orders arrived a median 10 days after purchase against a 24-day promise, but orders handed to the carrier after the seller's shipping limit were late 21.10% of the time, against 5.39%.",
+      "key_numbers": {
+        "on_time": {
+          "label": "On-time delivery",
+          "value": 93.21,
+          "display": "93.21%",
+          "unit": "pct",
+          "source": {
+            "file": "results/11_overall.csv",
+            "column": "on_time_rate_pct",
+            "where": {}
+          }
+        },
+        "median_promised": {
+          "label": "Median promised days",
+          "value": 24.0,
+          "display": "24",
+          "unit": "days",
+          "source": {
+            "file": "results/11_promise_medians.csv",
+            "column": "median_promised_days",
+            "where": {}
+          }
+        },
+        "median_actual": {
+          "label": "Median actual days (calendar)",
+          "value": 10.0,
+          "display": "10",
+          "unit": "days",
+          "source": {
+            "file": "results/11_promise_medians.csv",
+            "column": "median_actual_calendar_days",
+            "where": {}
+          }
+        },
+        "early_7plus": {
+          "label": "Delivered 7+ days early",
+          "value": 78.88,
+          "display": "78.88%",
+          "unit": "pct",
+          "source": {
+            "file": "results/11_delay_buckets.csv",
+            "column": "pct_of_orders",
+            "where": {
+              "bucket": "7+ days early"
+            }
+          }
+        },
+        "handover_after_share": {
+          "label": "Orders handed over after the shipping limit",
+          "value": 8.92,
+          "display": "8.92%",
+          "unit": "pct",
+          "source": {
+            "file": "results/11_seller_handling.csv",
+            "column": "pct_of_orders",
+            "where": {
+              "handover": "after limit"
+            }
+          }
+        },
+        "late_after_limit": {
+          "label": "Late rate, handed over after the limit",
+          "value": 21.1,
+          "display": "21.10%",
+          "unit": "pct",
+          "source": {
+            "file": "results/11_seller_handling.csv",
+            "column": "late_rate_pct",
+            "where": {
+              "handover": "after limit"
+            }
+          }
+        },
+        "late_on_time_handover": {
+          "label": "Late rate, handed over on time",
+          "value": 5.39,
+          "display": "5.39%",
+          "unit": "pct",
+          "source": {
+            "file": "results/11_seller_handling.csv",
+            "column": "late_rate_pct",
+            "where": {
+              "handover": "on or before limit"
+            }
+          }
+        },
+        "carrier_days_late": {
+          "label": "Median carrier-to-customer days, late orders",
+          "value": 26.21,
+          "display": "26.21",
+          "unit": "days",
+          "source": {
+            "file": "results/11_stage_medians.csv",
+            "column": "median_carrier_to_customer",
+            "where": {
+              "delivery_group": "late"
+            }
+          }
+        },
+        "carrier_days_on_time": {
+          "label": "Median carrier-to-customer days, on-time orders",
+          "value": 6.96,
+          "display": "6.96",
+          "unit": "days",
+          "source": {
+            "file": "results/11_stage_medians.csv",
+            "column": "median_carrier_to_customer",
+            "where": {
+              "delivery_group": "on_time"
+            }
+          }
+        },
+        "timed_orders": {
+          "label": "Delivered orders with a delivery date",
+          "value": 96203,
+          "display": "96,203",
+          "unit": "count",
+          "source": {
+            "file": "results/11_overall.csv",
+            "column": "orders",
+            "where": {}
+          }
+        },
+        "stage_orders": {
+          "label": "Orders with valid stage dates",
+          "value": 94844,
+          "display": "94,844",
+          "unit": "count",
+          "source": {
+            "file": "results/11_stage_medians.csv",
+            "column": "orders",
+            "where": {
+              "delivery_group": "all"
+            }
+          }
+        }
+      },
+      "source": [
+        {
+          "file": "sql/11_delivery_performance.sql",
+          "queries": [
+            "Q1",
+            "Q3",
+            "Q5",
+            "Q6"
+          ]
+        }
+      ],
+      "doesnt_show": "That late handover causes late delivery, how carriers perform, or the slowest deliveries of the last months (orders not yet delivered when the data ends).",
+      "recommendations": [
+        "R2"
+      ]
+    },
+    {
+      "id": "F3",
+      "topic": "Reviews and review timing",
+      "headline_template": "The share of 1-2 star reviews rises from {low_7plus_early} for orders arriving 7+ days early to {low_8plus_late} for orders 8+ days late, and {late_reviewed_before} of late orders were reviewed before they arrived.",
+      "headline": "The share of 1-2 star reviews rises from 8.98% for orders arriving 7+ days early to 79.27% for orders 8+ days late, and 74.46% of late orders were reviewed before they arrived.",
+      "key_numbers": {
+        "low_share": {
+          "label": "Share of 1-2 star reviews",
+          "value": 14.63,
+          "display": "14.63%",
+          "unit": "pct",
+          "source": {
+            "file": "results/baseline.csv",
+            "column": "value",
+            "where": {
+              "section": "reviews",
+              "dimension": "all",
+              "metric": "share_1_2_star_pct"
+            }
+          }
+        },
+        "low_7plus_early": {
+          "label": "1-2 star share, 7+ days early",
+          "value": 8.98,
+          "display": "8.98%",
+          "unit": "pct",
+          "source": {
+            "file": "results/12_by_delay_bucket.csv",
+            "column": "low_review_pct",
+            "where": {
+              "bucket": "7+ days early"
+            }
+          }
+        },
+        "low_8plus_late": {
+          "label": "1-2 star share, 8+ days late",
+          "value": 79.27,
+          "display": "79.27%",
+          "unit": "pct",
+          "source": {
+            "file": "results/12_by_delay_bucket.csv",
+            "column": "low_review_pct",
+            "where": {
+              "bucket": "8+ days late"
+            }
+          }
+        },
+        "late_reviewed_before": {
+          "label": "Late orders reviewed before delivery",
+          "value": 74.46,
+          "display": "74.46%",
+          "unit": "pct",
+          "source": {
+            "file": "results/12_review_timing.csv",
+            "column": "pct_within_delivery_group",
+            "where": {
+              "delivery_group": "late",
+              "review_timing": "before delivery"
+            }
+          }
+        },
+        "low_before": {
+          "label": "1-2 star share, late and reviewed before delivery",
+          "value": 75.22,
+          "display": "75.22%",
+          "unit": "pct",
+          "source": {
+            "file": "results/12_review_timing.csv",
+            "column": "low_review_pct",
+            "where": {
+              "delivery_group": "late",
+              "review_timing": "before delivery"
+            }
+          }
+        },
+        "low_after": {
+          "label": "1-2 star share, late and reviewed after delivery",
+          "value": 25.11,
+          "display": "25.11%",
+          "unit": "pct",
+          "source": {
+            "file": "results/12_review_timing.csv",
+            "column": "low_review_pct",
+            "where": {
+              "delivery_group": "late",
+              "review_timing": "on or after delivery"
+            }
+          }
+        },
+        "late_share_of_low": {
+          "label": "Share of all 1-2 star reviews from late delivered orders",
+          "value": 27.68,
+          "display": "27.68%",
+          "unit": "pct",
+          "source": {
+            "file": "results/12_low_review_sizing.csv",
+            "column": "pct_of_low_reviews",
+            "where": {
+              "sizing_group": "b) late delivered"
+            }
+          }
+        },
+        "other_share_of_low": {
+          "label": "Share of all 1-2 star reviews from on-time single-seller orders",
+          "value": 53.29,
+          "display": "53.29%",
+          "unit": "pct",
+          "source": {
+            "file": "results/12_low_review_sizing.csv",
+            "column": "pct_of_low_reviews",
+            "where": {
+              "sizing_group": "d) everything else"
+            }
+          }
+        },
+        "score_before": {
+          "label": "Average score, late and reviewed before delivery",
+          "value": 1.84,
+          "display": "1.84",
+          "unit": "score",
+          "source": {
+            "file": "results/12_review_timing.csv",
+            "column": "avg_score",
+            "where": {
+              "delivery_group": "late",
+              "review_timing": "before delivery"
+            }
+          }
+        },
+        "score_after": {
+          "label": "Average score, late and reviewed after delivery",
+          "value": 3.53,
+          "display": "3.53",
+          "unit": "score",
+          "source": {
+            "file": "results/12_review_timing.csv",
+            "column": "avg_score",
+            "where": {
+              "delivery_group": "late",
+              "review_timing": "on or after delivery"
+            }
+          }
+        },
+        "late_reviewed_orders": {
+          "label": "Late delivered orders with a review",
+          "value": 6378,
+          "display": "6,378",
+          "unit": "count",
+          "source": {
+            "file": "results/12_review_creation_gap.csv",
+            "column": "orders",
+            "where": {
+              "delivery_group": "late"
+            }
+          }
+        },
+        "review_days_after_estimate_late": {
+          "label": "Late orders: median days from estimated date to review",
+          "value": 2,
+          "display": "2",
+          "unit": "days",
+          "source": {
+            "file": "results/12_review_creation_gap.csv",
+            "column": "median_days_after_estimate",
+            "where": {
+              "delivery_group": "late"
+            }
+          }
+        }
+      },
+      "source": [
+        {
+          "file": "sql/12_review_drivers.sql",
+          "queries": [
+            "Q2",
+            "Q7",
+            "Q8",
+            "Q8b"
+          ]
+        }
+      ],
+      "doesnt_show": "What drives the low reviews on on-time single-seller orders (review text was not analysed), or how Olist triggers the review request.",
+      "recommendations": [
+        "R1"
+      ]
+    },
+    {
+      "id": "F4",
+      "topic": "Seller concentration",
+      "headline_template": "The top 1% of sellers ({top1_sellers} sellers) earned {top1_share} of revenue, and {handover_top_sellers} sellers account for {handover_top_share} of scorecard late handovers.",
+      "headline": "The top 1% of sellers (30 sellers) earned 25.93% of revenue, and 62 sellers account for 55.42% of scorecard late handovers.",
+      "key_numbers": {
+        "top1_sellers": {
+          "label": "Sellers in the top 1%",
+          "value": 30,
+          "display": "30",
+          "unit": "count",
+          "source": {
+            "file": "results/13_concentration.csv",
+            "column": "sellers_in_group",
+            "where": {
+              "top_pct": "1"
+            }
+          }
+        },
+        "top1_share": {
+          "label": "Revenue share, top 1% of sellers",
+          "value": 25.93,
+          "display": "25.93%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_concentration.csv",
+            "column": "revenue_share_pct",
+            "where": {
+              "top_pct": "1"
+            }
+          }
+        },
+        "top20_share": {
+          "label": "Revenue share, top 20% of sellers",
+          "value": 82.2,
+          "display": "82.20%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_concentration.csv",
+            "column": "revenue_share_pct",
+            "where": {
+              "top_pct": "20"
+            }
+          }
+        },
+        "handover_top_sellers": {
+          "label": "Sellers with the most late handovers (top 10% of scorecard)",
+          "value": 62,
+          "display": "62",
+          "unit": "count",
+          "source": {
+            "file": "results/13_handover_concentration.csv",
+            "column": "top10pct_sellers",
+            "where": {}
+          }
+        },
+        "handover_top_share": {
+          "label": "Their share of scorecard late handovers",
+          "value": 55.42,
+          "display": "55.42%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_handover_concentration.csv",
+            "column": "pct_of_scorecard_late_handovers",
+            "where": {}
+          }
+        },
+        "handover_top_order_share": {
+          "label": "Their share of scorecard orders",
+          "value": 31.93,
+          "display": "31.93%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_handover_concentration.csv",
+            "column": "pct_of_scorecard_handover_orders",
+            "where": {}
+          }
+        },
+        "problem_sellers": {
+          "label": "Problem sellers (low-review share >= 2x benchmark)",
+          "value": 31,
+          "display": "31",
+          "unit": "count",
+          "source": {
+            "file": "results/13_problem_sellers.csv",
+            "column": "problem_sellers",
+            "where": {}
+          }
+        },
+        "problem_low_share": {
+          "label": "Problem sellers' share of low reviews",
+          "value": 10.62,
+          "display": "10.62%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_problem_sellers.csv",
+            "column": "pct_of_scorecard_low_reviews",
+            "where": {}
+          }
+        },
+        "problem_order_share": {
+          "label": "Problem sellers' share of orders",
+          "value": 4.36,
+          "display": "4.36%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_problem_sellers.csv",
+            "column": "pct_of_scorecard_orders",
+            "where": {}
+          }
+        },
+        "q4_late_delivery": {
+          "label": "Late delivery, sellers with most late handovers (quartile 4)",
+          "value": 9.43,
+          "display": "9.43%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_handover_quartiles.csv",
+            "column": "late_delivery_pct",
+            "where": {
+              "handover_quartile": "4"
+            }
+          }
+        },
+        "active_sellers": {
+          "label": "Sellers with a delivered sale in the window",
+          "value": 2945,
+          "display": "2,945",
+          "unit": "count",
+          "source": {
+            "file": "results/13_concentration.csv",
+            "column": "total_sellers",
+            "where": {
+              "top_pct": "1"
+            }
+          }
+        },
+        "q1_late_delivery": {
+          "label": "Late delivery, sellers with fewest late handovers (quartile 1)",
+          "value": 4.9,
+          "display": "4.90%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_handover_quartiles.csv",
+            "column": "late_delivery_pct",
+            "where": {
+              "handover_quartile": "1"
+            }
+          }
+        }
+      },
+      "source": [
+        {
+          "file": "sql/13_seller_scorecard.sql",
+          "queries": [
+            "Q1",
+            "Q4",
+            "Q5",
+            "Q6"
+          ]
+        }
+      ],
+      "doesnt_show": "Why some sellers hand over late, quality on multi-seller orders (not attributed to a seller), or what would happen if sellers were penalised.",
+      "recommendations": [
+        "R2"
+      ]
+    },
+    {
+      "id": "F5",
+      "topic": "Volume growth and freight",
+      "headline_template": "Jan-Aug 2018 revenue was {revenue_change} above Jan-Aug 2017, with orders up {orders_change} and average order value up {aov_change}; freight adds {freight_pct} to item value, and {freight_q1} for the cheapest quarter of orders.",
+      "headline": "Jan-Aug 2018 revenue was 141.13% above Jan-Aug 2017, with orders up 139.94% and average order value up 0.49%; freight adds 16.63% to item value, and 53.41% for the cheapest quarter of orders.",
+      "key_numbers": {
+        "revenue_change": {
+          "label": "Revenue change, Jan-Aug 2018 vs 2017",
+          "value": 141.13,
+          "display": "141.13%",
+          "unit": "pct",
+          "source": {
+            "file": "results/14_yoy_jan_aug.csv",
+            "column": "revenue_change_pct",
+            "where": {}
+          }
+        },
+        "orders_change": {
+          "label": "Orders change",
+          "value": 139.94,
+          "display": "139.94%",
+          "unit": "pct",
+          "source": {
+            "file": "results/14_yoy_jan_aug.csv",
+            "column": "orders_change_pct",
+            "where": {}
+          }
+        },
+        "aov_change": {
+          "label": "Average order value change",
+          "value": 0.49,
+          "display": "0.49%",
+          "unit": "pct",
+          "source": {
+            "file": "results/14_yoy_jan_aug.csv",
+            "column": "aov_change_pct",
+            "where": {}
+          }
+        },
+        "revenue_2017": {
+          "label": "Revenue Jan-Aug 2017 (BRL)",
+          "value": 2993456.13,
+          "display": "2,993,456.13",
+          "unit": "brl",
+          "source": {
+            "file": "results/14_yoy_jan_aug.csv",
+            "column": "revenue_2017",
+            "where": {}
+          }
+        },
+        "revenue_2018": {
+          "label": "Revenue Jan-Aug 2018 (BRL)",
+          "value": 7218125.12,
+          "display": "7,218,125.12",
+          "unit": "brl",
+          "source": {
+            "file": "results/14_yoy_jan_aug.csv",
+            "column": "revenue_2018",
+            "where": {}
+          }
+        },
+        "freight_pct": {
+          "label": "Freight as share of item value",
+          "value": 16.63,
+          "display": "16.63%",
+          "unit": "pct",
+          "source": {
+            "file": "results/14_freight_overall.csv",
+            "column": "freight_pct_of_item_value",
+            "where": {}
+          }
+        },
+        "freight_gt50": {
+          "label": "Orders where freight > 50% of item value",
+          "value": 15.84,
+          "display": "15.84%",
+          "unit": "pct",
+          "source": {
+            "file": "results/14_freight_overall.csv",
+            "column": "pct_orders_freight_gt_50",
+            "where": {}
+          }
+        },
+        "freight_q1": {
+          "label": "Freight share, cheapest quarter of orders",
+          "value": 53.41,
+          "display": "53.41%",
+          "unit": "pct",
+          "source": {
+            "file": "results/14_freight_by_value_quartile.csv",
+            "column": "freight_pct_of_item_value",
+            "where": {
+              "value_quartile": "1"
+            }
+          }
+        },
+        "freight_q4": {
+          "label": "Freight share, most expensive quarter of orders",
+          "value": 10.26,
+          "display": "10.26%",
+          "unit": "pct",
+          "source": {
+            "file": "results/14_freight_by_value_quartile.csv",
+            "column": "freight_pct_of_item_value",
+            "where": {
+              "value_quartile": "4"
+            }
+          }
+        },
+        "freight_ma": {
+          "label": "Freight share, MA (highest state)",
+          "value": 26.22,
+          "display": "26.22%",
+          "unit": "pct",
+          "source": {
+            "file": "results/14_freight_by_state.csv",
+            "column": "freight_pct_of_item_value",
+            "where": {
+              "state": "MA"
+            }
+          }
+        },
+        "freight_sp": {
+          "label": "Freight share, SP (lowest state)",
+          "value": 13.85,
+          "display": "13.85%",
+          "unit": "pct",
+          "source": {
+            "file": "results/14_freight_by_state.csv",
+            "column": "freight_pct_of_item_value",
+            "where": {
+              "state": "SP"
+            }
+          }
+        }
+      },
+      "source": [
+        {
+          "file": "sql/14_revenue_rfm.sql",
+          "queries": [
+            "Q1",
+            "Q4"
+          ]
+        }
+      ],
+      "doesnt_show": "Whether freight cost holds back orders or repeat purchases, or how much of the growth is seasonality, marketing or price changes.",
+      "recommendations": [
+        "R3"
+      ]
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "R1",
+      "title": "Send the review request after delivery confirmation",
+      "findings": [
+        "F3"
+      ],
+      "target_metric": "Share of 1-2 star reviews on late orders",
+      "expected_direction": "down",
+      "evidence": {
+        "late_reviewed_before": {
+          "label": "Late orders reviewed before delivery",
+          "value": 74.46,
+          "display": "74.46%",
+          "unit": "pct",
+          "source": {
+            "file": "results/12_review_timing.csv",
+            "column": "pct_within_delivery_group",
+            "where": {
+              "delivery_group": "late",
+              "review_timing": "before delivery"
+            }
+          }
+        },
+        "low_before": {
+          "label": "1-2 star share, late and reviewed before delivery",
+          "value": 75.22,
+          "display": "75.22%",
+          "unit": "pct",
+          "source": {
+            "file": "results/12_review_timing.csv",
+            "column": "low_review_pct",
+            "where": {
+              "delivery_group": "late",
+              "review_timing": "before delivery"
+            }
+          }
+        },
+        "low_after": {
+          "label": "1-2 star share, late and reviewed after delivery",
+          "value": 25.11,
+          "display": "25.11%",
+          "unit": "pct",
+          "source": {
+            "file": "results/12_review_timing.csv",
+            "column": "low_review_pct",
+            "where": {
+              "delivery_group": "late",
+              "review_timing": "on or after delivery"
+            }
+          }
+        },
+        "late_share_of_low": {
+          "label": "Share of all 1-2 star reviews from late delivered orders",
+          "value": 27.68,
+          "display": "27.68%",
+          "unit": "pct",
+          "source": {
+            "file": "results/12_low_review_sizing.csv",
+            "column": "pct_of_low_reviews",
+            "where": {
+              "sizing_group": "b) late delivered"
+            }
+          }
+        }
+      },
+      "effort": "low",
+      "details": {
+        "verified_by": "docs/findings.md number check",
+        "change": "Trigger the review request when delivery is confirmed instead of on the current schedule.",
+        "target_metric": "Share of 1-2 star reviews on late orders.",
+        "expected_direction": "Down",
+        "test_design": [
+          {
+            "label": "Unit",
+            "text": "order (randomised by order id)."
+          },
+          {
+            "label": "Control",
+            "text": "current request timing."
+          },
+          {
+            "label": "Primary metric",
+            "text": "share of 1-2 star reviews, read separately for late and on-time orders."
+          },
+          {
+            "label": "Guardrail",
+            "text": "review response rate (share of delivered orders with a review) and days from delivery to review."
+          },
+          {
+            "label": "Duration",
+            "text": "4 weeks of orders, analysed once those orders are delivered."
+          }
+        ],
+        "risk": "Fewer reviews from customers whose delivery is never confirmed; complaints may move to other channels instead of disappearing.",
+        "effort": "Low"
+      }
+    },
+    {
+      "id": "R2",
+      "title_template": "Seller handover SLA with alerts and a ranking penalty, starting with the {handover_top_sellers} sellers with the most late handovers",
+      "title": "Seller handover SLA with alerts and a ranking penalty, starting with the 62 sellers with the most late handovers",
+      "title_numbers": {
+        "handover_top_sellers": {
+          "label": "Sellers with the most late handovers (top 10% of scorecard)",
+          "value": 62,
+          "display": "62",
+          "unit": "count",
+          "source": {
+            "file": "results/13_handover_concentration.csv",
+            "column": "top10pct_sellers",
+            "where": {}
+          }
+        }
+      },
+      "findings": [
+        "F2",
+        "F4"
+      ],
+      "target_metric": "Late-handover rate (primary); late-delivery rate (secondary)",
+      "expected_direction": "down",
+      "evidence": {
+        "late_after_limit": {
+          "label": "Late rate, handed over after the limit",
+          "value": 21.1,
+          "display": "21.10%",
+          "unit": "pct",
+          "source": {
+            "file": "results/11_seller_handling.csv",
+            "column": "late_rate_pct",
+            "where": {
+              "handover": "after limit"
+            }
+          }
+        },
+        "late_on_time_handover": {
+          "label": "Late rate, handed over on time",
+          "value": 5.39,
+          "display": "5.39%",
+          "unit": "pct",
+          "source": {
+            "file": "results/11_seller_handling.csv",
+            "column": "late_rate_pct",
+            "where": {
+              "handover": "on or before limit"
+            }
+          }
+        },
+        "handover_top_share": {
+          "label": "Their share of scorecard late handovers",
+          "value": 55.42,
+          "display": "55.42%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_handover_concentration.csv",
+            "column": "pct_of_scorecard_late_handovers",
+            "where": {}
+          }
+        },
+        "handover_top_order_share": {
+          "label": "Their share of scorecard orders",
+          "value": 31.93,
+          "display": "31.93%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_handover_concentration.csv",
+            "column": "pct_of_scorecard_handover_orders",
+            "where": {}
+          }
+        },
+        "q4_late_delivery": {
+          "label": "Late delivery, sellers with most late handovers (quartile 4)",
+          "value": 9.43,
+          "display": "9.43%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_handover_quartiles.csv",
+            "column": "late_delivery_pct",
+            "where": {
+              "handover_quartile": "4"
+            }
+          }
+        },
+        "q1_late_delivery": {
+          "label": "Late delivery, sellers with fewest late handovers (quartile 1)",
+          "value": 4.9,
+          "display": "4.90%",
+          "unit": "pct",
+          "source": {
+            "file": "results/13_handover_quartiles.csv",
+            "column": "late_delivery_pct",
+            "where": {
+              "handover_quartile": "1"
+            }
+          }
+        }
+      },
+      "effort": "medium",
+      "details": {
+        "verified_by": "docs/findings.md number check",
+        "change": "Alert sellers before their shipping limit and lower the search ranking of sellers who repeatedly hand over late. Start with the 62 sellers with the most late handovers.",
+        "target_metric": "Late-handover rate (primary); late-delivery rate (secondary).",
+        "expected_direction": "Down",
+        "test_design": [
+          {
+            "label": "Unit",
+            "text": "seller."
+          },
+          {
+            "label": "Control",
+            "text": "half of the 62 sellers, randomly chosen, keep the current rules."
+          },
+          {
+            "label": "Primary metric",
+            "text": "late-handover rate."
+          },
+          {
+            "label": "Guardrail",
+            "text": "seller order volume, share of sellers still active, and 1-2 star review share."
+          },
+          {
+            "label": "Duration",
+            "text": "8 weeks."
+          }
+        ],
+        "risk": "Penalties may push sellers off the platform or cut supply in some categories; with 62 sellers the test has limited statistical power.",
+        "effort": "Medium"
+      }
+    },
+    {
+      "id": "R3",
+      "title": "Win back lapsed high-value one-time customers with a free-freight voucher",
+      "findings": [
+        "F1",
+        "F5"
+      ],
+      "target_metric": "Share of targeted customers placing a delivered order within the test window",
+      "expected_direction": "up",
+      "evidence": {
+        "segment_customers": {
+          "label": "Lapsed high-value one-time customers",
+          "value": 22369,
+          "display": "22,369",
+          "unit": "count",
+          "source": {
+            "file": "results/14_rfm_segments.csv",
+            "column": "customers",
+            "where": {
+              "segment": "Lapsed high-value"
+            }
+          }
+        },
+        "segment_revenue_share": {
+          "label": "Their share of revenue",
+          "value": 39.77,
+          "display": "39.77%",
+          "unit": "pct",
+          "source": {
+            "file": "results/14_rfm_segments.csv",
+            "column": "pct_of_revenue",
+            "where": {
+              "segment": "Lapsed high-value"
+            }
+          }
+        },
+        "segment_avg_revenue": {
+          "label": "Their average revenue per customer (BRL)",
+          "value": 234.37,
+          "display": "234.37",
+          "unit": "brl",
+          "source": {
+            "file": "results/14_rfm_segments.csv",
+            "column": "avg_revenue_per_customer",
+            "where": {
+              "segment": "Lapsed high-value"
+            }
+          }
+        },
+        "segment_min_recency": {
+          "label": "Days since last order, minimum",
+          "value": 220,
+          "display": "220",
+          "unit": "days",
+          "source": {
+            "file": "results/14_rfm_segments.csv",
+            "column": "min_recency_days",
+            "where": {
+              "segment": "Lapsed high-value"
+            }
+          }
+        },
+        "segment_max_recency": {
+          "label": "Days since last order, maximum",
+          "value": 602,
+          "display": "602",
+          "unit": "days",
+          "source": {
+            "file": "results/14_rfm_segments.csv",
+            "column": "max_recency_days",
+            "where": {
+              "segment": "Lapsed high-value"
+            }
+          }
+        },
+        "repeat_later_day": {
+          "label": "Returned on a later day",
+          "value": 2.15,
+          "display": "2.15%",
+          "unit": "pct",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "repeat_rate_later_day_pct",
+            "where": {}
+          }
+        },
+        "freight_pct": {
+          "label": "Freight as share of item value",
+          "value": 16.63,
+          "display": "16.63%",
+          "unit": "pct",
+          "source": {
+            "file": "results/14_freight_overall.csv",
+            "column": "freight_pct_of_item_value",
+            "where": {}
+          }
+        }
+      },
+      "effort": "medium",
+      "details": {
+        "verified_by": "docs/findings.md number check",
+        "change": "Offer a free-freight voucher to one-time customers with above-median spend whose last order was a long time ago.",
+        "target_metric": "Share of targeted customers placing a delivered order within 90 days of the voucher.",
+        "expected_direction": "Up",
+        "test_design": [
+          {
+            "label": "Unit",
+            "text": "customer in the lapsed high-value segment."
+          },
+          {
+            "label": "Control",
+            "text": "a random holdout group that receives no voucher."
+          },
+          {
+            "label": "Primary metric",
+            "text": "share placing a delivered order within 90 days."
+          },
+          {
+            "label": "Guardrail",
+            "text": "net revenue per targeted customer after the freight subsidy, and voucher cost."
+          },
+          {
+            "label": "Duration",
+            "text": "12 weeks after the send."
+          }
+        ],
+        "risk": "Paying for freight on orders that would have happened anyway; a low base rate means a large group is needed to detect a change.",
+        "effort": "Medium"
+      }
+    }
+  ],
+  "limitations": [
+    {
+      "id": "window",
+      "text_template": "The analysis covers purchases from 2017-01-01 to 2018-08-31; {outside} orders outside that window are excluded, and a customer's first order means their first delivered order inside the window.",
+      "numbers": {
+        "outside": {
+          "label": "Orders outside the window",
+          "value": 349,
+          "display": "349",
+          "unit": "count",
+          "source": {
+            "file": "results/15_quality_issues.csv",
+            "column": "affected",
+            "where": {
+              "issue_id": "orders_outside_window"
+            }
+          }
+        }
+      },
+      "text": "The analysis covers purchases from 2017-01-01 to 2018-08-31; 349 orders outside that window are excluded, and a customer's first order means their first delivered order inside the window."
+    },
+    {
+      "id": "same_day",
+      "text_template": "{same_day} of {second_orders} second orders were placed on the same calendar day as the first, {within_10} of them within 10 minutes; they are not counted as returns.",
+      "numbers": {
+        "same_day": {
+          "label": "Same-day second orders",
+          "value": 827,
+          "display": "827",
+          "unit": "count",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "same_day_second_orders",
+            "where": {}
+          }
+        },
+        "second_orders": {
+          "label": "Second orders",
+          "value": 2789,
+          "display": "2,789",
+          "unit": "count",
+          "source": {
+            "file": "results/10_same_day_check.csv",
+            "column": "second_orders",
+            "where": {}
+          }
+        },
+        "within_10": {
+          "label": "Same-day second orders within 10 minutes",
+          "value": 735,
+          "display": "735",
+          "unit": "count",
+          "source": {
+            "file": "results/10_same_day_gap.csv",
+            "column": "within_10_minutes",
+            "where": {}
+          }
+        }
+      },
+      "text": "827 of 2,789 second orders were placed on the same calendar day as the first, 735 of them within 10 minutes; they are not counted as returns."
+    },
+    {
+      "id": "payments",
+      "text_template": "{mismatch} delivered orders have payments that differ from items plus freight by more than one cent; the gap is unexplained. Revenue uses item prices, not payments.",
+      "numbers": {
+        "mismatch": {
+          "label": "Payment mismatches",
+          "value": 294,
+          "display": "294",
+          "unit": "count",
+          "source": {
+            "file": "results/15_quality_issues.csv",
+            "column": "affected",
+            "where": {
+              "issue_id": "payment_mismatch"
+            }
+          }
+        }
+      },
+      "text": "294 delivered orders have payments that differ from items plus freight by more than one cent; the gap is unexplained. Revenue uses item prices, not payments."
+    },
+    {
+      "id": "stages",
+      "text_template": "Stage times exclude {negative} orders with a negative stage duration and {missing} with a missing stage.",
+      "numbers": {
+        "negative": {
+          "label": "Orders with a negative stage",
+          "value": 1344,
+          "display": "1,344",
+          "unit": "count",
+          "source": {
+            "file": "results/15_quality_issues.csv",
+            "column": "affected",
+            "where": {
+              "issue_id": "negative_stage_duration"
+            }
+          }
+        },
+        "missing": {
+          "label": "Orders with a missing stage only",
+          "value": 15,
+          "display": "15",
+          "unit": "count",
+          "source": {
+            "file": "results/11_stage_exclusions.csv",
+            "column": "excluded_missing_stage_only",
+            "where": {}
+          }
+        }
+      },
+      "text": "Stage times exclude 1,344 orders with a negative stage duration and 15 with a missing stage."
+    },
+    {
+      "id": "recent_months",
+      "text_template": "Orders not yet delivered when the data ends have no delivery timing ({aug_untimed} of {aug_orders} orders from August 2018), so the most recent months may be missing their slowest deliveries.",
+      "numbers": {
+        "aug_untimed": {
+          "label": "August 2018 orders without timing",
+          "value": 161,
+          "display": "161",
+          "unit": "count",
+          "source": {
+            "file": "results/11_monthly_trend.csv",
+            "column": "orders_without_timing",
+            "where": {
+              "purchase_month": "2018-08-01"
+            }
+          }
+        },
+        "aug_orders": {
+          "label": "August 2018 orders",
+          "value": 6512,
+          "display": "6,512",
+          "unit": "count",
+          "source": {
+            "file": "results/baseline.csv",
+            "column": "value",
+            "where": {
+              "section": "monthly",
+              "dimension": "2018-08-01",
+              "metric": "orders"
+            }
+          }
+        }
+      },
+      "text": "Orders not yet delivered when the data ends have no delivery timing (161 of 6,512 orders from August 2018), so the most recent months may be missing their slowest deliveries."
+    },
+    {
+      "id": "distance",
+      "text_template": "Distances are between zip-prefix centres, not addresses; {used} of {single_seller} single-seller orders had usable coordinates.",
+      "numbers": {
+        "used": {
+          "label": "Orders with usable coordinates",
+          "value": 94453,
+          "display": "94,453",
+          "unit": "count",
+          "source": {
+            "file": "results/11_geo_coverage.csv",
+            "column": "orders_used",
+            "where": {}
+          }
+        },
+        "single_seller": {
+          "label": "Single-seller orders",
+          "value": 94931,
+          "display": "94,931",
+          "unit": "count",
+          "source": {
+            "file": "results/11_geo_coverage.csv",
+            "column": "single_seller_orders",
+            "where": {}
+          }
+        }
+      },
+      "text": "Distances are between zip-prefix centres, not addresses; 94,453 of 94,931 single-seller orders had usable coordinates."
+    },
+    {
+      "id": "attribution",
+      "text_template": "Seller quality metrics (reviews, lateness, handover) use single-seller orders only; {multi} multi-seller orders with delivery timing are not attributed to a seller.",
+      "numbers": {
+        "multi": {
+          "label": "Multi-seller timed orders",
+          "value": 1272,
+          "display": "1,272",
+          "unit": "count",
+          "source": {
+            "file": "results/11_same_vs_cross_state.csv",
+            "column": "orders",
+            "where": {
+              "route": "excluded: multi-seller"
+            }
+          }
+        }
+      },
+      "text": "Seller quality metrics (reviews, lateness, handover) use single-seller orders only; 1,272 multi-seller orders with delivery timing are not attributed to a seller."
+    },
+    {
+      "id": "small_counts",
+      "text_template": "Some comparisons rest on few customers: only {late_returners} customers whose first order was late came back. No significance tests were run; differences are described, not tested.",
+      "numbers": {
+        "late_returners": {
+          "label": "Returners after a late first order",
+          "value": 103,
+          "display": "103",
+          "unit": "count",
+          "source": {
+            "file": "results/12_first_order_return.csv",
+            "column": "repeat_customers",
+            "where": {
+              "dimension": "lateness",
+              "first_order_group": "late"
+            }
+          }
+        }
+      },
+      "text": "Some comparisons rest on few customers: only 103 customers whose first order was late came back. No significance tests were run; differences are described, not tested."
+    },
+    {
+      "id": "rfm",
+      "text_template": "RFM scores are quartiles (NTILE), so the four one-time segments are each about a quarter of customers by construction; their revenue shares, not their sizes, are the result.",
+      "numbers": {},
+      "text": "RFM scores are quartiles (NTILE), so the four one-time segments are each about a quarter of customers by construction; their revenue shares, not their sizes, are the result."
+    },
+    {
+      "id": "associations",
+      "text_template": "All findings are associations in observational data from 2016-2018; none shows cause and effect.",
+      "numbers": {},
+      "text": "All findings are associations in observational data from 2016-2018; none shows cause and effect."
+    }
+  ]
+}

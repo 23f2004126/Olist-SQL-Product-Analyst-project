@@ -1,0 +1,540 @@
+{
+  "source": "parsed from sql/00_schema.sql and sql/03_clean_views.sql; row counts from results/15_table_counts.csv",
+  "tables": [
+    {
+      "name": "customers",
+      "kind": "table",
+      "primary_key": [
+        "customer_id"
+      ],
+      "row_count": 99441,
+      "columns": [
+        {
+          "name": "customer_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "customer_unique_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "customer_zip_code_prefix",
+          "type": "char(5)"
+        },
+        {
+          "name": "customer_city",
+          "type": "text"
+        },
+        {
+          "name": "customer_state",
+          "type": "char(2)"
+        }
+      ]
+    },
+    {
+      "name": "geolocation",
+      "kind": "table",
+      "primary_key": [],
+      "row_count": 1000163,
+      "columns": [
+        {
+          "name": "geolocation_zip_code_prefix",
+          "type": "char(5)"
+        },
+        {
+          "name": "geolocation_lat",
+          "type": "double precision"
+        },
+        {
+          "name": "geolocation_lng",
+          "type": "double precision"
+        },
+        {
+          "name": "geolocation_city",
+          "type": "text"
+        },
+        {
+          "name": "geolocation_state",
+          "type": "char(2)"
+        }
+      ]
+    },
+    {
+      "name": "sellers",
+      "kind": "table",
+      "primary_key": [
+        "seller_id"
+      ],
+      "row_count": 3095,
+      "columns": [
+        {
+          "name": "seller_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "seller_zip_code_prefix",
+          "type": "char(5)"
+        },
+        {
+          "name": "seller_city",
+          "type": "text"
+        },
+        {
+          "name": "seller_state",
+          "type": "char(2)"
+        }
+      ]
+    },
+    {
+      "name": "product_category_name_translation",
+      "kind": "table",
+      "primary_key": [
+        "product_category_name"
+      ],
+      "row_count": 71,
+      "columns": [
+        {
+          "name": "product_category_name",
+          "type": "text"
+        },
+        {
+          "name": "product_category_name_english",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "products",
+      "kind": "table",
+      "primary_key": [
+        "product_id"
+      ],
+      "row_count": 32951,
+      "columns": [
+        {
+          "name": "product_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "product_category_name",
+          "type": "text"
+        },
+        {
+          "name": "product_name_lenght",
+          "type": "integer"
+        },
+        {
+          "name": "product_description_lenght",
+          "type": "integer"
+        },
+        {
+          "name": "product_photos_qty",
+          "type": "integer"
+        },
+        {
+          "name": "product_weight_g",
+          "type": "integer"
+        },
+        {
+          "name": "product_length_cm",
+          "type": "integer"
+        },
+        {
+          "name": "product_height_cm",
+          "type": "integer"
+        },
+        {
+          "name": "product_width_cm",
+          "type": "integer"
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "kind": "table",
+      "primary_key": [
+        "order_id"
+      ],
+      "row_count": 99441,
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "customer_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "order_status",
+          "type": "text"
+        },
+        {
+          "name": "order_purchase_timestamp",
+          "type": "timestamp"
+        },
+        {
+          "name": "order_approved_at",
+          "type": "timestamp"
+        },
+        {
+          "name": "order_delivered_carrier_date",
+          "type": "timestamp"
+        },
+        {
+          "name": "order_delivered_customer_date",
+          "type": "timestamp"
+        },
+        {
+          "name": "order_estimated_delivery_date",
+          "type": "timestamp"
+        }
+      ]
+    },
+    {
+      "name": "order_items",
+      "kind": "table",
+      "primary_key": [
+        "order_id",
+        "order_item_id"
+      ],
+      "row_count": 112650,
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "order_item_id",
+          "type": "integer"
+        },
+        {
+          "name": "product_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "seller_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "shipping_limit_date",
+          "type": "timestamp"
+        },
+        {
+          "name": "price",
+          "type": "numeric(10,2)"
+        },
+        {
+          "name": "freight_value",
+          "type": "numeric(10,2)"
+        }
+      ]
+    },
+    {
+      "name": "order_payments",
+      "kind": "table",
+      "primary_key": [
+        "order_id",
+        "payment_sequential"
+      ],
+      "row_count": 103886,
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "payment_sequential",
+          "type": "integer"
+        },
+        {
+          "name": "payment_type",
+          "type": "text"
+        },
+        {
+          "name": "payment_installments",
+          "type": "integer"
+        },
+        {
+          "name": "payment_value",
+          "type": "numeric(10,2)"
+        }
+      ]
+    },
+    {
+      "name": "order_reviews",
+      "kind": "table",
+      "primary_key": [
+        "review_id",
+        "order_id"
+      ],
+      "row_count": 99224,
+      "columns": [
+        {
+          "name": "review_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "order_id",
+          "type": "varchar(32)"
+        },
+        {
+          "name": "review_score",
+          "type": "smallint"
+        },
+        {
+          "name": "review_comment_title",
+          "type": "text"
+        },
+        {
+          "name": "review_comment_message",
+          "type": "text"
+        },
+        {
+          "name": "review_creation_date",
+          "type": "timestamp"
+        },
+        {
+          "name": "review_answer_timestamp",
+          "type": "timestamp"
+        }
+      ]
+    }
+  ],
+  "views": [
+    {
+      "name": "v_order_items_agg",
+      "kind": "view",
+      "grain": "one row per order_id (only orders that have at least one item).",
+      "row_count": 98666,
+      "built_from": [
+        "order_items"
+      ]
+    },
+    {
+      "name": "v_order_payments_agg",
+      "kind": "view",
+      "grain": "one row per order_id (only orders that have at least one payment).",
+      "row_count": 99440,
+      "built_from": [
+        "order_payments"
+      ]
+    },
+    {
+      "name": "v_order_review",
+      "kind": "view",
+      "grain": "one row per order_id (only orders that have at least one review).",
+      "row_count": 98673,
+      "built_from": [
+        "order_reviews"
+      ]
+    },
+    {
+      "name": "v_geo",
+      "kind": "view",
+      "grain": "one row per zip code prefix.",
+      "row_count": 19015,
+      "built_from": [
+        "geolocation"
+      ]
+    },
+    {
+      "name": "v_products",
+      "kind": "view",
+      "grain": "one row per product_id.",
+      "row_count": 32951,
+      "built_from": [
+        "product_category_name_translation",
+        "products"
+      ]
+    },
+    {
+      "name": "v_sellers",
+      "kind": "view",
+      "grain": "one row per seller_id.",
+      "row_count": 3095,
+      "built_from": [
+        "sellers"
+      ]
+    },
+    {
+      "name": "v_order_lines",
+      "kind": "view",
+      "grain": "one row per (order_id, order_item_id), i.e. one row per item sold.",
+      "row_count": 112650,
+      "built_from": [
+        "order_items",
+        "v_products"
+      ]
+    },
+    {
+      "name": "v_seller_orders",
+      "kind": "view",
+      "grain": "one row per (order_id, seller_id) pair.",
+      "row_count": 100010,
+      "built_from": [
+        "order_items"
+      ]
+    },
+    {
+      "name": "v_order_main_category",
+      "kind": "view",
+      "grain": "one row per order_id (only orders that have at least one item).",
+      "row_count": 98666,
+      "built_from": [
+        "order_items",
+        "v_products"
+      ]
+    },
+    {
+      "name": "v_orders",
+      "kind": "view",
+      "grain": "one row per order_id. ALL orders, every status and date. Use in_window to filter.",
+      "row_count": 99441,
+      "built_from": [
+        "customers",
+        "orders"
+      ]
+    },
+    {
+      "name": "v_order_facts",
+      "kind": "view",
+      "grain": "one row per order_id, ONLY orders in the analysis window.",
+      "row_count": 99092,
+      "built_from": [
+        "v_order_items_agg",
+        "v_order_main_category",
+        "v_order_payments_agg",
+        "v_order_review",
+        "v_orders"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "from": "orders.customer_id",
+      "to": "customers.customer_id",
+      "kind": "foreign key"
+    },
+    {
+      "from": "order_items.order_id",
+      "to": "orders.order_id",
+      "kind": "foreign key"
+    },
+    {
+      "from": "order_items.product_id",
+      "to": "products.product_id",
+      "kind": "foreign key"
+    },
+    {
+      "from": "order_items.seller_id",
+      "to": "sellers.seller_id",
+      "kind": "foreign key"
+    },
+    {
+      "from": "order_payments.order_id",
+      "to": "orders.order_id",
+      "kind": "foreign key"
+    },
+    {
+      "from": "order_reviews.order_id",
+      "to": "orders.order_id",
+      "kind": "foreign key"
+    },
+    {
+      "from": "v_order_items_agg",
+      "to": "order_items",
+      "kind": "built from"
+    },
+    {
+      "from": "v_order_payments_agg",
+      "to": "order_payments",
+      "kind": "built from"
+    },
+    {
+      "from": "v_order_review",
+      "to": "order_reviews",
+      "kind": "built from"
+    },
+    {
+      "from": "v_geo",
+      "to": "geolocation",
+      "kind": "built from"
+    },
+    {
+      "from": "v_products",
+      "to": "product_category_name_translation",
+      "kind": "built from"
+    },
+    {
+      "from": "v_products",
+      "to": "products",
+      "kind": "built from"
+    },
+    {
+      "from": "v_sellers",
+      "to": "sellers",
+      "kind": "built from"
+    },
+    {
+      "from": "v_order_lines",
+      "to": "order_items",
+      "kind": "built from"
+    },
+    {
+      "from": "v_order_lines",
+      "to": "v_products",
+      "kind": "built from"
+    },
+    {
+      "from": "v_seller_orders",
+      "to": "order_items",
+      "kind": "built from"
+    },
+    {
+      "from": "v_order_main_category",
+      "to": "order_items",
+      "kind": "built from"
+    },
+    {
+      "from": "v_order_main_category",
+      "to": "v_products",
+      "kind": "built from"
+    },
+    {
+      "from": "v_orders",
+      "to": "customers",
+      "kind": "built from"
+    },
+    {
+      "from": "v_orders",
+      "to": "orders",
+      "kind": "built from"
+    },
+    {
+      "from": "v_order_facts",
+      "to": "v_order_items_agg",
+      "kind": "built from"
+    },
+    {
+      "from": "v_order_facts",
+      "to": "v_order_main_category",
+      "kind": "built from"
+    },
+    {
+      "from": "v_order_facts",
+      "to": "v_order_payments_agg",
+      "kind": "built from"
+    },
+    {
+      "from": "v_order_facts",
+      "to": "v_order_review",
+      "kind": "built from"
+    },
+    {
+      "from": "v_order_facts",
+      "to": "v_orders",
+      "kind": "built from"
+    }
+  ]
+}

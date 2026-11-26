@@ -1,0 +1,125 @@
+{
+  "source": "results/15_quality_issues.csv (sql/15_site_support.sql, Q4); decisions detailed in docs/data_quality_notes.md",
+  "issues": [
+    {
+      "id": "same_day_second_order",
+      "issue": "Second delivered orders placed on the same calendar day as the first",
+      "affected": 827,
+      "unit": "customers",
+      "decision_ref": "C12",
+      "decision": "A repeat customer is one who returned on a later calendar day"
+    },
+    {
+      "id": "customer_id_per_order",
+      "issue": "customer_id is created per order; one person can have several",
+      "affected": 2997,
+      "unit": "people with 2+ customer_ids",
+      "decision_ref": "C2",
+      "decision": "Identify customers by customer_unique_id"
+    },
+    {
+      "id": "orders_outside_window",
+      "issue": "Orders purchased outside the analysis window (thin months at both ends)",
+      "affected": 349,
+      "unit": "orders",
+      "decision_ref": "C1",
+      "decision": "Analyse 2017-01-01 to 2018-08-31 only"
+    },
+    {
+      "id": "orders_multiple_reviews",
+      "issue": "Orders with more than one review",
+      "affected": 547,
+      "unit": "orders",
+      "decision_ref": "C3",
+      "decision": "Keep the latest review per order"
+    },
+    {
+      "id": "repeated_review_id",
+      "issue": "review_id values that appear on more than one order",
+      "affected": 789,
+      "unit": "review_ids",
+      "decision_ref": "C3",
+      "decision": "Never join on review_id; key reviews by (review_id, order_id)"
+    },
+    {
+      "id": "payment_mismatch",
+      "issue": "Delivered in-window orders where items + freight differ from total paid by more than 0.01",
+      "affected": 294,
+      "unit": "orders",
+      "decision_ref": "C4, C11",
+      "decision": "Revenue uses item prices; mismatches left unexplained and listed as a limitation"
+    },
+    {
+      "id": "delivered_without_date",
+      "issue": "Orders with status delivered but no customer delivery date",
+      "affected": 8,
+      "unit": "orders",
+      "decision_ref": "C5",
+      "decision": "Excluded from delivery-timing metrics"
+    },
+    {
+      "id": "canceled_with_delivery_date",
+      "issue": "Orders with status canceled that have a customer delivery date",
+      "affected": 6,
+      "unit": "orders",
+      "decision_ref": "C5",
+      "decision": "Kept as canceled; not used for delivery timing"
+    },
+    {
+      "id": "products_without_category",
+      "issue": "Products with no category",
+      "affected": 610,
+      "unit": "products",
+      "decision_ref": "C6",
+      "decision": "Shown as unknown"
+    },
+    {
+      "id": "untranslated_category",
+      "issue": "Products whose category has no English translation",
+      "affected": 13,
+      "unit": "products",
+      "decision_ref": "C6",
+      "decision": "Fall back to the Portuguese name"
+    },
+    {
+      "id": "misspelled_columns",
+      "issue": "Source columns spelled lenght instead of length",
+      "affected": 2,
+      "unit": "columns",
+      "decision_ref": "C7",
+      "decision": "Raw table unchanged; v_products exposes corrected names"
+    },
+    {
+      "id": "negative_stage_duration",
+      "issue": "Timed in-window orders with a negative stage duration",
+      "affected": 1344,
+      "unit": "orders",
+      "decision_ref": "C9",
+      "decision": "Excluded from stage statistics only; reported as a limitation"
+    },
+    {
+      "id": "geo_exact_duplicates",
+      "issue": "Geolocation rows that exactly duplicate another row",
+      "affected": 261831,
+      "unit": "rows",
+      "decision_ref": "v_geo",
+      "decision": "v_geo averages distinct points, one row per zip prefix"
+    },
+    {
+      "id": "customer_zip_missing_geo",
+      "issue": "Customer zip prefixes with no geolocation row",
+      "affected": 157,
+      "unit": "zip prefixes",
+      "decision_ref": "Delivery notes",
+      "decision": "Orders without coordinates left out of distance analysis"
+    },
+    {
+      "id": "orders_without_items",
+      "issue": "Orders with no order_items rows (all statuses, all dates)",
+      "affected": 775,
+      "unit": "orders",
+      "decision_ref": "Section 4",
+      "decision": "Drop out of item-level analysis naturally; kept in status counts"
+    }
+  ]
+}

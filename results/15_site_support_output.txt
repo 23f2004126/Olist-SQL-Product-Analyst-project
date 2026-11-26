@@ -1,0 +1,127 @@
+ customers | orders | orders_per_customer |  aov   | aov_4dp  |   revenue   
+-----------+--------+---------------------+--------+----------+-------------
+     93104 |  96211 |              1.0334 | 137.00 | 137.0012 | 13181027.13
+(1 row)
+
+ finding | step |                         label                          | row_count | rows_dropped |                                         reason                                          
+---------+------+--------------------------------------------------------+-----------+--------------+-----------------------------------------------------------------------------------------
+ F1      |    1 | All orders                                             |     99441 |              | 
+ F1      |    2 | Purchased in the analysis window                       |     99092 |          349 | Purchased before 2017-01-01 or after 2018-08-31
+ F1      |    3 | Delivered orders                                       |     96211 |         2881 | Not delivered (shipped, canceled, unavailable, invoiced, processing, created, approved)
+ F1      |    4 | Customers (customer_unique_id)                         |     93104 |         3107 | Orders collapsed to one row per customer
+ F1      |    5 | Customers who returned on a later day                  |      2005 |        91099 | No delivered order on a later calendar day than the first
+ F2      |    1 | All orders                                             |     99441 |              | 
+ F2      |    2 | Purchased in the analysis window                       |     99092 |          349 | Purchased before 2017-01-01 or after 2018-08-31
+ F2      |    3 | Delivered orders                                       |     96211 |         2881 | Not delivered
+ F2      |    4 | With a customer delivery date                          |     96203 |            8 | Status delivered but no delivery date recorded
+ F2      |    5 | With a carrier handover date                           |     96202 |            1 | No carrier handover date recorded
+ F2      |    6 | Handed to the carrier after the shipping limit         |      8581 |        87621 | Handed over on or before the shipping limit
+ F3      |    1 | All orders                                             |     99441 |              | 
+ F3      |    2 | Purchased in the analysis window                       |     99092 |          349 | Purchased before 2017-01-01 or after 2018-08-31
+ F3      |    3 | With a review                                          |     98330 |          762 | No review
+ F3      |    4 | Delivered with a delivery date                         |     95560 |         2770 | Not delivered, or no delivery date
+ F3      |    5 | Delivered late                                         |      6378 |        89182 | Delivered on or before the estimated day
+ F3      |    6 | Review created before delivery                         |      4749 |         1629 | Review created on or after the delivery day
+ F4      |    1 | Sellers in the sellers table                           |      3095 |              | 
+ F4      |    2 | Sellers with a delivered in-window sale                |      2945 |          150 | No delivered sale in the analysis window
+ F4      |    3 | Scorecard sellers (30+ single-seller delivered orders) |       614 |         2331 | Fewer than 30 single-seller delivered orders
+ F5      |    1 | All orders                                             |     99441 |              | 
+ F5      |    2 | Purchased in the analysis window                       |     99092 |          349 | Purchased before 2017-01-01 or after 2018-08-31
+ F5      |    3 | Delivered orders                                       |     96211 |         2881 | Not delivered
+ F5      |    4 | Purchased in Jan-Aug 2017 or Jan-Aug 2018              |     74781 |        21430 | Purchased Sep-Dec 2017, outside the comparison months
+ F5      |    5 | Purchased in Jan-Aug 2018                              |     52783 |        21998 | Purchased in Jan-Aug 2017 (the comparison base)
+(25 rows)
+
+ kind  |               name                | row_count 
+-------+-----------------------------------+-----------
+ table | customers                         |     99441
+ table | geolocation                       |   1000163
+ table | sellers                           |      3095
+ table | product_category_name_translation |        71
+ table | products                          |     32951
+ table | orders                            |     99441
+ table | order_items                       |    112650
+ table | order_payments                    |    103886
+ table | order_reviews                     |     99224
+ view  | v_order_items_agg                 |     98666
+ view  | v_order_payments_agg              |     99440
+ view  | v_order_review                    |     98673
+ view  | v_geo                             |     19015
+ view  | v_products                        |     32951
+ view  | v_sellers                         |      3095
+ view  | v_order_lines                     |    112650
+ view  | v_seller_orders                   |    100010
+ view  | v_order_main_category             |     98666
+ view  | v_orders                          |     99441
+ view  | v_order_facts                     |     99092
+(20 rows)
+
+          issue_id           |                                           issue                                           | affected |            unit             |  decision_ref  |                                     decision                                     
+-----------------------------+-------------------------------------------------------------------------------------------+----------+-----------------------------+----------------+----------------------------------------------------------------------------------
+ orders_outside_window       | Orders purchased outside the analysis window (thin months at both ends)                   |      349 | orders                      | C1             | Analyse 2017-01-01 to 2018-08-31 only
+ customer_id_per_order       | customer_id is created per order; one person can have several                             |     2997 | people with 2+ customer_ids | C2             | Identify customers by customer_unique_id
+ orders_multiple_reviews     | Orders with more than one review                                                          |      547 | orders                      | C3             | Keep the latest review per order
+ repeated_review_id          | review_id values that appear on more than one order                                       |      789 | review_ids                  | C3             | Never join on review_id; key reviews by (review_id, order_id)
+ payment_mismatch            | Delivered in-window orders where items + freight differ from total paid by more than 0.01 |      294 | orders                      | C4, C11        | Revenue uses item prices; mismatches left unexplained and listed as a limitation
+ delivered_without_date      | Orders with status delivered but no customer delivery date                                |        8 | orders                      | C5             | Excluded from delivery-timing metrics
+ canceled_with_delivery_date | Orders with status canceled that have a customer delivery date                            |        6 | orders                      | C5             | Kept as canceled; not used for delivery timing
+ products_without_category   | Products with no category                                                                 |      610 | products                    | C6             | Shown as unknown
+ untranslated_category       | Products whose category has no English translation                                        |       13 | products                    | C6             | Fall back to the Portuguese name
+ misspelled_columns          | Source columns spelled lenght instead of length                                           |        2 | columns                     | C7             | Raw table unchanged; v_products exposes corrected names
+ negative_stage_duration     | Timed in-window orders with a negative stage duration                                     |     1344 | orders                      | C9             | Excluded from stage statistics only; reported as a limitation
+ same_day_second_order       | Second delivered orders placed on the same calendar day as the first                      |      827 | customers                   | C12            | A repeat customer is one who returned on a later calendar day
+ geo_exact_duplicates        | Geolocation rows that exactly duplicate another row                                       |   261831 | rows                        | v_geo          | v_geo averages distinct points, one row per zip prefix
+ customer_zip_missing_geo    | Customer zip prefixes with no geolocation row                                             |      157 | zip prefixes                | Delivery notes | Orders without coordinates left out of distance analysis
+ orders_without_items        | Orders with no order_items rows (all statuses, all dates)                                 |      775 | orders                      | Section 4      | Drop out of item-level analysis naturally; kept in status counts
+(15 rows)
+
+ sample_rows | late_in_sample 
+-------------+----------------
+        3000 |            191
+(1 row)
+
+ sample_orders | on_time_orders | late_orders | on_time_pct | late_pct 
+---------------+----------------+-------------+-------------+----------
+          3000 |           2809 |         191 |       93.63 |     6.37
+(1 row)
+
+ state | delivered_orders | timed_orders | median_delivery_days | late_rate_pct 
+-------+------------------+--------------+----------------------+---------------
+ AC    |               80 |           80 |                18.36 |          3.75
+ AL    |              396 |          396 |                22.33 |         21.46
+ AM    |              145 |          145 |                25.88 |          2.76
+ AP    |               67 |           67 |                24.35 |          2.99
+ BA    |             3253 |         3253 |                16.91 |         12.17
+ CE    |             1273 |         1273 |                18.17 |         13.83
+ DF    |             2074 |         2074 |                11.36 |          5.69
+ ES    |             1992 |         1992 |                13.64 |         10.74
+ GO    |             1950 |         1950 |                13.95 |          6.56
+ MA    |              713 |          713 |                19.18 |         17.53
+ MG    |            11319 |        11319 |                10.31 |          4.59
+ MS    |              701 |          701 |                13.94 |          9.70
+ MT    |              885 |          885 |                16.12 |          5.99
+ PA    |              942 |          942 |                21.07 |         11.25
+ PB    |              516 |          516 |                18.15 |         10.47
+ PE    |             1587 |         1587 |                15.70 |          9.64
+ PI    |              475 |          475 |                16.28 |         13.89
+ PR    |             4903 |         4903 |                10.42 |          4.06
+ RJ    |            12310 |        12310 |                12.04 |         12.14
+ RN    |              470 |          470 |                16.05 |          9.36
+ RO    |              243 |          243 |                17.58 |          2.88
+ RR    |               40 |           40 |                25.13 |         12.50
+ RS    |             5328 |         5327 |                13.17 |          6.10
+ SC    |             3537 |         3537 |                13.01 |          8.23
+ SE    |              332 |          332 |                17.93 |         15.36
+ SP    |            40406 |        40399 |                 7.20 |          4.50
+ TO    |              274 |          274 |                15.87 |          9.85
+(27 rows)
+
+    view_name    |         grain_key         | row_count | distinct_keys | expected_rows | passed 
+-----------------+---------------------------+-----------+---------------+---------------+--------
+ v_order_facts   | order_id                  |     99092 |         99092 |         99092 | t
+ v_order_lines   | (order_id, order_item_id) |    112650 |        112650 |        112650 | t
+ v_order_review  | order_id                  |     98673 |         98673 |         98673 | t
+ v_seller_orders | (order_id, seller_id)     |    100010 |        100010 |        100010 | t
+(4 rows)
+
+psql:sql/15_site_support.sql:504: NOTICE:  Q8: all site fan-out checks passed.

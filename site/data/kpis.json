@@ -1,0 +1,244 @@
+{
+  "window": {
+    "from": "2017-01-01",
+    "to": "2018-08-31",
+    "basis": "purchase date"
+  },
+  "kpis": {
+    "orders_in_window": {
+      "label": "Orders in window",
+      "value": 99092,
+      "display": "99,092",
+      "unit": "count",
+      "source": {
+        "file": "results/baseline.csv",
+        "column": "value",
+        "where": {
+          "section": "orders_by_status",
+          "dimension": "all",
+          "metric": "orders"
+        }
+      }
+    },
+    "delivered_orders": {
+      "label": "Delivered orders",
+      "value": 96211,
+      "display": "96,211",
+      "unit": "count",
+      "source": {
+        "file": "results/baseline.csv",
+        "column": "value",
+        "where": {
+          "section": "volume",
+          "dimension": "all",
+          "metric": "delivered_orders"
+        }
+      }
+    },
+    "unique_customers": {
+      "label": "Customers",
+      "value": 93104,
+      "display": "93,104",
+      "unit": "count",
+      "source": {
+        "file": "results/baseline.csv",
+        "column": "value",
+        "where": {
+          "section": "volume",
+          "dimension": "all",
+          "metric": "unique_customers"
+        }
+      }
+    },
+    "active_sellers": {
+      "label": "Active sellers",
+      "value": 2945,
+      "display": "2,945",
+      "unit": "count",
+      "source": {
+        "file": "results/baseline.csv",
+        "column": "value",
+        "where": {
+          "section": "volume",
+          "dimension": "all",
+          "metric": "active_sellers"
+        }
+      }
+    },
+    "revenue": {
+      "label": "Revenue (BRL, item price)",
+      "value": 13181027.13,
+      "display": "13,181,027.13",
+      "unit": "brl",
+      "source": {
+        "file": "results/baseline.csv",
+        "column": "value",
+        "where": {
+          "section": "money",
+          "dimension": "all",
+          "metric": "revenue"
+        }
+      }
+    },
+    "freight": {
+      "label": "Freight (BRL)",
+      "value": 2192092.88,
+      "display": "2,192,092.88",
+      "unit": "brl",
+      "source": {
+        "file": "results/baseline.csv",
+        "column": "value",
+        "where": {
+          "section": "money",
+          "dimension": "all",
+          "metric": "freight"
+        }
+      }
+    },
+    "aov": {
+      "label": "Average order value (BRL)",
+      "value": 137.0,
+      "display": "137.00",
+      "unit": "brl",
+      "source": {
+        "file": "results/baseline.csv",
+        "column": "value",
+        "where": {
+          "section": "money",
+          "dimension": "all",
+          "metric": "average_order_value"
+        }
+      }
+    },
+    "repeat_rate_later_day": {
+      "label": "Customers who returned on a later day",
+      "value": 2.15,
+      "display": "2.15%",
+      "unit": "pct",
+      "source": {
+        "file": "results/10_same_day_check.csv",
+        "column": "repeat_rate_later_day_pct",
+        "where": {}
+      }
+    },
+    "on_time_rate": {
+      "label": "On-time delivery",
+      "value": 93.21,
+      "display": "93.21%",
+      "unit": "pct",
+      "source": {
+        "file": "results/baseline.csv",
+        "column": "value",
+        "where": {
+          "section": "delivery",
+          "dimension": "all",
+          "metric": "on_time_rate_pct"
+        }
+      }
+    },
+    "median_delivery_days": {
+      "label": "Median delivery days",
+      "value": 10.21,
+      "display": "10.21",
+      "unit": "days",
+      "source": {
+        "file": "results/baseline.csv",
+        "column": "value",
+        "where": {
+          "section": "delivery",
+          "dimension": "all",
+          "metric": "median_delivery_days"
+        }
+      }
+    },
+    "avg_review_score": {
+      "label": "Average review score",
+      "value": 4.09,
+      "display": "4.09",
+      "unit": "score",
+      "source": {
+        "file": "results/baseline.csv",
+        "column": "value",
+        "where": {
+          "section": "reviews",
+          "dimension": "all",
+          "metric": "avg_review_score"
+        }
+      }
+    },
+    "low_review_share": {
+      "label": "Share of 1-2 star reviews",
+      "value": 14.63,
+      "display": "14.63%",
+      "unit": "pct",
+      "source": {
+        "file": "results/baseline.csv",
+        "column": "value",
+        "where": {
+          "section": "reviews",
+          "dimension": "all",
+          "metric": "share_1_2_star_pct"
+        }
+      }
+    }
+  },
+  "metrics_tree": {
+    "formula": "revenue = customers x orders per customer x average order value",
+    "revenue": {
+      "label": "Revenue (BRL)",
+      "value": 13181027.13,
+      "display": "13,181,027.13",
+      "unit": "brl",
+      "source": {
+        "file": "results/15_metrics_tree.csv",
+        "column": "revenue",
+        "where": {}
+      }
+    },
+    "customers": {
+      "label": "Customers",
+      "value": 93104,
+      "display": "93,104",
+      "unit": "count",
+      "source": {
+        "file": "results/15_metrics_tree.csv",
+        "column": "customers",
+        "where": {}
+      }
+    },
+    "orders": {
+      "label": "Delivered orders",
+      "value": 96211,
+      "display": "96,211",
+      "unit": "count",
+      "source": {
+        "file": "results/15_metrics_tree.csv",
+        "column": "orders",
+        "where": {}
+      }
+    },
+    "orders_per_customer": {
+      "label": "Orders per customer",
+      "value": 1.0334,
+      "display": "1.0334",
+      "unit": "ratio",
+      "source": {
+        "file": "results/15_metrics_tree.csv",
+        "column": "orders_per_customer",
+        "where": {}
+      }
+    },
+    "aov": {
+      "label": "Average order value (BRL)",
+      "value": 137.0,
+      "display": "137.00",
+      "unit": "brl",
+      "source": {
+        "file": "results/15_metrics_tree.csv",
+        "column": "aov",
+        "where": {}
+      }
+    },
+    "note": "Factors are rounded (orders per customer to 4 decimals, AOV to 2), so their product is close to, not exactly, the revenue."
+  }
+}
